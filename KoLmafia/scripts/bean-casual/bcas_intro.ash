@@ -1,8 +1,8 @@
 void bcas_intro() {
-    set_clan("Bonus Adventures From Hell");
+    set_clan("Bonus Adventures from Hell");
     if (get_property_int('_clanFortuneConsultUses') < 3) {
         while (get_property_int('_clanFortuneConsultUses') < 3) {
-            cli_execute('fortune chatplanet');
+            cli_execute('fortune cheesefax');
             cli_execute('wait 5');
         }
     }
@@ -17,8 +17,8 @@ void bcas_intro() {
 
     try_use(1, $item[astral six-pack]);
 
-    // Buy toy accordion
-    ensure_item(1, $item[toy accordion]);
+    // Buy antique accordion
+    ensure_item(1, $item[antique accordion], 2500);
 
     // Initialize council.
     visit_url('council.php');

@@ -1,3 +1,5 @@
+import <bcas_lib.ash>
+
 // multi_fight() stolen from Aenimus: https://github.com/Aenimus/aen_cocoabo_farm/blob/master/scripts/aen_combat.ash.
 // Thanks! Licensed under MIT license.
 void multi_fight() {
@@ -40,15 +42,6 @@ buffer m_skill(buffer macro, skill sk) {
     }
 }
 
-buffer m_skill_repeat(buffer macro, skill sk) {
-    if (have_skill(sk)) {
-        string name = sk.name.replace_string("%fn, ", "");
-        return macro.m_step(`skill {name}`).m_repeat();
-    } else {
-        return macro;
-    }
-}
-
 buffer m_item(buffer macro, item it) {
     return macro.m_step(`item {it.name}`);
 }
@@ -59,6 +52,15 @@ buffer m_repeat(buffer macro) {
 
 string m_repeat_submit(buffer macro) {
     return macro.m_step("repeat").m_submit();
+}
+
+buffer m_skill_repeat(buffer macro, skill sk) {
+    if (have_skill(sk)) {
+        string name = sk.name.replace_string("%fn, ", "");
+        return macro.m_step(`skill {name}`).m_repeat();
+    } else {
+        return macro;
+    }
 }
 
 buffer m_if(buffer macro, string condition, string next) {
@@ -89,6 +91,7 @@ string MODE_NULL = "";
 string MODE_CUSTOM = "custom";
 string MODE_FIND_MONSTER_SABER_YR = "findsaber";
 string MODE_FIND_MONSTER_THEN = "findthen";
+string MODE_RUN_UNLESS_FREE = "rununlessfree";
 string MODE_KILL = "kill";
 
 void set_hccs_combat_mode(string mode) {
@@ -142,11 +145,11 @@ boolean used_banisher_in_zone(monster[string] banished, string banisher, locatio
 void main(int initround, monster foe, string page) {
     string mode = get_hccs_combat_mode();
     location loc = my_location();
-    int monster_id = get_hccs_combat_arg1().to_int();
-    monster desired = monster_name.to_monster();
     if (mode == MODE_CUSTOM) {
         m_new(get_hccs_combat_arg1()).m_repeat_submit();
     } else if (mode == MODE_FIND_MONSTER_THEN) {
+        int monster_id = get_hccs_combat_arg1().to_int();
+        monster desired = monster_id.to_monster();
         monster[string] banished = banished_monsters();
         if (foe == desired) {
             set_property("_hccsCombatFound", "true");
@@ -183,8 +186,8 @@ void main(int initround, monster foe, string page) {
                 print("WARNING: Mafia is not tracking bander runaways correctly.");
                 set_property_int("_banderRunaways", banderRunaways + 1);
             }
-        /* } else if (have_skill($skill[Reflex Hammer]) && get_property_int("_reflexHammerUsed") < 3) {
-            use_skill(1, $skill[Reflex Hammer]); */
+        } else if (have_skill($skill[Reflex Hammer]) && get_property_int("_reflexHammerUsed") < 3) {
+            use_skill(1, $skill[Reflex Hammer]);
         } else if (my_mp() >= 50 && have_skill($skill[Snokebomb]) && get_property_int("_snokebombUsed") < 3) {
             use_skill(1, $skill[Snokebomb]);
         } else {
@@ -201,7 +204,7 @@ void main(int initround, monster foe, string page) {
 }
 
 void saber_yr() {
-    if (!handling_choice()) error('No choice?');
+    if (!handling_choice()) abort('No choice?');
     if (last_choice() == 1387 && count(available_choice_options()) > 0) {
         run_choice(3);
     }
@@ -211,6 +214,10 @@ void adventure_macro(location loc, buffer macro) {
     set_hccs_combat_mode(MODE_CUSTOM, macro);
     adv1(loc, -1, "");
     set_hccs_combat_mode(MODE_NULL, '');
+}
+
+void adventure_kill(location loc) {
+    adventure_macro(loc, m_new().m_kill());
 }
 
 void find_monster_then(location loc, monster foe, buffer macro) {

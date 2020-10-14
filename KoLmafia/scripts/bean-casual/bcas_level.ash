@@ -1,5 +1,8 @@
+import <bcas_lib.ash>
+import <bcas_combat.ash>
+
 void level_mood() {
-    if (my_mp() < 0.5 * my_maxmp() && my_mp() < 200) {
+    if (my_mp() < 200) {
         eat(1, $item[magical sausage]);
     }
 
@@ -17,11 +20,11 @@ void level_mood() {
     try_ensure_effect($effect[You Learned Something Maybe!]);
     if (get_property_boolean("_daycareToday") && !get_property_boolean("_daycareSpa")) cli_execute(`daycare {my_primestat()}`);
 
-    if (my_mp() < 0.5 * my_maxmp() && my_mp() < 200) {
+    if (my_mp() < 200) {
         eat(1, $item[magical sausage]);
     }
     if (my_primestat() == $stat[Muscle]) {
-        try_ensure_song($skill[Power Ballad of the Arrowsmith]);
+        try_ensure_song($skill[The Power Ballad of the Arrowsmith]);
         try_ensure_effect($effect[Lack of Body-Building]);
         ensure_effect($effect[Go Get 'Em, Tiger!]);
         ensure_effect($effect[Phorcefullness]);
@@ -41,7 +44,7 @@ void level_mood() {
         ensure_effect($effect[Cock of the Walk]);
     }
 
-    if (my_mp() < 0.5 * my_maxmp() && my_mp() < 200) {
+    if (my_mp() < 200) {
         eat(1, $item[magical sausage]);
     }
 
@@ -51,22 +54,24 @@ void level_mood() {
     try_ensure_skill($skill[Drescher's Annoying Noise]);
 
     // Combat.
-    try_ensure_skill($effect[Carol of the Hells]);
+    try_ensure_skill($skill[Carol of the Hells]);
     ensure_effect($effect[Pisces in the Skyces]);
 
     // Misc.
     try_ensure_song($skill[The Polka of Plenty]);
     try_ensure_song($skill[Singer's Faithful Ocelot]);
     try_ensure_skill($skill[Blood Bond]);
-    try_ensure_skill($skill[Empathy]);
+    try_ensure_skill($skill[Empathy of the Newt]);
     try_ensure_skill($skill[Leash of Linguini]);
     try_ensure_skill($skill[Carol of the Thrills]);
 }
 
 void bcas_level() {
+    if (my_level() >= 13) return;
+
     // Put on some basic gear.
     maximize("mp", false);
-    if (my_mp() < 0.5 * my_maxmp() && available_amount($item[magical sausage]) + available_amount($item[magical sausage casing]) > 0) {
+    if (my_mp() < 200 && available_amount($item[magical sausage]) + available_amount($item[magical sausage casing]) > 0) {
         eat(1, $item[magical sausage]);
     }
 
@@ -98,7 +103,7 @@ void bcas_level() {
     }
 
     // Bastille first.
-    if (get_property_int("_bastilleGames") == 0 {
+    if (get_property_int("_bastilleGames") == 0) {
         if (available_amount($item[Bastille Battalion control rig]) == 0) {
             use(1, $item[Bastille Battalion control rig loaner voucher]);
         }
@@ -106,7 +111,7 @@ void bcas_level() {
     }
 
     // Chateau rests.
-    if (get_property_boolean("chateauAvailable") {
+    if (get_property_boolean("chateauAvailable")) {
         buy(1, $item[ceiling fan]);
         if (my_primestat() == $stat[Muscle]) {
             buy(1, $item[electric muscle stimulator]);
@@ -134,14 +139,14 @@ void bcas_level() {
             set_hccs_combat_mode(MODE_KILL);
             run_combat();
             visit_url('choice.php');
-            if (handling_choice()) run_choice(1);
+            if (handling_choice()) run_choice(3);
             set_hccs_combat_mode(MODE_NULL);
         }
     }
 
     if (get_property_int('_sausageFights') == 0
             && have_familiar($familiar[Pocket Professor])
-            && available_amount($item[Kramco Sausage-o-Matic&trade;])) {
+            && available_amount($item[Kramco Sausage-o-Matic&trade;]) > 0) {
         use_familiar($familiar[Pocket Professor]);
         maximize_cached("mainstat, 4exp, equip makeshift garbage shirt, equip Pocket Professor memory chip, equip Kramco");
         level_mood();

@@ -2,7 +2,7 @@
 int get_property_int(string name) {
     string str = get_property(name);
     if (str == '') {
-        error('Unknown property ' + name + '.');
+        abort('Unknown property ' + name + '.');
     }
     return to_int(str);
 }
@@ -14,7 +14,7 @@ void set_property_int(string name, int value) {
 boolean get_property_boolean(string name) {
     string str = get_property(name);
     if (str == '') {
-        error('Unknown property ' + name + '.');
+        abort('Unknown property ' + name + '.');
     }
     return str == 'true';
 }
@@ -30,7 +30,7 @@ int my_familiar_weight() {
 void ensure_effect(effect ef, int turns) {
     if (have_effect(ef) < turns) {
         if (!cli_execute(ef.default) || have_effect(ef) == 0) {
-            error('Failed to get effect ' + ef.name + '.');
+            abort('Failed to get effect ' + ef.name + '.');
         }
     }
 }
@@ -42,7 +42,7 @@ void ensure_effect(effect ef) {
 void try_ensure_effect(effect ef) {
     try {
         ensure_effect(ef);
-    }
+    } finally {}
 }
 
 void try_ensure_skill(skill sk) {
@@ -64,8 +64,8 @@ void shrug(effect ef) {
 
 // Mechanics for managing song slots.
 // We have Stevedave's, Ur-Kel's on at all times during leveling; third and fourth slots are variable.
-boolean[effect] song_slot_1 = $effects[Stevedave's Shanty of Superiority, Fat Leon's Phat Loot Lyric]
-boolean[effect] song_slot_2 = $effects[Ur-Kel's Aria of Annoyance]
+boolean[effect] song_slot_1 = $effects[Stevedave's Shanty of Superiority, Fat Leon's Phat Loot Lyric];
+boolean[effect] song_slot_2 = $effects[Ur-Kel's Aria of Annoyance];
 boolean[effect] song_slot_3 = $effects[Power Ballad of the Arrowsmith, The Magical Mojomuscular Melody, The Moxious Madrigal, Ode to Booze, Jackasses' Symphony of Destruction];
 boolean[effect] song_slot_4 = $effects[Carlweather's Cantata of Confrontation, The Sonata of Sneakiness, Polka of Plenty];
 void open_song_slot(effect song) {
@@ -84,7 +84,7 @@ void try_ensure_song(skill sk) {
     if (have_effect(ef) == 0) {
         open_song_slot(ef);
         if (!cli_execute(ef.default) || have_effect(ef) == 0) {
-            error('Failed to get effect ' + ef.name + '.');
+            abort('Failed to get effect ' + ef.name + '.');
         }
     } else {
         print('Already have effect ' + ef.name + '.');
@@ -93,7 +93,6 @@ void try_ensure_song(skill sk) {
 
 void ensure_ode(int turns) {
     while (have_effect($effect[Ode to Booze]) < turns) {
-        ensure_mp_tonic(50);
         open_song_slot($effect[Ode to Booze]);
         use_skill(1, $skill[The Ode to Booze]);
     }
@@ -146,7 +145,19 @@ boolean set_clan(string target) {
 }
 
 void maximize_cached(string objective) {
+    objective += objective.length() > 0 ? ", equip Powerful Glove" : "equip Powerful Glove";
     if (get_property("bcas_objective") == objective) return;
     set_property("bcas_objective", objective);
     maximize(objective, false);
+}
+
+int get_step(string quest_name) {
+    string string_step = get_property(quest_name);
+    if (string_step == "unstarted") return -1;
+    else if (string_step == "started") return 0;
+    else if (string_step == "finished") return 999;
+    else {
+        if (string_step.substring(0, 4) != "step") abort("Quest state parsing error.");
+        return string_step.substring(4).to_int();
+    }
 }
