@@ -47,7 +47,7 @@ void bcas_billiards() {
 
     while (available_amount($item[[7302]Spookyraven library key]) == 0) {
         while (my_inebriety() < 5 && available_amount($item[astral pilsner]) > 0) {
-            try_ensure_skill($skill[The Ode to Booze]);
+            try_ensure_song($skill[The Ode to Booze]);
             drink(1, $item[astral pilsner]);
         }
 
@@ -79,9 +79,14 @@ void bcas_war() {
         adventure_run_unless_free($location[Hippy Camp]);
     }
 
-    while (get_property_int("hippiesDefeated") < 1000) {
-        retrieve_item(1, $item[stuffing fluffer]);
-        use(1, $item[stuffing fluffer]);
+    if (get_property_int("hippiesDefeated") < 1000) {
+        int count = clamp((1000 - get_property_int("hippiesDefeated")) / 46, 0, 24);
+        retrieve_item(count, $item[stuffing fluffer]);
+        use(count, $item[stuffing fluffer]);
+        while (get_property_int("hippiesDefeated") < 1000) {
+            retrieve_item(count, $item[stuffing fluffer]);
+            use(count, $item[stuffing fluffer]);
+        }
     }
 
     if (get_property("warProgress") != "finished") {
@@ -116,6 +121,27 @@ void bcas_ores() {
         retrieve_item(3, get_property("trapperOre").to_item());
         retrieve_item(3, $item[goat cheese]);
         visit_url("place.php?whichplace=mclargehuge&action=trappercabin");
+    }
+}
+
+void bcas_bridge() {
+    if (get_property_int("chasmBridgeProgress") < 30) {
+        int count = (34 - get_property_int("chasmBridgeProgress")) / 5;
+        ensure_item(count, $item[smut orc keepsake box], 20000);
+        use(count, $item[smut orc keepsake box]);
+        visit_url(`place.php?whichplace=orc_chasm&action=bridge{get_property("chasmBridgeProgress")}`);
+    }
+}
+
+void bcas_aboo() {
+    int theoretical_progress = get_property_int("booPeakProgress") - 30 * item_amount($item[A-Boo Clue]);
+    while (theoretical_progress > 0) {
+        // while blasts through intro adventure here...
+        retrieve_item(1, $item[ten-leaf clover]);
+        set_property("cloverProtectActive", "false");
+        adv1($location[A-Boo Peak], -1, "");
+        set_property("cloverProtectActive", "true");
+        theoretical_progress = get_property_int("booPeakProgress") - 30 * item_amount($item[A-Boo Clue]);
     }
 }
 

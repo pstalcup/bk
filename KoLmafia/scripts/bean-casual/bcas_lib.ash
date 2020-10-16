@@ -1,3 +1,6 @@
+int clamp(int value, int lower, int upper) {
+    return max(min(value, upper), lower);
+}
 
 int get_property_int(string name) {
     string str = get_property(name);

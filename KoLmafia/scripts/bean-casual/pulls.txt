@@ -1,4 +1,3 @@
-bitchin' meatcar
 10 white pixel
 Richard's star key
 skeleton key
@@ -17,7 +16,7 @@ killing jar
 5 bowling ball
 wet stew
 Wand of Nagamar
-7 disassembled clover
+9 disassembled clover
 lynyrdskin cap
 lynyrdskin tunic
 lynyrdskin breeches
@@ -35,3 +34,4 @@ head mirror
 bloodied surgical dungarees
 surgical mask
 surgical apron
+bitchin' meatcar

@@ -34,16 +34,14 @@ string m_monster(monster m) {
 }
 
 buffer m_skill(buffer macro, skill sk) {
-    if (have_skill(sk)) {
-        string name = sk.name.replace_string("%fn, ", "");
-        return macro.m_step(`skill {name}`);
-    } else {
-        return macro;
-    }
+    string name = sk.name.replace_string("%fn, ", "");
+    return macro.m_step(`skill {name}`);
 }
 
 buffer m_item(buffer macro, item it) {
-    return macro.m_step(`item {it.name}`);
+    if (available_amount(it) > 0) {
+        return macro.m_step(`use {it.name}`);
+    } else return macro;
 }
 
 buffer m_repeat(buffer macro) {
