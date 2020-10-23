@@ -84,8 +84,8 @@ void bcas_war() {
         retrieve_item(count, $item[stuffing fluffer]);
         use(count, $item[stuffing fluffer]);
         while (get_property_int("hippiesDefeated") < 1000) {
-            retrieve_item(count, $item[stuffing fluffer]);
-            use(count, $item[stuffing fluffer]);
+            retrieve_item(1, $item[stuffing fluffer]);
+            use(1, $item[stuffing fluffer]);
         }
     }
 
@@ -142,6 +142,12 @@ void bcas_aboo() {
         adv1($location[A-Boo Peak], -1, "");
         set_property("cloverProtectActive", "true");
         theoretical_progress = get_property_int("booPeakProgress") - 30 * item_amount($item[A-Boo Clue]);
+    }
+
+    while (get_property_int("booPeakProgress") > 0 && available_amount($item[A-Boo Clue]) > 0) {
+        maximize_cached("0.1hp, spooky res, cold res");
+        use(1, $item[A-Boo Clue]);
+        adv1($location[A-Boo Peak], -1, "");
     }
 }
 

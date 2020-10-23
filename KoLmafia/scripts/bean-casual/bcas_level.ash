@@ -135,6 +135,7 @@ void bcas_level() {
             // Get stats from the fight.
             set_choice(1310, 3);
             level_mood();
+            restore_hp(my_maxhp());
             visit_url('main.php?fightgodlobster=1');
             set_hccs_combat_mode(MODE_KILL);
             run_combat();

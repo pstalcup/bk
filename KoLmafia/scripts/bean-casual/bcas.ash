@@ -13,10 +13,13 @@ visit_url("council.php");
 
 if (my_level() < 13) abort("Something went wrong in leveling!");
 
-foreach i, line in file_to_buffer("scripts/bean-casual/pulls.txt").split_string("\n") {
-    print(`acquire {line}`);
-    if (line.length() == 0) continue;
-    cli_execute(`acquire {line}`);
+if (get_property("bcas_lastStockedUp").to_int() < my_ascensions()) {
+    foreach i, line in file_to_buffer("scripts/bean-casual/pulls.txt").split_string("\n") {
+        print(`acquire {line}`);
+        if (line.length() == 0) continue;
+        cli_execute(`acquire {line}`);
+    }
+    set_property("bcas_lastStockedUp", my_ascensions());
 }
 
 bcas_billiards();

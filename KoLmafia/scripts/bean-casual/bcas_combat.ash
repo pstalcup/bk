@@ -33,34 +33,6 @@ string m_monster(monster m) {
     return `monstername "{m.name}"`;
 }
 
-buffer m_skill(buffer macro, skill sk) {
-    string name = sk.name.replace_string("%fn, ", "");
-    return macro.m_step(`skill {name}`);
-}
-
-buffer m_item(buffer macro, item it) {
-    if (available_amount(it) > 0) {
-        return macro.m_step(`use {it.name}`);
-    } else return macro;
-}
-
-buffer m_repeat(buffer macro) {
-    return macro.m_step("repeat");
-}
-
-string m_repeat_submit(buffer macro) {
-    return macro.m_step("repeat").m_submit();
-}
-
-buffer m_skill_repeat(buffer macro, skill sk) {
-    if (have_skill(sk)) {
-        string name = sk.name.replace_string("%fn, ", "");
-        return macro.m_step(`skill {name}`).m_repeat();
-    } else {
-        return macro;
-    }
-}
-
 buffer m_if(buffer macro, string condition, string next) {
     return macro.m_step(`if {condition}`).m_step(next).m_step("endif");
 }
@@ -76,6 +48,29 @@ buffer m_if(buffer macro, string condition, string next1, string next2, string n
 buffer m_external_if(buffer macro, boolean condition, buffer next) {
     if (condition) return macro;
     else return macro.m_step(next);
+}
+
+buffer m_repeat(buffer macro) {
+    return macro.m_step("repeat");
+}
+
+string m_repeat_submit(buffer macro) {
+    return macro.m_step("repeat").m_submit();
+}
+
+buffer m_skill(buffer macro, skill sk) {
+    string name = sk.name.replace_string("%fn, ", "");
+    return macro.m_if(`hasskill {name}`, `skill {name}`);
+}
+
+buffer m_skill_repeat(buffer macro, skill sk) {
+    return macro.m_skill(sk).m_repeat();
+}
+
+buffer m_item(buffer macro, item it) {
+    if (available_amount(it) > 0) {
+        return macro.m_step(`use {it.name}`);
+    } else return macro;
 }
 
 buffer m_kill(buffer macro) {
