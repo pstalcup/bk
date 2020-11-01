@@ -26,6 +26,9 @@ void bcas_intro() {
     // All combat handled by our consult script (bcas_combat.ash).
     cli_execute('ccs bean-casual');
 
+    // Mood handled in ASH.
+    cli_execute("mood apathetic");
+
     // Upgrade saber for fam wt
     if (available_amount($item[Fourth of May Cosplay Saber]) > 0) {
         visit_url('main.php?action=may4');

@@ -64,7 +64,8 @@ buffer m_skill(buffer macro, skill sk) {
 }
 
 buffer m_skill_repeat(buffer macro, skill sk) {
-    return macro.m_skill(sk).m_repeat();
+    string name = sk.name.replace_string("%fn, ", "");
+    return macro.m_if(`hasskill {name}`, `skill {name};repeat`);
 }
 
 buffer m_item(buffer macro, item it) {

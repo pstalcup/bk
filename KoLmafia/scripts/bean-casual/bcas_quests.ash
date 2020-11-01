@@ -42,7 +42,7 @@ void bcas_billiards() {
         use_familiar($familiar[Exotic Parrot]);
         mood_baseline();
         maximize_cached("hot res 9 min, stench res 9 min, equip Kramco");
-        adventure_macro($location[The Haunted Kitchen], m_new().m_skill($skill[Saucestorm]));
+        adventure_macro($location[The Haunted Kitchen], m_new().m_skill_repeat($skill[Saucestorm]));
     }
 
     while (available_amount($item[[7302]Spookyraven library key]) == 0) {
