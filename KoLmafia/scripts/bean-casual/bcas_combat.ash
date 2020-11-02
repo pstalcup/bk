@@ -37,6 +37,10 @@ buffer m_if(buffer macro, string condition, string next) {
     return macro.m_step(`if {condition}`).m_step(next).m_step("endif");
 }
 
+buffer m_external_if(buffer macro, boolean condition, string next) {
+    return condition ? macro.m_step(next) : macro;
+}
+
 buffer m_if(buffer macro, string condition, string next1, string next2) {
     return macro.m_if(condition, `{next1};{next2}`);
 }

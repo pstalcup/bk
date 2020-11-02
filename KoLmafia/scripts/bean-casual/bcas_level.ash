@@ -130,14 +130,21 @@ void bcas_level() {
 
     if (have_familiar($familiar[God Lobster])) {
         use_familiar($familiar[God Lobster]);
+        boolean use_gg = have_skill($skill[Giant Growth]) && mall_price($item[green mana]) < 8000;
+
         while (get_property('_godLobsterFights') < 3) {
             maximize_cached("mainstat, 4exp, equip makeshift garbage shirt");
             // Get stats from the fight.
             set_choice(1310, 3);
             level_mood();
             restore_hp(my_maxhp());
+            if (use_gg && have_effect($effect[Giant Growth]) == 0) retrieve_item(1, $item[green mana]);
             visit_url('main.php?fightgodlobster=1');
-            set_hccs_combat_mode(MODE_KILL);
+            set_hccs_combat_mode(MODE_CUSTOM,
+                m_new()
+                    .m_external_if(use_gg && have_effect($effect[Giant Growth]) == 0, "skill Giant Growth")
+                    .m_kill()
+            );
             run_combat();
             visit_url('choice.php');
             if (handling_choice()) run_choice(3);
