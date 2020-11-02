@@ -4,6 +4,11 @@ import <bcas_level.ash>
 import <bcas_quests.ash>
 
 set_property("bcas_objective", "");
+string diet_script = get_property("bcas_diet"); 
+
+if(diet_script == "") {
+    abort("Set property \"bcas_diet\" with your diet script"); 
+}
 
 bcas_intro();
 bcas_level();
@@ -24,7 +29,7 @@ if (get_property("bcas_lastStockedUp").to_int() < my_ascensions()) {
 
 bcas_billiards();
 
-cli_execute("hobodiet");
+cli_execute(diet_script);
 
 bcas_war();
 bcas_daily_dungeon();
