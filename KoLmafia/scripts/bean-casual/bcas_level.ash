@@ -162,6 +162,10 @@ void bcas_level() {
    }
 
     while (get_property_int('_neverendingPartyFreeTurns') < 10) {
+        if (!get_property_boolean("leafletCompleted") && my_level() >= 9) {
+            visit_url("council.php");
+            cli_execute("leaflet");
+        }
         use_familiar($familiar[Hovering Sombrero]);
         maximize_cached("mainstat, 4exp, equip makeshift garbage shirt");
         set_choice(1324, 5);
