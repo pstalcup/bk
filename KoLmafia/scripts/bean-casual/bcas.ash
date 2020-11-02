@@ -6,9 +6,6 @@ import <bcas_quests.ash>
 set_property("bcas_objective", "");
 string diet_script = get_property("bcas_diet"); 
 
-if(diet_script == "") {
-    abort("Set property \"bcas_diet\" with your diet script"); 
-}
 
 bcas_intro();
 bcas_level();
@@ -29,7 +26,12 @@ if (get_property("bcas_lastStockedUp").to_int() < my_ascensions()) {
 
 bcas_billiards();
 
-cli_execute(diet_script);
+if(my_inebriety() <= 5 && my_fullness() <= 0) {
+    if(diet_script == "") {
+        abort("Set property \"bcas_diet\" with your diet script, or consume your diet and rerun"); 
+    }
+    cli_execute(diet_script);
+}
 
 bcas_war();
 bcas_daily_dungeon();
