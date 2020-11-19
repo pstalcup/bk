@@ -76,7 +76,6 @@ void bcas_level() {
     }
 
     // Start buffing. XP buffs first.
-    ensure_effect($effect[Thaumodynamic]);
     if (my_primestat() == $stat[Muscle]) {
         ensure_effect($effect[Muscle Unbound]);
         ensure_effect($effect[Purpose]);
