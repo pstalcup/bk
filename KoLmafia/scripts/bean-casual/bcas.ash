@@ -6,6 +6,8 @@ import <bcas_quests.ash>
 set_property("bcas_objective", "");
 string diet_script = get_property("bcas_diet"); 
 
+if (my_meat() > 5000000) abort("You have more than 5M liquid meat! Put it in the closet to avoid autoscend danger.");
+
 bcas_intro();
 bcas_level();
 
