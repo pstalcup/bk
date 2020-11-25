@@ -41,85 +41,6 @@ function _defineProperty(obj, key, value) {
   return obj;
 }
 
-function _inherits(subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function");
-  }
-
-  subClass.prototype = Object.create(superClass && superClass.prototype, {
-    constructor: {
-      value: subClass,
-      writable: true,
-      configurable: true
-    }
-  });
-  if (superClass) _setPrototypeOf(subClass, superClass);
-}
-
-function _getPrototypeOf(o) {
-  _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
-    return o.__proto__ || Object.getPrototypeOf(o);
-  };
-  return _getPrototypeOf(o);
-}
-
-function _setPrototypeOf(o, p) {
-  _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
-    o.__proto__ = p;
-    return o;
-  };
-
-  return _setPrototypeOf(o, p);
-}
-
-function _isNativeReflectConstruct() {
-  if (typeof Reflect === "undefined" || !Reflect.construct) return false;
-  if (Reflect.construct.sham) return false;
-  if (typeof Proxy === "function") return true;
-
-  try {
-    Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
-function _assertThisInitialized(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-
-  return self;
-}
-
-function _possibleConstructorReturn(self, call) {
-  if (call && (typeof call === "object" || typeof call === "function")) {
-    return call;
-  }
-
-  return _assertThisInitialized(self);
-}
-
-function _createSuper(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct();
-
-  return function _createSuperInternal() {
-    var Super = _getPrototypeOf(Derived),
-        result;
-
-    if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf(this).constructor;
-
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-
-    return _possibleConstructorReturn(this, result);
-  };
-}
-
 function _unsupportedIterableToArray(o, minLen) {
   if (!o) return;
   if (typeof o === "string") return _arrayLikeToArray(o, minLen);
@@ -604,20 +525,6 @@ function adventureRunUnlessFree(loc) {
   setMode(MODE_NULL);
 }
 
-var Stat = /*#__PURE__*/function (_MafiaClass) {
-  _inherits(Stat, _MafiaClass);
-
-  var _super = _createSuper(Stat);
-
-  function Stat() {
-    _classCallCheck(this, Stat);
-
-    return _super.apply(this, arguments);
-  }
-
-  return Stat;
-}(MafiaClass);
-
 function levelMood() {
   if (Lib.myMp() < 200) {
     Lib.eat(1, Item.get('magical sausage'));
@@ -811,7 +718,6 @@ function moodBaseline() {
   tryEnsureSkill(Skill.get('Blood Bond'));
   tryEnsureSkill(Skill.get('Empathy of the Newt'));
   tryEnsureSkill(Skill.get('Leash of Linguini'));
-  tryEnsureSkill(Skill.get('Carol of the Thrills'));
 }
 function moodNoncombat() {
   moodBaseline();
@@ -969,10 +875,12 @@ function main() {
 
   if (Lib.myMeat() > 5000000) {
     if (getPropertyBoolean('bcas_autoClosetMeat', false)) {
-      Lib.cliExecute("closet put ".concat(Lib.myMeat() - 5000000));
+      var closetAmount = Lib.myMeat() - 5 * 1000 * 1000;
+      Lib.print("You have more than 5M liquid meat! Putting ".concat(closetAmount, " in the closet automatically."), 'blue');
+      Lib.cliExecute("closet put ".concat(closetAmount, " meat"));
+    } else {
+      Lib.abort('You have more than 5M liquid meat! ' + 'Put it in the closet to avoid autoscend danger, or set bcas_autoClosetMeat to true and rerun.');
     }
-
-    Lib.abort('You have more than 5M liquid meat! ' + 'Put it in the closet to avoid autoscend danger, or set bcas_autoClosetMeat to true and rerun.');
   }
 
   intro();
@@ -982,7 +890,7 @@ function main() {
   if (Lib.myLevel() < 13) Lib.abort('Something went wrong in leveling!');
 
   if (Lib.getProperty('bcas_lastStockedUp').toInt() < Lib.myAscensions()) {
-    var _iterator = _createForOfIteratorHelper(Lib.fileToBuffer('scripts/bean-casual/pulls.txt').split('\n')),
+    var _iterator = _createForOfIteratorHelper(Lib.fileToBuffer('data/bean-casual/pulls.txt').split('\n')),
         _step;
 
     try {

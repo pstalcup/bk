@@ -9,12 +9,15 @@ export function main() {
 
   if (Lib.myMeat() > 5000000) {
     if (getPropertyBoolean('bcas_autoClosetMeat', false)) {
-      Lib.cliExecute(`closet put ${Lib.myMeat() - 5000000}`);
+      const closetAmount = Lib.myMeat() - 5 * 1000 * 1000;
+      Lib.print(`You have more than 5M liquid meat! Putting ${closetAmount} in the closet automatically.`, 'blue');
+      Lib.cliExecute(`closet put ${closetAmount} meat`);
+    } else {
+      Lib.abort(
+        'You have more than 5M liquid meat! ' +
+          'Put it in the closet to avoid autoscend danger, or set bcas_autoClosetMeat to true and rerun.'
+      );
     }
-    Lib.abort(
-      'You have more than 5M liquid meat! ' +
-        'Put it in the closet to avoid autoscend danger, or set bcas_autoClosetMeat to true and rerun.'
-    );
   }
 
   intro();

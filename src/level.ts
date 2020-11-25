@@ -11,8 +11,6 @@ import {
   setChoice,
 } from './lib';
 
-declare class Stat extends MafiaClass {}
-
 function levelMood() {
   if (Lib.myMp() < 200) {
     Lib.eat(1, Item.get('magical sausage'));

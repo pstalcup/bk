@@ -38,7 +38,6 @@ export function moodBaseline() {
   tryEnsureSkill(Skill.get('Blood Bond'));
   tryEnsureSkill(Skill.get('Empathy of the Newt'));
   tryEnsureSkill(Skill.get('Leash of Linguini'));
-  tryEnsureSkill(Skill.get('Carol of the Thrills'));
 }
 
 export function moodNoncombat() {
