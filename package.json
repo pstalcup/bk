@@ -2,7 +2,7 @@
   "name": "bean-casual",
   "version": "1.0.0",
   "description": "Casual script for Kingdom of Loathing.",
-  "main": "build/scripts/bean-casual/bcas.js",
+  "main": "KoLmafia/scripts/bean-casual/bcas.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rollup -c",
