@@ -2,15 +2,10 @@
   "name": "bean-casual",
   "version": "1.0.0",
   "description": "Casual script for Kingdom of Loathing.",
-  "main": "src/index.ts",
+  "main": "build/scripts/bean-casual/bcas.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "gts lint",
-    "clean": "gts clean",
-    "fix": "gts fix",
-    "build": "npm run build:types && npm run build:js",
-    "build:types": "tsc",
-    "build:js": "babel src --out-dir build/scripts/bean-casual --extensions \".ts\"",
+    "build": "rollup -c",
     "postinstall": "patch-package"
   },
   "repository": {
@@ -27,12 +22,18 @@
   "devDependencies": {
     "@babel/cli": "^7.12.8",
     "@babel/core": "^7.12.9",
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@babel/plugin-proposal-object-rest-spread": "^7.12.1",
     "@babel/preset-env": "^7.12.7",
     "@babel/preset-typescript": "^7.12.7",
+    "@rollup/plugin-babel": "^5.2.1",
+    "@rollup/plugin-commonjs": "^16.0.0",
+    "@rollup/plugin-node-resolve": "^10.0.0",
     "@types/node": "^14.11.2",
     "gts": "^3.0.2",
     "libram": "github:Loathing-Associates-Scripting-Society/libram",
     "patch-package": "^6.2.2",
+    "rollup": "^2.33.3",
     "typescript": "^4.0.3"
   }
 }
