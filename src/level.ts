@@ -30,7 +30,7 @@ function levelMood() {
   tryEnsureEffect(Effect.get('Starry-Eyed'));
   tryEnsureSkill(Skill.get('CHEAT CODE: Triple Size'));
   tryEnsureEffect(Effect.get('You Learned Something Maybe!'));
-  if (getPropertyBoolean('DaycareToday') && !getPropertyBoolean('DaycareSpa'))
+  if (getPropertyBoolean('_daycareToday') && !getPropertyBoolean('_daycareSpa'))
     Lib.cliExecute('daycare {Lib.myPrimestat()}');
 
   if (Lib.myMp() < 200) {
@@ -112,13 +112,13 @@ export function level() {
   }
 
   // Daycare
-  if (getPropertyInt('DaycareGymScavenges') === 0) {
+  if (getPropertyInt('_daycareGymScavenges') === 0) {
     // Free scavenge.
     Lib.visitUrl('choice.php?whichchoice=1336&option=2');
   }
 
   // Bastille first.
-  if (getPropertyInt('BastilleGames') === 0) {
+  if (getPropertyInt('_bastilleGames') === 0) {
     if (Lib.availableAmount(Item.get('Bastille Battalion control rig')) === 0) {
       Lib.use(1, Item.get('Bastille Battalion control rig loaner voucher'));
     }
@@ -147,7 +147,7 @@ export function level() {
     Lib.useFamiliar(Familiar.get('God Lobster'));
     const useGg = Lib.haveSkill(Skill.get('Giant Growth')) && Lib.mallPrice(Item.get('green mana')) < 8000;
 
-    while (Lib.getProperty('GodLobsterFights') < 3) {
+    while (Lib.getProperty('_godLobsterFights') < 3) {
       maximizeCached('mainstat, 4exp, equip makeshift garbage shirt');
       // Get stats from the fight.
       setChoice(1310, 3);
@@ -169,7 +169,7 @@ export function level() {
   }
 
   if (
-    getPropertyInt('SausageFights') === 0 &&
+    getPropertyInt('_sausageFights') === 0 &&
     Lib.haveFamiliar(Familiar.get('Pocket Professor')) &&
     Lib.availableAmount(Item.get('Kramco Sausage-o-Matic&trade;')) > 0
   ) {
@@ -179,7 +179,7 @@ export function level() {
     adventureCopy(Location.get("The Outskirts of Cobb's Knob"), Monster.get('sausage goblin'));
   }
 
-  while (getPropertyInt('NeverendingPartyFreeTurns') < 10) {
+  while (getPropertyInt('_neverendingPartyFreeTurns') < 10) {
     if (!getPropertyBoolean('leafletCompleted') && Lib.myLevel() >= 9) {
       Lib.visitUrl('council.php');
       Lib.cliExecute('leaflet');

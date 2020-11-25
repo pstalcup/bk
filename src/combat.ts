@@ -158,24 +158,24 @@ export function main(initround: number, foe: Monster) {
     } else if (
       Lib.myMp() >= 50 &&
       Lib.haveSkill(Skill.get('Snokebomb')) &&
-      getPropertyInt('SnokebombUsed') < 3 &&
+      getPropertyInt('_snokebombUsed') < 3 &&
       !usedBanisherInZone(banished, 'snokebomb', loc)
     ) {
       Lib.useSkill(1, Skill.get('Snokebomb'));
       /* } else if (haveSkill(Skill.get('Reflex Hammer')) && getPropertyInt("ReflexHammerUsed") < 3 && !usedBanisherInZone(banished, "Reflex Hammer", loc)) {
           Lib.useSkill(1, Skill.get('Reflex Hammer')); */
-    } else if (Lib.haveSkill(Skill.get('Macrometeorite')) && getPropertyInt('MacrometeoriteUses') < 10) {
+    } else if (Lib.haveSkill(Skill.get('Macrometeorite')) && getPropertyInt('_macrometeoriteUses') < 10) {
       Lib.useSkill(1, Skill.get('Macrometeorite'));
     } else if (
       Lib.haveSkill(Skill.get('CHEAT CODE: Replace Enemy')) &&
-      getPropertyInt('PowerfulGloveBatteryPowerUsed') <= 80
+      getPropertyInt('_powerfulGloveBatteryPowerUsed') <= 80
     ) {
-      const originalBattery = getPropertyInt('PowerfulGloveBatteryPowerUsed');
+      const originalBattery = getPropertyInt('_powerfulGloveBatteryPowerUsed');
       Lib.useSkill(1, Skill.get('CHEAT CODE: Replace Enemy'));
-      const newBattery = getPropertyInt('PowerfulGloveBatteryPowerUsed');
+      const newBattery = getPropertyInt('_powerfulGloveBatteryPowerUsed');
       if (newBattery === originalBattery) {
         Lib.print('WARNING: Mafia is not updating PG battery charge.');
-        Lib.setProperty('PowerfulGloveBatteryPowerUsed', '' + (newBattery + 10));
+        Lib.setProperty('_powerfulGloveBatteryPowerUsed', '' + (newBattery + 10));
       }
       // Hopefully at this point it comes back to the consult script.
     }
@@ -189,17 +189,17 @@ export function main(initround: number, foe: Monster) {
     } else if (
       Lib.myFamiliar() === Familiar.get('Frumious Bandersnatch') &&
       Lib.haveEffect(Effect.get('Ode to Booze')) > 0 &&
-      getPropertyInt('BanderRunaways') < myFamiliarWeight() / 5
+      getPropertyInt('_banderRunaways') < myFamiliarWeight() / 5
     ) {
-      const banderRunaways = getPropertyInt('BanderRunaways');
+      const banderRunaways = getPropertyInt('_banderRunaways');
       Lib.runaway();
-      if (getPropertyInt('BanderRunaways') === banderRunaways) {
+      if (getPropertyInt('_banderRunaways') === banderRunaways) {
         Lib.print('WARNING: Mafia is not tracking bander runaways correctly.');
-        Lib.setProperty('BanderRunaways', banderRunaways + 1);
+        Lib.setProperty('_banderRunaways', banderRunaways + 1);
       }
-    } else if (Lib.haveSkill(Skill.get('Reflex Hammer')) && getPropertyInt('ReflexHammerUsed') < 3) {
+    } else if (Lib.haveSkill(Skill.get('Reflex Hammer')) && getPropertyInt('_reflexHammerUsed') < 3) {
       Lib.useSkill(1, Skill.get('Reflex Hammer'));
-    } else if (Lib.myMp() >= 50 && Lib.haveSkill(Skill.get('Snokebomb')) && getPropertyInt('SnokebombUsed') < 3) {
+    } else if (Lib.myMp() >= 50 && Lib.haveSkill(Skill.get('Snokebomb')) && getPropertyInt('_snokebombUsed') < 3) {
       Lib.useSkill(1, Skill.get('Snokebomb'));
     } else {
       // non-free, whatever

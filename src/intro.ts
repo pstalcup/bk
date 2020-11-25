@@ -2,8 +2,8 @@ import {setClan, getPropertyInt, tryUse, ensureItem} from './lib';
 
 export function intro() {
   setClan('Bonus Adventures from Hell');
-  if (getPropertyInt('ClanFortuneConsultUses') < 3) {
-    while (getPropertyInt('ClanFortuneConsultUses') < 3) {
+  if (getPropertyInt('_clanFortuneConsultUses') < 3) {
+    while (getPropertyInt('_clanFortuneConsultUses') < 3) {
       Lib.cliExecute('fortune cheesefax');
       Lib.cliExecute('wait 5');
     }

@@ -257,8 +257,8 @@ export function setClan(target: string) {
 
 export function maximizeCached(objective: string) {
   objective += objective.length > 0 ? ', equip Powerful Glove' : 'equip Powerful Glove';
-  if (Lib.getProperty('bcasObjective') === objective) return;
-  Lib.setProperty('bcasObjective', objective);
+  if (Lib.getProperty('bcas_objective') === objective) return;
+  Lib.setProperty('bcas_objective', objective);
   Lib.maximize(objective, false);
 }
 

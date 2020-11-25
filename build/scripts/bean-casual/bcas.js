@@ -376,8 +376,8 @@ function setClan(target) {
 }
 function maximizeCached(objective) {
   objective += objective.length > 0 ? ', equip Powerful Glove' : 'equip Powerful Glove';
-  if (Lib.getProperty('bcasObjective') === objective) return;
-  Lib.setProperty('bcasObjective', objective);
+  if (Lib.getProperty('bcas_objective') === objective) return;
+  Lib.setProperty('bcas_objective', objective);
   Lib.maximize(objective, false);
 }
 function getStep(questName) {
@@ -394,8 +394,8 @@ function getStep(questName) {
 function intro() {
   setClan('Bonus Adventures from Hell');
 
-  if (getPropertyInt('ClanFortuneConsultUses') < 3) {
-    while (getPropertyInt('ClanFortuneConsultUses') < 3) {
+  if (getPropertyInt('_clanFortuneConsultUses') < 3) {
+    while (getPropertyInt('_clanFortuneConsultUses') < 3) {
       Lib.cliExecute('fortune cheesefax');
       Lib.cliExecute('wait 5');
     }
@@ -635,7 +635,7 @@ function levelMood() {
   tryEnsureEffect(Effect.get('Starry-Eyed'));
   tryEnsureSkill(Skill.get('CHEAT CODE: Triple Size'));
   tryEnsureEffect(Effect.get('You Learned Something Maybe!'));
-  if (getPropertyBoolean('DaycareToday') && !getPropertyBoolean('DaycareSpa')) Lib.cliExecute('daycare {Lib.myPrimestat()}');
+  if (getPropertyBoolean('_daycareToday') && !getPropertyBoolean('_daycareSpa')) Lib.cliExecute('daycare {Lib.myPrimestat()}');
 
   if (Lib.myMp() < 200) {
     Lib.eat(1, Item.get('magical sausage'));
@@ -712,13 +712,13 @@ function level() {
   } // Daycare
 
 
-  if (getPropertyInt('DaycareGymScavenges') === 0) {
+  if (getPropertyInt('_daycareGymScavenges') === 0) {
     // Free scavenge.
     Lib.visitUrl('choice.php?whichchoice=1336&option=2');
   } // Bastille first.
 
 
-  if (getPropertyInt('BastilleGames') === 0) {
+  if (getPropertyInt('_bastilleGames') === 0) {
     if (Lib.availableAmount(Item.get('Bastille Battalion control rig')) === 0) {
       Lib.use(1, Item.get('Bastille Battalion control rig loaner voucher'));
     }
@@ -750,7 +750,7 @@ function level() {
     Lib.useFamiliar(Familiar.get('God Lobster'));
     var useGg = Lib.haveSkill(Skill.get('Giant Growth')) && Lib.mallPrice(Item.get('green mana')) < 8000;
 
-    while (Lib.getProperty('GodLobsterFights') < 3) {
+    while (Lib.getProperty('_godLobsterFights') < 3) {
       maximizeCached('mainstat, 4exp, equip makeshift garbage shirt'); // Get stats from the fight.
 
       setChoice(1310, 3);
@@ -766,14 +766,14 @@ function level() {
     }
   }
 
-  if (getPropertyInt('SausageFights') === 0 && Lib.haveFamiliar(Familiar.get('Pocket Professor')) && Lib.availableAmount(Item.get('Kramco Sausage-o-Matic&trade;')) > 0) {
+  if (getPropertyInt('_sausageFights') === 0 && Lib.haveFamiliar(Familiar.get('Pocket Professor')) && Lib.availableAmount(Item.get('Kramco Sausage-o-Matic&trade;')) > 0) {
     Lib.useFamiliar(Familiar.get('Pocket Professor'));
     maximizeCached('mainstat, 4exp, equip makeshift garbage shirt, equip Pocket Professor memory chip, equip Kramco');
     levelMood();
     adventureCopy(Location.get("The Outskirts of Cobb's Knob"), Monster.get('sausage goblin'));
   }
 
-  while (getPropertyInt('NeverendingPartyFreeTurns') < 10) {
+  while (getPropertyInt('_neverendingPartyFreeTurns') < 10) {
     if (!getPropertyBoolean('leafletCompleted') && Lib.myLevel() >= 9) {
       Lib.visitUrl('council.php');
       Lib.cliExecute('leaflet');
