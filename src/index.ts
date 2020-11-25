@@ -26,7 +26,7 @@ export function main() {
   if (Lib.myLevel() < 13) Lib.abort('Something went wrong in leveling!');
 
   if (Lib.getProperty('bcas_lastStockedUp').toInt() < Lib.myAscensions()) {
-    for (const line of Lib.fileToBuffer('scripts/bean-casual/pulls.txt').split('\n')) {
+    for (const line of Lib.fileToBuffer('data/bean-casual/pulls.txt').split('\n')) {
       Lib.print('acquire {line}');
       if (line.length() === 0) continue;
       Lib.cliExecute('acquire {line}');
