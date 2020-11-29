@@ -859,7 +859,7 @@ function main(initround, foe) {
 
       if ((0,_lib__WEBPACK_IMPORTED_MODULE_2__.getPropertyInt)('_banderRunaways') === banderRunaways) {
         (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)('WARNING: Mafia is not tracking bander runaways correctly.');
-        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.setProperty)('_banderRunaways', banderRunaways + 1);
+        (0,_lib__WEBPACK_IMPORTED_MODULE_2__.setPropertyInt)('_banderRunaways', banderRunaways + 1);
       }
     } else if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveSkill)((0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$skill)(_templateObject15())) && (0,_lib__WEBPACK_IMPORTED_MODULE_2__.getPropertyInt)('_reflexHammerUsed') < 3) {
       (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useSkill)(1, (0,libram_src__WEBPACK_IMPORTED_MODULE_1__.$skill)(_templateObject16()));
@@ -2218,6 +2218,7 @@ function main() {
 /*! export openSongSlot [provided] [no usage info] [missing usage info prevents renaming] */
 /*! export setChoice [provided] [no usage info] [missing usage info prevents renaming] */
 /*! export setClan [provided] [no usage info] [missing usage info prevents renaming] */
+/*! export setPropertyInt [provided] [no usage info] [missing usage info prevents renaming] */
 /*! export shrug [provided] [no usage info] [missing usage info prevents renaming] */
 /*! export totalAmount [provided] [no usage info] [missing usage info prevents renaming] */
 /*! export tryEnsureEffect [provided] [no usage info] [missing usage info prevents renaming] */
@@ -2236,6 +2237,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "getPropertyString": () => /* binding */ getPropertyString,
 /* harmony export */   "getPropertyInt": () => /* binding */ getPropertyInt,
 /* harmony export */   "getPropertyBoolean": () => /* binding */ getPropertyBoolean,
+/* harmony export */   "setPropertyInt": () => /* binding */ setPropertyInt,
 /* harmony export */   "itemPriority": () => /* binding */ itemPriority,
 /* harmony export */   "cheaper": () => /* binding */ cheaper,
 /* harmony export */   "getCapped": () => /* binding */ getCapped,
@@ -2358,6 +2360,9 @@ function getPropertyBoolean(name) {
   }
 
   return str === 'true';
+}
+function setPropertyInt(name, value) {
+  (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.setProperty)(name, value.toString());
 }
 function itemPriority() {
   for (var _len = arguments.length, items = new Array(_len), _key = 0; _key < _len; _key++) {
@@ -3335,7 +3340,7 @@ function dailyDungeon() {
 function ores() {
   if (!(0,canadv_ash__WEBPACK_IMPORTED_MODULE_0__.canAdv)((0,libram_src__WEBPACK_IMPORTED_MODULE_4__.$location)(_templateObject43()))) {
     (0,kolmafia__WEBPACK_IMPORTED_MODULE_3__.visitUrl)('place.php?whichplace=mclargehuge&action=trappercabin');
-    (0,kolmafia__WEBPACK_IMPORTED_MODULE_3__.retrieveItem)(3, (0,kolmafia__WEBPACK_IMPORTED_MODULE_3__.getProperty)('trapperOre').toItem());
+    (0,kolmafia__WEBPACK_IMPORTED_MODULE_3__.retrieveItem)(3, Item.get((0,kolmafia__WEBPACK_IMPORTED_MODULE_3__.getProperty)('trapperOre')));
     (0,kolmafia__WEBPACK_IMPORTED_MODULE_3__.retrieveItem)(3, (0,libram_src__WEBPACK_IMPORTED_MODULE_4__.$item)(_templateObject44()));
     (0,kolmafia__WEBPACK_IMPORTED_MODULE_3__.visitUrl)('place.php?whichplace=mclargehuge&action=trappercabin');
   }

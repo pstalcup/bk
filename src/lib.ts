@@ -58,6 +58,10 @@ export function getPropertyBoolean(name: string, default_: boolean | null = null
   return str === 'true';
 }
 
+export function setPropertyInt(name: string, value: number) {
+  setProperty(name, value.toString());
+}
+
 export function itemPriority(...items: Item[]): Item {
   if (items.length === 1) return items[0];
   else return itemAmount(items[0]) > 0 ? items[0] : itemPriority(...items.slice(1));

@@ -152,7 +152,7 @@ export function dailyDungeon() {
 export function ores() {
   if (!canAdv($location`Lair of the Ninja Snowmen`)) {
     visitUrl('place.php?whichplace=mclargehuge&action=trappercabin');
-    retrieveItem(3, getProperty('trapperOre').toItem());
+    retrieveItem(3, Item.get(getProperty('trapperOre')));
     retrieveItem(3, $item`goat cheese`);
     visitUrl('place.php?whichplace=mclargehuge&action=trappercabin');
   }

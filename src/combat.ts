@@ -26,7 +26,7 @@ import {
   adv1,
 } from 'kolmafia';
 import { $skill, $familiar, $effect } from 'libram/src';
-import { getPropertyInt, myFamiliarWeight } from './lib';
+import { getPropertyInt, myFamiliarWeight, setPropertyInt } from './lib';
 
 // multiFight() stolen from Aenimus: https://github.com/Aenimus/aen_cocoabo_farm/blob/master/scripts/aen_combat.ash.
 // Thanks! Licensed under MIT license.
@@ -223,7 +223,7 @@ export function main(initround: number, foe: Monster) {
       runaway();
       if (getPropertyInt('_banderRunaways') === banderRunaways) {
         print('WARNING: Mafia is not tracking bander runaways correctly.');
-        setProperty('_banderRunaways', banderRunaways + 1);
+        setPropertyInt('_banderRunaways', banderRunaways + 1);
       }
     } else if (haveSkill($skill`Reflex Hammer`) && getPropertyInt('_reflexHammerUsed') < 3) {
       useSkill(1, $skill`Reflex Hammer`);
