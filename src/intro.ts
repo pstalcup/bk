@@ -1,46 +1,45 @@
-import {setClan, getPropertyInt, tryUse, ensureItem} from './lib';
+import { cliExecute, visitUrl, availableAmount, runChoice, getProperty, setProperty, use } from 'kolmafia';
+import { $item } from 'libram/src';
+import { setClan, tryUse, ensureItem } from './lib';
 
 export function intro() {
   setClan('Bonus Adventures from Hell');
-  if (getPropertyInt('_clanFortuneConsultUses') < 3) {
-    while (getPropertyInt('_clanFortuneConsultUses') < 3) {
-      Lib.cliExecute('fortune cheesefax');
-      Lib.cliExecute('wait 5');
-    }
-  }
 
   // Chateau juice bar
-  Lib.visitUrl('place.php?whichplace=chateau&action=chateauDesk2');
+  visitUrl('place.php?whichplace=chateau&action=chateauDesk2');
 
   // Sell pork gems
-  Lib.visitUrl('tutorial.php?action=toot');
-  tryUse(1, Item.get('letter from King Ralph XI'));
-  tryUse(1, Item.get('pork elf goodies sack'));
+  visitUrl('tutorial.php?action=toot');
+  tryUse(1, $item`letter from King Ralph XI`);
+  tryUse(1, $item`pork elf goodies sack`);
 
-  tryUse(1, Item.get('astral six-pack'));
+  tryUse(1, $item`astral six-pack`);
 
   // Buy antique accordion
-  ensureItem(1, Item.get('antique accordion'), 2500);
+  ensureItem(1, $item`antique accordion`, 2500);
 
   // Initialize council.
-  Lib.visitUrl('council.php');
+  visitUrl('council.php');
 
   // All combat handled by our consult script (bcasCombat.ash).
-  Lib.cliExecute('ccs bean-casual');
+  cliExecute('ccs bean-casual');
 
   // Mood handled in ASH.
-  Lib.cliExecute('mood apathetic');
+  cliExecute('mood apathetic');
 
   // Upgrade saber for fam wt
-  if (Lib.availableAmount(Item.get('Fourth of May Cosplay Saber')) > 0) {
-    Lib.visitUrl('main.php?action=may4');
-    Lib.runChoice(4);
+  if (availableAmount($item`Fourth of May Cosplay Saber`) > 0) {
+    visitUrl('main.php?action=may4');
+    runChoice(4);
   }
 
-  if (Lib.getProperty('boomBoxSong') !== 'Food Vibrations') {
-    Lib.cliExecute('boombox food');
+  if (getProperty('boomBoxSong') !== 'Food Vibrations') {
+    cliExecute('boombox food');
   }
 
-  Lib.setProperty('hpAutoRecovery', '0.8');
-  Lib.setProperty('hpAutoRecovery', '0.3');
+  setProperty('cloverProtectActive', 'true');
+  use(availableAmount($item`ten-leaf clover`), $item`ten-leaf clover`);
+
+  setProperty('hpAutoRecovery', '0.8');
+  setProperty('hpAutoRecovery', '0.3');
 }

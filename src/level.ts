@@ -1,4 +1,31 @@
-import {MODE_CUSTOM, MODE_NULL, adventureCopy, adventureKill, setMode, Macro} from './combat';
+import {
+  myMp,
+  eat,
+  cliExecute,
+  myPrimestat,
+  myLevel,
+  availableAmount,
+  haveEffect,
+  visitUrl,
+  use,
+  buy,
+  totalFreeRests,
+  haveFamiliar,
+  useFamiliar,
+  haveSkill,
+  mallPrice,
+  restoreHp,
+  myMaxhp,
+  retrieveItem,
+  runCombat,
+  handlingChoice,
+  runChoice,
+  print,
+  myBasestat,
+} from 'kolmafia';
+import { $effect, $familiar, $item, $location, $monster, $skill, $stat } from 'libram/src';
+import { MODE_CUSTOM, MODE_NULL, adventureCopy, adventureKill, setMode, Macro } from './combat';
+import { intro } from './intro';
 import {
   tryEnsureSong,
   tryEnsureSkill,
@@ -12,186 +39,190 @@ import {
 } from './lib';
 
 function levelMood() {
-  if (Lib.myMp() < 200) {
-    Lib.eat(1, Item.get('magical sausage'));
+  if (myMp() < 200) {
+    eat(1, $item`magical sausage`);
   }
 
   // Stats.
-  tryEnsureSong(Skill.get("Stevedave's Shanty of Superiority"));
-  tryEnsureSkill(Skill.get('Song of Bravado'));
-  tryEnsureSkill(Skill.get('Get Big'));
-  ensureEffect(Effect.get('Having a Ball!'));
-  ensureEffect(Effect.get('Tomato Power'));
-  ensureEffect(Effect.get('Trivia Master'));
-  ensureEffect(Effect.get('Gr8ness'));
-  tryEnsureEffect(Effect.get('Favored by Lyle'));
-  tryEnsureEffect(Effect.get('Starry-Eyed'));
-  tryEnsureSkill(Skill.get('CHEAT CODE: Triple Size'));
-  tryEnsureEffect(Effect.get('You Learned Something Maybe!'));
-  if (getPropertyBoolean('_daycareToday') && !getPropertyBoolean('_daycareSpa'))
-    Lib.cliExecute('daycare {Lib.myPrimestat()}');
+  tryEnsureSong($skill`"Stevedave's Shanty of Superiority"`);
+  tryEnsureSkill($skill`Song of Bravado`);
+  tryEnsureSkill($skill`Get Big`);
+  ensureEffect($effect`Having a Ball!`);
+  ensureEffect($effect`Tomato Power`);
+  ensureEffect($effect`Trivia Master`);
+  ensureEffect($effect`Gr8ness`);
+  tryEnsureEffect($effect`Favored by Lyle`);
+  tryEnsureEffect($effect`Starry-Eyed`);
+  tryEnsureSkill($skill`CHEAT CODE: Triple Size`);
+  tryEnsureEffect($effect`You Learned Something Maybe!`);
+  if (getPropertyBoolean('_daycareToday') && !getPropertyBoolean('_daycareSpa')) cliExecute('daycare {myPrimestat()}');
 
-  if (Lib.myMp() < 200) {
-    Lib.eat(1, Item.get('magical sausage'));
+  if (myMp() < 200) {
+    eat(1, $item`magical sausage`);
   }
-  if (Lib.myPrimestat() === Stat.get('Muscle')) {
-    tryEnsureSong(Skill.get('The Power Ballad of the Arrowsmith'));
-    tryEnsureEffect(Effect.get('Lack of Body-Building'));
-    ensureEffect(Effect.get("Go Get 'Em, Tiger!"));
-    ensureEffect(Effect.get('Phorcefullness'));
-    ensureEffect(Effect.get('Incredibly Hulking'));
-  } else if (Lib.myPrimestat() === Stat.get('Mysticality')) {
-    tryEnsureSong(Skill.get('The Magical Mojomuscular Melody'));
-    tryEnsureEffect(Effect.get("We're All Made of Starfish"));
-    tryEnsureSkill(Skill.get('Inscrutable Gaze'));
-    ensureEffect(Effect.get('Glittering Eyelashes'));
-    ensureEffect(Effect.get('Mystically Oiled'));
-    ensureEffect(Effect.get('On The Shoulders Of Giants'));
-  } else if (Lib.myPrimestat() === Stat.get('Moxie')) {
-    tryEnsureSong(Skill.get('The Moxious Madrigal'));
-    tryEnsureEffect(Effect.get('Pomp & Circumsands'));
-    ensureEffect(Effect.get('Butt-Rock Hair'));
-    ensureEffect(Effect.get('Superhuman Sarcasm'));
-    ensureEffect(Effect.get('Cock of the Walk'));
+  if (myPrimestat() === $stat`Muscle`) {
+    tryEnsureSong($skill`The Power Ballad of the Arrowsmith`);
+    tryEnsureEffect($effect`Lack of Body-Building`);
+    ensureEffect($effect`"Go Get 'Em, Tiger!"`);
+    ensureEffect($effect`Phorcefullness`);
+    ensureEffect($effect`Incredibly Hulking`);
+  } else if (myPrimestat() === $stat`Mysticality`) {
+    tryEnsureSong($skill`The Magical Mojomuscular Melody`);
+    tryEnsureEffect($effect`"We're All Made of Starfish"`);
+    tryEnsureSkill($skill`Inscrutable Gaze`);
+    ensureEffect($effect`Glittering Eyelashes`);
+    ensureEffect($effect`Mystically Oiled`);
+    ensureEffect($effect`On The Shoulders Of Giants`);
+  } else if (myPrimestat() === $stat`Moxie`) {
+    tryEnsureSong($skill`The Moxious Madrigal`);
+    tryEnsureEffect($effect`Pomp & Circumsands`);
+    ensureEffect($effect`Butt-Rock Hair`);
+    ensureEffect($effect`Superhuman Sarcasm`);
+    ensureEffect($effect`Cock of the Walk`);
   }
 
-  if (Lib.myMp() < 200) {
-    Lib.eat(1, Item.get('magical sausage'));
+  if (myMp() < 200) {
+    eat(1, $item`magical sausage`);
   }
 
   // ML.
-  tryEnsureSong(Skill.get("Ur-Kel's Aria of Annoyance"));
-  tryEnsureSkill(Skill.get('Pride of the Puffin'));
-  tryEnsureSkill(Skill.get("Drescher's Annoying Noise"));
+  tryEnsureSong($skill`"Ur-Kel's Aria of Annoyance"`);
+  tryEnsureSkill($skill`Pride of the Puffin`);
+  tryEnsureSkill($skill`"Drescher's Annoying Noise"`);
 
   // Combat.
-  tryEnsureSkill(Skill.get('Carol of the Hells'));
-  ensureEffect(Effect.get('Pisces in the Skyces'));
+  tryEnsureSkill($skill`Carol of the Hells`);
+  ensureEffect($effect`Pisces in the Skyces`);
 
   // Misc.
-  tryEnsureSong(Skill.get('The Polka of Plenty'));
-  tryEnsureSong(Skill.get("Singer's Faithful Ocelot"));
-  tryEnsureSkill(Skill.get('Blood Bond'));
-  tryEnsureSkill(Skill.get('Empathy of the Newt'));
-  tryEnsureSkill(Skill.get('Leash of Linguini'));
-  tryEnsureSkill(Skill.get('Carol of the Thrills'));
+  tryEnsureSong($skill`The Polka of Plenty`);
+  tryEnsureSong($skill`"Singer's Faithful Ocelot"`);
+  tryEnsureSkill($skill`Blood Bond`);
+  tryEnsureSkill($skill`Empathy of the Newt`);
+  tryEnsureSkill($skill`Leash of Linguini`);
+  tryEnsureSkill($skill`Carol of the Thrills`);
 }
 
 export function level() {
-  if (Lib.myLevel() >= 13) return;
+  if (myLevel() >= 13) return;
 
   // Put on some basic gear.
   maximizeCached('mp');
   if (
-    Lib.myMp() < 200 &&
-    Lib.availableAmount(Item.get('magical sausage')) + Lib.availableAmount(Item.get('magical sausage casing')) > 0
+    myMp() < 200 &&
+    availableAmount($item`magical sausage`) + availableAmount($item`magical sausage casing`) > 0
   ) {
-    Lib.eat(1, Item.get('magical sausage'));
+    eat(1, $item`magical sausage`);
   }
 
   // Start buffing. XP buffs first.
-  if (Lib.myPrimestat() === Stat.get('Muscle')) {
-    ensureEffect(Effect.get('Muscle Unbound'));
-    ensureEffect(Effect.get('Purpose'));
-    trySynthesize(Effect.get('Synthesis: Movement'));
-  } else if (Lib.myPrimestat() === Stat.get('Mysticality')) {
-    ensureEffect(Effect.get('Thaumodynamic'));
-    ensureEffect(Effect.get('Category'));
-    trySynthesize(Effect.get('Synthesis: Learning'));
-  } else if (Lib.myPrimestat() === Stat.get('Moxie')) {
-    ensureEffect(Effect.get('So Fresh and So Clean'));
-    ensureEffect(Effect.get('Perception'));
-    trySynthesize(Effect.get('Synthesis: Style'));
+  if (myPrimestat() === $stat`Muscle`) {
+    ensureEffect($effect`Muscle Unbound`);
+    ensureEffect($effect`Purpose`);
+    trySynthesize($effect`Synthesis: Movement`);
+  } else if (myPrimestat() === $stat`Mysticality`) {
+    ensureEffect($effect`Thaumodynamic`);
+    ensureEffect($effect`Category`);
+    trySynthesize($effect`Synthesis: Learning`);
+  } else if (myPrimestat() === $stat`Moxie`) {
+    ensureEffect($effect`So Fresh and So Clean`);
+    ensureEffect($effect`Perception`);
+    trySynthesize($effect`Synthesis: Style`);
   }
 
   // Campsite
-  if (Lib.haveEffect(Effect.get("That's Just Cloud-Talk, Man")) === 0) {
-    Lib.visitUrl('place.php?whichplace=campaway&action=campawaySky');
+  if (haveEffect($effect`That's Just Cloud-Talk, Man`) === 0) {
+    visitUrl('place.php?whichplace=campaway&action=campawaySky');
   }
 
   // Daycare
   if (getPropertyInt('_daycareGymScavenges') === 0) {
     // Free scavenge.
-    Lib.visitUrl('choice.php?whichchoice=1336&option=2');
+    visitUrl('choice.php?whichchoice=1336&option=2');
   }
 
   // Bastille first.
   if (getPropertyInt('_bastilleGames') === 0) {
-    if (Lib.availableAmount(Item.get('Bastille Battalion control rig')) === 0) {
-      Lib.use(1, Item.get('Bastille Battalion control rig loaner voucher'));
+    if (availableAmount($item`Bastille Battalion control rig`) === 0) {
+      use(1, $item`Bastille Battalion control rig loaner voucher`);
     }
-    Lib.cliExecute('bastille {Lib.myPrimestat() === Stat.get(\'Mysticality\') ? "Lib.myst" : Lib.myPrimestat()}');
+    cliExecute(`bastille ${myPrimestat() === $stat`Mysticality` ? 'myst' : myPrimestat()}`);
   }
 
   // Chateau rests.
   if (getPropertyBoolean('chateauAvailable')) {
-    Lib.buy(1, Item.get('ceiling fan'));
-    if (Lib.myPrimestat() === Stat.get('Muscle')) {
-      Lib.buy(1, Item.get('electric muscle stimulator'));
-    } else if (Lib.myPrimestat() === Stat.get('Mysticality')) {
-      Lib.buy(1, Item.get('foreign language tapes'));
-    } else if (Lib.myPrimestat() === Stat.get('Moxie')) {
-      Lib.buy(1, Item.get('bowl of potpourri'));
+    buy(1, $item`ceiling fan`);
+    if (myPrimestat() === $stat`Muscle`) {
+      buy(1, $item`electric muscle stimulator`);
+    } else if (myPrimestat() === $stat`Mysticality`) {
+      buy(1, $item`foreign language tapes`);
+    } else if (myPrimestat() === $stat`Moxie`) {
+      buy(1, $item`bowl of potpourri`);
     }
     // Chateau rest
-    while (getPropertyInt('timesRested') < Lib.totalFreeRests()) {
-      Lib.visitUrl('place.php?whichplace=chateau&action=chateauRestbox');
+    while (getPropertyInt('timesRested') < totalFreeRests()) {
+      visitUrl('place.php?whichplace=chateau&action=chateau_restbox');
     }
   }
 
-  Lib.cliExecute('breakfast');
+  cliExecute('breakfast');
 
-  if (Lib.haveFamiliar(Familiar.get('God Lobster'))) {
-    Lib.useFamiliar(Familiar.get('God Lobster'));
-    const useGg = Lib.haveSkill(Skill.get('Giant Growth')) && Lib.mallPrice(Item.get('green mana')) < 8000;
+  if (haveFamiliar($familiar`God Lobster`)) {
+    useFamiliar($familiar`God Lobster`);
+    const useGg = haveSkill($skill`Giant Growth`) && mallPrice($item`green mana`) < 8000;
 
-    while (Lib.getProperty('_godLobsterFights') < 3) {
+    while (getPropertyInt('_godLobsterFights') < 3) {
       maximizeCached('mainstat, 4exp, equip makeshift garbage shirt');
       // Get stats from the fight.
       setChoice(1310, 3);
       levelMood();
-      Lib.restoreHp(Lib.myMaxhp());
-      if (useGg && Lib.haveEffect(Effect.get('Giant Growth')) === 0) Lib.retrieveItem(1, Item.get('green mana'));
-      Lib.visitUrl('main.php?fightgodlobster=1');
+      restoreHp(myMaxhp());
+      if (useGg && haveEffect($effect`Giant Growth`) === 0) retrieveItem(1, $item`green mana`);
+      visitUrl('main.php?fightgodlobster=1');
       setMode(
         MODE_CUSTOM,
-        Macro.externalIf(useGg && Lib.haveEffect(Effect.get('Giant Growth')) === 0, 'skill Giant Growth')
+        Macro.externalIf(useGg && haveEffect($effect`Giant Growth`) === 0, 'skill Giant Growth')
           .kill()
           .toString()
       );
-      Lib.runCombat();
-      Lib.visitUrl('choice.php');
-      if (Lib.handlingChoice()) Lib.runChoice(3);
+      runCombat();
+      visitUrl('choice.php');
+      if (handlingChoice()) runChoice(3);
       setMode(MODE_NULL);
     }
   }
 
   if (
     getPropertyInt('_sausageFights') === 0 &&
-    Lib.haveFamiliar(Familiar.get('Pocket Professor')) &&
-    Lib.availableAmount(Item.get('Kramco Sausage-o-Matic&trade;')) > 0
+    haveFamiliar($familiar`Pocket Professor`) &&
+    availableAmount($item`Kramco Sausage-o-Matic&trade;`) > 0
   ) {
-    Lib.useFamiliar(Familiar.get('Pocket Professor'));
-    maximizeCached('mainstat, 4exp, equip makeshift garbage shirt, equip Pocket Professor memory chip, equip Kramco');
+    useFamiliar($familiar`Pocket Professor`);
+    maximizeCached('mainstat, 4exp, 10mainstat experience percent, 10familiar weight, equip makeshift garbage shirt, equip Pocket Professor memory chip, equip Kramco');
     levelMood();
-    adventureCopy(Location.get("The Outskirts of Cobb's Knob"), Monster.get('sausage goblin'));
+    adventureCopy($location`"The Outskirts of Cobb's Knob"`, $monster`sausage goblin`);
   }
 
   while (getPropertyInt('_neverendingPartyFreeTurns') < 10) {
-    if (!getPropertyBoolean('leafletCompleted') && Lib.myLevel() >= 9) {
-      Lib.visitUrl('council.php');
-      Lib.cliExecute('leaflet');
+    if (!getPropertyBoolean('leafletCompleted') && myLevel() >= 9) {
+      visitUrl('council.php');
+      cliExecute('leaflet');
     }
-    Lib.useFamiliar(Familiar.get('Hovering Sombrero'));
+    useFamiliar($familiar`Hovering Sombrero`);
     maximizeCached('mainstat, 4exp, equip makeshift garbage shirt');
     setChoice(1324, 5);
     levelMood();
-    adventureKill(Location.get('The Neverending Party'));
+    adventureKill($location`The Neverending Party`);
   }
 
-  Lib.visitUrl('council.php');
+  visitUrl('council.php');
 
-  Lib.print('');
-  Lib.print('Done leveling.', 'blue');
-  Lib.print('Reached mainstat {Lib.myBasestat(Lib.myPrimestat())}');
+  print('');
+  print('Done leveling.', 'blue');
+  print(`Reached mainstat ${myBasestat(myPrimestat())}`);
+}
+
+export function main() {
+  intro();
+  level();
 }

@@ -1,10 +1,38 @@
-import {getPropertyInt, myFamiliarWeight} from './lib';
+import {
+  inMultiFight,
+  runCombat,
+  choiceFollowsFight,
+  visitUrl,
+  print,
+  urlEncode,
+  availableAmount,
+  setProperty,
+  getProperty,
+  getLocationMonsters,
+  myLocation,
+  toMonster,
+  myMp,
+  haveSkill,
+  useSkill,
+  myFamiliar,
+  haveEffect,
+  runaway,
+  abort,
+  handlingChoice,
+  lastChoice,
+  count,
+  availableChoiceOptions,
+  runChoice,
+  adv1,
+} from 'kolmafia';
+import { $skill, $familiar, $effect } from 'libram/src';
+import { getPropertyInt, myFamiliarWeight } from './lib';
 
 // multiFight() stolen from Aenimus: https://github.com/Aenimus/aen_cocoabo_farm/blob/master/scripts/aen_combat.ash.
 // Thanks! Licensed under MIT license.
 function multiFight() {
-  while (Lib.inMultiFight()) Lib.runCombat();
-  if (Lib.choiceFollowsFight()) Lib.visitUrl('choice.php');
+  while (inMultiFight()) runCombat();
+  if (choiceFollowsFight()) visitUrl('choice.php');
 }
 
 export class Macro {
@@ -15,7 +43,7 @@ export class Macro {
   }
 
   step(...nextSteps: string[]) {
-    this.components.concat(nextSteps.filter(s => s.length > 0));
+    this.components = this.components.concat(nextSteps.filter(s => s.length > 0));
     return this;
   }
 
@@ -25,12 +53,12 @@ export class Macro {
 
   submit() {
     const final = this.toString();
-    Lib.print(`Submitting macro: ${final}`);
-    return Lib.visitUrl('fight.php?action=macro&macrotext=' + Lib.urlEncode(final), true, true);
+    print(`Submitting macro: ${final}`);
+    return visitUrl('fight.php?action=macro&macrotext=' + urlEncode(final), true, true);
   }
 
   static monster(foe: Monster) {
-    return `monstername "${foe.name}"`;
+    return `monstername "${foe.name}`;
   }
 
   mIf(condition: string, ...next: string[]) {
@@ -78,7 +106,7 @@ export class Macro {
   }
 
   item(it: Item) {
-    if (Lib.availableAmount(it) > 0) {
+    if (availableAmount(it) > 0) {
       return this.step(`use ${it.name}`);
     } else return this;
   }
@@ -88,9 +116,9 @@ export class Macro {
   }
 
   kill() {
-    return this.skill(Skill.get('Stuffed Mortar Shell'))
-      .skillRepeat(Skill.get('Saucegeyser'))
-      .skillRepeat(Skill.get('Saucestorm'));
+    return this.skill($skill`Stuffed Mortar Shell`)
+      .skillRepeat($skill`Saucegeyser`)
+      .skillRepeat($skill`Saucestorm`);
   }
 
   static kill() {
@@ -105,125 +133,125 @@ export const MODE_RUN_UNLESS_FREE = 'rununlessfree';
 export const MODE_KILL = 'kill';
 
 export function setMode(mode: string, arg1: string | null = null, arg2: string | null = null) {
-  Lib.setProperty('bcas_combatMode', mode);
-  if (arg1 !== null) Lib.setProperty('bcas_combatArg1', arg1);
-  if (arg2 !== null) Lib.setProperty('bcas_combatArg2', arg2);
+  setProperty('bcas_combatMode', mode);
+  if (arg1 !== null) setProperty('bcas_combatArg1', arg1);
+  if (arg2 !== null) setProperty('bcas_combatArg2', arg2);
 }
 
 export function getMode() {
-  return Lib.getProperty('bcas_combatMode');
+  return getProperty('bcas_combatMode');
 }
 
 export function getArg1() {
-  return Lib.getProperty('bcas_combatArg1');
+  return getProperty('bcas_combatArg1');
 }
 
 export function getArg2() {
-  return Lib.getProperty('bcas_combatArg2');
+  return getProperty('bcas_combatArg2');
 }
 
 function banishedMonsters() {
-  const banishedstring = Lib.getProperty('banishedMonsters');
+  const banishedstring = getProperty('banishedMonsters');
   const banishedComponents = banishedstring.split(':');
-  const result: {[index: string]: Monster} = {};
-  if (banishedComponents.count() < 3) return result;
-  for (let idx = 0; idx < banishedComponents.count() / 3 - 1; idx++) {
-    const foe = banishedComponents[idx * 3].toMonster();
+  const result: { [index: string]: Monster } = {};
+  if (banishedComponents.length < 3) return result;
+  for (let idx = 0; idx < banishedComponents.length / 3 - 1; idx++) {
+    const foe = Monster.get(banishedComponents[idx * 3]);
     const banisher = banishedComponents[idx * 3 + 1];
-    Lib.print(`Banished ${foe.name} using ${banisher}`);
+    print(`Banished ${foe.name} using ${banisher}`);
     result[banisher] = foe;
   }
   return result;
 }
 
-function usedBanisherInZone(banished: {[index: string]: Monster}, banisher: string, loc: Location) {
-  Lib.print(`Checking to see if we've used ${banisher} in ${loc}.`);
+function usedBanisherInZone(banished: { [index: string]: Monster }, banisher: string, loc: Location) {
+  print(`Checking to see if we've used ${banisher} in ${loc}.`);
   if (banished[banisher] === undefined) return false;
-  Lib.print(`Used it to banish ${banished[banisher].name}`);
-  return Lib.getLocationMonsters(loc)[banished[banisher].name] === undefined;
+  print(`Used it to banish ${banished[banisher].name}`);
+  return getLocationMonsters(loc)[banished[banisher].name] === undefined;
 }
 
 export function main(initround: number, foe: Monster) {
   const mode = getMode();
-  const loc = Lib.myLocation();
+  const loc = myLocation();
   if (mode === MODE_CUSTOM) {
     Macro.step(getArg1()).repeatSubmit();
   } else if (mode === MODE_FIND_MONSTER_THEN) {
     const monsterId = parseInt(getArg1(), 10);
-    const desired = Lib.toMonster(monsterId);
+    const desired = toMonster(monsterId);
     const banished = banishedMonsters();
     if (foe === desired) {
-      Lib.setProperty('bcas_combatFound', 'true');
+      setProperty('bcas_combatFound', 'true');
       new Macro().step(getArg2()).repeatSubmit();
     } else if (
-      Lib.myMp() >= 50 &&
-      Lib.haveSkill(Skill.get('Snokebomb')) &&
+      myMp() >= 50 &&
+      haveSkill($skill`Snokebomb`) &&
       getPropertyInt('_snokebombUsed') < 3 &&
       !usedBanisherInZone(banished, 'snokebomb', loc)
     ) {
-      Lib.useSkill(1, Skill.get('Snokebomb'));
-      /* } else if (haveSkill(Skill.get('Reflex Hammer')) && getPropertyInt("ReflexHammerUsed") < 3 && !usedBanisherInZone(banished, "Reflex Hammer", loc)) {
-          Lib.useSkill(1, Skill.get('Reflex Hammer')); */
-    } else if (Lib.haveSkill(Skill.get('Macrometeorite')) && getPropertyInt('_macrometeoriteUses') < 10) {
-      Lib.useSkill(1, Skill.get('Macrometeorite'));
+      useSkill(1, $skill`Snokebomb`);
+      /* } else if (haveSkill($skill`Reflex Hammer`) && getPropertyInt("ReflexHammerUsed") < 3 && !usedBanisherInZone(banished, "Reflex Hammer", loc)) {
+          useSkill(1, $skill`Reflex Hammer`); */
+    } else if (haveSkill($skill`Macrometeorite`) && getPropertyInt('_macrometeoriteUses') < 10) {
+      useSkill(1, $skill`Macrometeorite`);
     } else if (
-      Lib.haveSkill(Skill.get('CHEAT CODE: Replace Enemy')) &&
+      haveSkill($skill`CHEAT CODE: Replace Enemy`) &&
       getPropertyInt('_powerfulGloveBatteryPowerUsed') <= 80
     ) {
       const originalBattery = getPropertyInt('_powerfulGloveBatteryPowerUsed');
-      Lib.useSkill(1, Skill.get('CHEAT CODE: Replace Enemy'));
+      useSkill(1, $skill`CHEAT CODE: Replace Enemy`);
       const newBattery = getPropertyInt('_powerfulGloveBatteryPowerUsed');
       if (newBattery === originalBattery) {
-        Lib.print('WARNING: Mafia is not updating PG battery charge.');
-        Lib.setProperty('_powerfulGloveBatteryPowerUsed', '' + (newBattery + 10));
+        print('WARNING: Mafia is not updating PG battery charge.');
+        setProperty('_powerfulGloveBatteryPowerUsed', '' + (newBattery + 10));
       }
       // Hopefully at this point it comes back to the consult script.
     }
   } else if (mode === MODE_RUN_UNLESS_FREE) {
     if (foe.attributes.includes('FREE')) {
       new Macro()
-        .skill(Skill.get('Curse of Weaksauce'))
-        .skill(Skill.get('Sing Along'))
-        .skill(Skill.get('Saucegeyser'))
+        .skill($skill`Curse of Weaksauce`)
+        .skill($skill`Sing Along`)
+        .skill($skill`Saucegeyser`)
         .repeatSubmit();
     } else if (
-      Lib.myFamiliar() === Familiar.get('Frumious Bandersnatch') &&
-      Lib.haveEffect(Effect.get('Ode to Booze')) > 0 &&
+      myFamiliar() === $familiar`Frumious Bandersnatch` &&
+      haveEffect($effect`Ode to Booze`) > 0 &&
       getPropertyInt('_banderRunaways') < myFamiliarWeight() / 5
     ) {
       const banderRunaways = getPropertyInt('_banderRunaways');
-      Lib.runaway();
+      runaway();
       if (getPropertyInt('_banderRunaways') === banderRunaways) {
-        Lib.print('WARNING: Mafia is not tracking bander runaways correctly.');
-        Lib.setProperty('_banderRunaways', banderRunaways + 1);
+        print('WARNING: Mafia is not tracking bander runaways correctly.');
+        setProperty('_banderRunaways', banderRunaways + 1);
       }
-    } else if (Lib.haveSkill(Skill.get('Reflex Hammer')) && getPropertyInt('_reflexHammerUsed') < 3) {
-      Lib.useSkill(1, Skill.get('Reflex Hammer'));
-    } else if (Lib.myMp() >= 50 && Lib.haveSkill(Skill.get('Snokebomb')) && getPropertyInt('_snokebombUsed') < 3) {
-      Lib.useSkill(1, Skill.get('Snokebomb'));
+    } else if (haveSkill($skill`Reflex Hammer`) && getPropertyInt('_reflexHammerUsed') < 3) {
+      useSkill(1, $skill`Reflex Hammer`);
+    } else if (myMp() >= 50 && haveSkill($skill`Snokebomb`) && getPropertyInt('_snokebombUsed') < 3) {
+      useSkill(1, $skill`Snokebomb`);
     } else {
       // non-free, whatever
-      Lib.runaway();
+      runaway();
     }
   } else if (mode === MODE_KILL) {
     Macro.kill().submit();
   } else {
-    Lib.abort('Unrecognized mode.');
+    abort('Unrecognized mode.');
   }
 
   multiFight();
 }
 
 export function saberYr() {
-  if (!Lib.handlingChoice()) Lib.abort('No choice?');
-  if (Lib.lastChoice() === 1387 && Lib.count(Lib.availableChoiceOptions()) > 0) {
-    Lib.runChoice(3);
+  if (!handlingChoice()) abort('No choice?');
+  if (lastChoice() === 1387 && count(availableChoiceOptions()) > 0) {
+    runChoice(3);
   }
 }
 
 export function adventureMacro(loc: Location, macro: Macro) {
   setMode(MODE_CUSTOM, macro.toString());
-  Lib.adv1(loc, -1, '');
+  adv1(loc, -1, '');
   setMode(MODE_NULL, '');
 }
 
@@ -233,29 +261,29 @@ export function adventureKill(loc: Location) {
 
 function findMonsterThen(loc: Location, foe: Monster, macro: Macro) {
   setMode(MODE_FIND_MONSTER_THEN, foe.id.toString(), macro.toString());
-  Lib.setProperty('bcas_combatFound', 'false');
-  while (Lib.getProperty('bcas_combatFound') !== 'true') {
-    Lib.adv1(loc, -1, '');
+  setProperty('bcas_combatFound', 'false');
+  while (getProperty('bcas_combatFound') !== 'true') {
+    adv1(loc, -1, '');
   }
   setMode(MODE_NULL, '');
 }
 
 export function findMonsterSaberYr(loc: Location, foe: Monster) {
-  Lib.setProperty('choiceAdventure1387', '3');
-  findMonsterThen(loc, foe, Macro.skill(Skill.get('Use the Force')));
+  setProperty('choiceAdventure1387', '3');
+  findMonsterThen(loc, foe, Macro.skill($skill`Use the Force`));
 }
 
 export function adventureCopy(loc: Location, foe: Monster) {
   setMode(
     MODE_CUSTOM,
-    Macro.mIf(`!monstername "${foe.name}"`, 'abort').skill(Skill.get('Lecture on Relativity')).kill().toString()
+    Macro.mIf(`!monstername "${foe.name}`, 'abort').skill($skill`Lecture on Relativity`).kill().toString()
   );
-  Lib.adv1(loc, -1, '');
+  adv1(loc, -1, '');
   setMode(MODE_NULL, '');
 }
 
 export function adventureRunUnlessFree(loc: Location) {
   setMode(MODE_RUN_UNLESS_FREE);
-  Lib.adv1(loc, -1, '');
+  adv1(loc, -1, '');
   setMode(MODE_NULL);
 }

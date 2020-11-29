@@ -1,2 +1,3 @@
 [ default ]
-consult bcas_combat.ash
+consult bcas_combat.js
+
