@@ -61,7 +61,7 @@ export function moodNoncombat() {
   moodBaseline();
   tryEnsureSkill($skill`The Sonata of Sneakiness`);
   tryEnsureSkill($skill`Smooth Movement`);
-  if (getPropertyBoolean('horseryAvailable') && getProperty('Horsery') !== 'dark horse') cliExecute('horsery dark');
+  if (getPropertyBoolean('horseryAvailable') && getProperty('_horsery') !== 'dark horse') cliExecute('horsery dark');
 }
 
 export function billiards() {
@@ -163,7 +163,7 @@ export function bridge() {
     const count = (34 - getPropertyInt('chasmBridgeProgress')) / 5;
     ensureItem(count, $item`smut orc keepsake box`, 20000);
     use(count, $item`smut orc keepsake box`);
-    visitUrl(`place.php?whichplace=orcChasm&action=bridge${getProperty('chasmBridgeProgress')}`);
+    visitUrl(`place.php?whichplace=orc_chasm&action=bridge${getProperty('chasmBridgeProgress')}`);
   }
 }
 

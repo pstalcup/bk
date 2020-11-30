@@ -3246,7 +3246,7 @@ function moodNoncombat() {
   moodBaseline();
   (0,_lib__WEBPACK_IMPORTED_MODULE_2__.tryEnsureSkill)((0,libram_src__WEBPACK_IMPORTED_MODULE_4__.$skill)(_templateObject12()));
   (0,_lib__WEBPACK_IMPORTED_MODULE_2__.tryEnsureSkill)((0,libram_src__WEBPACK_IMPORTED_MODULE_4__.$skill)(_templateObject13()));
-  if ((0,_lib__WEBPACK_IMPORTED_MODULE_2__.getPropertyBoolean)('horseryAvailable') && (0,kolmafia__WEBPACK_IMPORTED_MODULE_3__.getProperty)('Horsery') !== 'dark horse') (0,kolmafia__WEBPACK_IMPORTED_MODULE_3__.cliExecute)('horsery dark');
+  if ((0,_lib__WEBPACK_IMPORTED_MODULE_2__.getPropertyBoolean)('horseryAvailable') && (0,kolmafia__WEBPACK_IMPORTED_MODULE_3__.getProperty)('_horsery') !== 'dark horse') (0,kolmafia__WEBPACK_IMPORTED_MODULE_3__.cliExecute)('horsery dark');
 }
 function billiards() {
   if (!(0,canadv_ash__WEBPACK_IMPORTED_MODULE_0__.canAdv)((0,libram_src__WEBPACK_IMPORTED_MODULE_4__.$location)(_templateObject14()))) {
@@ -3350,7 +3350,7 @@ function bridge() {
     var count = (34 - (0,_lib__WEBPACK_IMPORTED_MODULE_2__.getPropertyInt)('chasmBridgeProgress')) / 5;
     (0,_lib__WEBPACK_IMPORTED_MODULE_2__.ensureItem)(count, (0,libram_src__WEBPACK_IMPORTED_MODULE_4__.$item)(_templateObject45()), 20000);
     (0,kolmafia__WEBPACK_IMPORTED_MODULE_3__.use)(count, (0,libram_src__WEBPACK_IMPORTED_MODULE_4__.$item)(_templateObject46()));
-    (0,kolmafia__WEBPACK_IMPORTED_MODULE_3__.visitUrl)("place.php?whichplace=orcChasm&action=bridge".concat((0,kolmafia__WEBPACK_IMPORTED_MODULE_3__.getProperty)('chasmBridgeProgress')));
+    (0,kolmafia__WEBPACK_IMPORTED_MODULE_3__.visitUrl)("place.php?whichplace=orc_chasm&action=bridge".concat((0,kolmafia__WEBPACK_IMPORTED_MODULE_3__.getProperty)('chasmBridgeProgress')));
   }
 }
 function aboo() {
