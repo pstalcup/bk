@@ -40,7 +40,8 @@ export function main() {
 
   if (myLevel() < 13) abort('Something went wrong in leveling!');
 
-  if (parseInt(getProperty('bcas_lastStockedUp'), 10) < myAscensions()) {
+  if (parseInt(getProperty('bcas_lastStockedUp') || '0', 10) < myAscensions()) {
+    print('Stocking up!');
     for (const line of fileToBuffer('data/bean-casual/pulls.txt').split('\n')) {
       print(`acquire ${line}`);
       if (line.length === 0) continue;
@@ -67,6 +68,7 @@ export function main() {
   shen();
 
   setProperty('auto_abooclover', 'true');
+  setProperty('auto_interrupt', 'false');
 
   cliExecute('autoscend');
 }

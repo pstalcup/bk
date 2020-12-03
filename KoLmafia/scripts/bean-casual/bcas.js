@@ -972,7 +972,9 @@ function main() {
   (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.visitUrl)('council.php');
   if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myLevel)() < 13) (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.abort)('Something went wrong in leveling!');
 
-  if (parseInt((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getProperty)('bcas_lastStockedUp'), 10) < (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myAscensions)()) {
+  if (parseInt((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getProperty)('bcas_lastStockedUp') || '0', 10) < (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myAscensions)()) {
+    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)('Stocking up!');
+
     var _iterator = _createForOfIteratorHelper((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.fileToBuffer)('data/bean-casual/pulls.txt').split('\n')),
         _step;
 
@@ -1010,6 +1012,7 @@ function main() {
   (0,_quests__WEBPACK_IMPORTED_MODULE_4__.blackForest)();
   (0,_quests__WEBPACK_IMPORTED_MODULE_4__.shen)();
   (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.setProperty)('auto_abooclover', 'true');
+  (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.setProperty)('auto_interrupt', 'false');
   (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)('autoscend');
 }
 
