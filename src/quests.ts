@@ -7,6 +7,8 @@ import {
   drinkSafe,
   ensureEffect,
   ensureItem,
+  get,
+  getCapped,
   getPropertyBoolean,
   getPropertyInt,
   getStep,
@@ -30,6 +32,7 @@ import {
   runCombat,
   setProperty,
   adv1,
+  buy,
 } from 'kolmafia';
 import { $item, $skill, $location, $familiar, $effect } from 'libram/src';
 
@@ -112,7 +115,7 @@ export function war() {
 
   if (getPropertyInt('hippiesDefeated') < 1000) {
     const count = clamp((1000 - getPropertyInt('hippiesDefeated')) / 46, 0, 24);
-    retrieveItem(count, $item`stuffing fluffer`);
+    getCapped(count, $item`stuffing fluffer`, 30000);
     use(count, $item`stuffing fluffer`);
     while (getPropertyInt('hippiesDefeated') < 1000) {
       retrieveItem(1, $item`stuffing fluffer`);

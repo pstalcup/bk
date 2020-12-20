@@ -101,6 +101,8 @@ function levelMood() {
   tryEnsureSkill($skill`Empathy of the Newt`);
   tryEnsureSkill($skill`Leash of Linguini`);
   tryEnsureSkill($skill`Carol of the Thrills`);
+  tryEnsureSkill($skill`Elemental Saucesphere`);
+  tryEnsureSkill($skill`Astral Shell`);
 }
 
 export function level() {
@@ -167,7 +169,7 @@ export function level() {
 
   cliExecute('breakfast');
 
-  if (haveFamiliar($familiar`God Lobster`)) {
+  if (haveFamiliar($familiar`God Lobster`) && getPropertyInt('_godLobsterFights') < 3) {
     useFamiliar($familiar`God Lobster`);
     const useGg = haveSkill($skill`Giant Growth`) && mallPrice($item`green mana`) < 8000;
 
@@ -200,6 +202,8 @@ export function level() {
     useFamiliar($familiar`Pocket Professor`);
     maximizeCached('mainstat, 4exp, 10mainstat experience percent, 10familiar weight, equip makeshift garbage shirt, equip Pocket Professor memory chip, equip Kramco');
     levelMood();
+    restoreHp(myMaxhp());
+    tryEnsureEffect($effect`Oiled, Slick`);
     adventureCopy($location`"The Outskirts of Cobb's Knob"`, $monster`sausage goblin`);
   }
 
