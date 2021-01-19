@@ -1,21 +1,21 @@
 import { canAdv } from 'canadv.ash';
-import { adventureMacro, adventureRunUnlessFree, adventureKill, Macro } from './combat';
+import { adventureMacro, adventureRunUnlessFree, Macro } from './combat';
 import * as Combat from './combat';
 
 import {
   clamp,
   drinkSafe,
   ensureEffect,
-  ensureItem,
-  get,
-  getCapped,
+  get as getItem,
   getPropertyBoolean,
   getPropertyInt,
-  getStep,
+  questStep,
   maximizeCached,
   setChoice,
   tryEnsureSkill,
   tryEnsureSong,
+  tryEnsureEffect,
+  getCapped,
 } from './lib';
 import {
   myMp,
@@ -32,9 +32,14 @@ import {
   runCombat,
   setProperty,
   adv1,
-  buy,
+  mallPrice,
+  create,
+  haveFamiliar,
+  weightAdjustment,
+  familiarWeight,
+  getCampground,
 } from 'kolmafia';
-import { $item, $skill, $location, $familiar, $effect } from 'libram/src';
+import { $item, $skill, $location, $familiar, $effect, get, set } from 'libram/src';
 
 export function moodBaseline() {
   if (myMp() < 200) {
@@ -53,7 +58,6 @@ export function moodBaseline() {
 
   // Misc.
   tryEnsureSong($skill`The Polka of Plenty`);
-  tryEnsureSong($skill`Fat Leon's Phat Loot Lyric`);
   tryEnsureSkill($skill`Singer's Faithful Ocelot`);
   tryEnsureSkill($skill`Blood Bond`);
   tryEnsureSkill($skill`Empathy of the Newt`);
@@ -67,6 +71,18 @@ export function moodNoncombat() {
   if (getPropertyBoolean('horseryAvailable') && getProperty('_horsery') !== 'dark horse') cliExecute('horsery dark');
 }
 
+export function addFamiliarWeight() {
+  tryEnsureEffect($effect`Chorale of Companionship`);
+  tryEnsureEffect($effect`Billiards Belligerence`);
+  tryEnsureEffect($effect`Do I Know You From Somewhere?`);
+  if (getCampground()['Witchess Set'] !== undefined && get('puzzleChampBonus') === 20 && !get('_witchessBuff')) {
+    tryEnsureEffect($effect`Puzzle Champ`);
+  }
+  if (getCampground()['Witchess Set'] !== undefined && get('puzzleChampBonus') === 20 && !get('_witchessBuff')) {
+    tryEnsureEffect($effect`Puzzle Champ`);
+  }
+}
+
 export function billiards() {
   if (!canAdv($location`The Haunted Kitchen`)) {
     use(1, $item`telegram from Lady Spookyraven`);
@@ -76,7 +92,7 @@ export function billiards() {
     useFamiliar($familiar`Exotic Parrot`);
     moodBaseline();
     maximizeCached('hot res 9 min, stench res 9 min, equip Kramco');
-    adventureMacro($location`The Haunted Kitchen`, Macro.skillRepeat($skill`Saucestorm`));
+    adventureMacro($location`The Haunted Kitchen`, Macro.skill($skill`Saucestorm`).repeat());
   }
 
   while (availableAmount(Item.get(7302 /* Spookyraven library key */)) === 0) {
@@ -98,6 +114,55 @@ export function billiards() {
   }
 }
 
+export function airship() {
+  if (questStep('questL10Garbage') < 7) {
+    if (questStep('questL10Garbage') < 1) use(1, $item`enchanted bean`);
+
+    const freeRunFamiliar = haveFamiliar($familiar`Frumious Bandersnatch`)
+      ? $familiar`Frumious Bandersnatch`
+      : $familiar`Pair of Stomping Boots`;
+    if (!get<boolean>('_bcas_banderRunawaysUsed') && haveFamiliar(freeRunFamiliar)) {
+      useFamiliar(freeRunFamiliar);
+      moodNoncombat();
+      addFamiliarWeight();
+      maximizeCached('familiar weight, -combat');
+      const myFamiliarWeight = familiarWeight(freeRunFamiliar) + weightAdjustment();
+
+      while (
+        questStep('questL10Garbage') < 7 &&
+        getPropertyInt('_banderRunaways') < Math.floor(myFamiliarWeight / 5) &&
+        (freeRunFamiliar !== $familiar`Frumious Bandersnatch` || tryEnsureSong($skill`The Ode to Booze`))
+      ) {
+        moodNoncombat();
+        addFamiliarWeight();
+        adventureMacro($location`The Penultimate Fantasy Airship`, Macro.runaway());
+      }
+
+      set('_bcas_banderRunawaysUsed', true);
+    }
+  }
+}
+
+function ensureFluffers(flufferCount: number) {
+  const neededFluffers = flufferCount - availableAmount($item`stuffing fluffer`);
+  const stuffingFlufferSources: [Item, number][] = [
+    [$item`cashew`, 3],
+    [$item`stuffing fluffer`, 1],
+    [$item`cornucopia`, (1 / 3.5) * 3],
+  ];
+  stuffingFlufferSources.sort(([item1, mult1], [item2, mult2]) => mallPrice(item1) * mult1 - mallPrice(item2) * mult2);
+  const [stuffingFlufferSource, sourceMultiplier] = stuffingFlufferSources[0];
+
+  const neededOfSource = Math.ceil(neededFluffers * sourceMultiplier);
+  getItem(neededOfSource, stuffingFlufferSource);
+  if (stuffingFlufferSource === $item`cornucopia`) {
+    use(neededOfSource, $item`cornucopia`);
+  }
+  if (stuffingFlufferSource !== $item`stuffing fluffer`) {
+    create(neededFluffers, $item`stuffing fluffer`);
+  }
+}
+
 export function war() {
   retrieveItem(1, $item`skeletal skiff`);
   retrieveItem(1, $item`beer helmet`);
@@ -115,10 +180,11 @@ export function war() {
 
   if (getPropertyInt('hippiesDefeated') < 1000) {
     const count = clamp((1000 - getPropertyInt('hippiesDefeated')) / 46, 0, 24);
-    getCapped(count, $item`stuffing fluffer`, 30000);
+
+    ensureFluffers(count);
     use(count, $item`stuffing fluffer`);
     while (getPropertyInt('hippiesDefeated') < 1000) {
-      retrieveItem(1, $item`stuffing fluffer`);
+      ensureFluffers(1);
       use(1, $item`stuffing fluffer`);
     }
   }
@@ -126,7 +192,8 @@ export function war() {
   if (getProperty('warProgress') !== 'finished') {
     moodBaseline();
     maximizeCached('outfit Frat Warrior Fatigues');
-    Combat.setMode(Combat.MODE_KILL);
+    Combat.setMode(Combat.MODE_MACRO);
+    Macro.kill().save();
     visitUrl('bigisland.php?place=camp&whichcamp=1');
     visitUrl('bigisland.php?action=bossfight');
     runCombat();
@@ -137,7 +204,7 @@ export function war() {
 export function dailyDungeon() {
   while (availableAmount($item`fat loot token`) < 2 && !getPropertyBoolean('dailyDungeonDone')) {
     if (availableAmount($item`fat loot token`) === 0) {
-      ensureItem(1, $item`daily dungeon malware`, 40000);
+      getCapped(1, $item`daily dungeon malware`, 40000);
     }
     setChoice(690, 2); // Chest 5
     setChoice(691, 2); // Chest 10
@@ -147,7 +214,10 @@ export function dailyDungeon() {
     maximizeCached('equip Ring of Detect Boring Doors');
     adventureMacro(
       $location`The Daily Dungeon`,
-      Macro.item($item`daily dungeon malware`).skill($skill`Saucestorm`)
+      Macro.externalIf(
+        !get('_dailyDungeonMalwareUsed'),
+        Macro.item($item`daily dungeon malware`)
+      ).kill()
     );
   }
 }
@@ -164,9 +234,9 @@ export function ores() {
 export function bridge() {
   if (getPropertyInt('chasmBridgeProgress') < 30) {
     const count = (34 - getPropertyInt('chasmBridgeProgress')) / 5;
-    ensureItem(count, $item`smut orc keepsake box`, 20000);
+    getCapped(count, $item`smut orc keepsake box`, 20000);
     use(count, $item`smut orc keepsake box`);
-    visitUrl(`place.php?whichplace=orc_chasm&action=bridge${getProperty('chasmBridgeProgress')}`);
+    visitUrl(`place.php ? whichplace = orc_chasm & action=bridge${getProperty('chasmBridgeProgress')}`);
   }
 }
 
@@ -189,22 +259,22 @@ export function aboo() {
 }
 
 export function blackForest() {
-  while (getStep('questL11Black') < 2) {
+  while (questStep('questL11Black') < 2) {
     setChoice(924, 1);
     useFamiliar($familiar`Reassembled Blackbird`);
     moodBaseline();
     maximizeCached('0.1 combat rate 5 min, equip blackberry galoshes');
-    adventureKill($location`The Black Forest`);
+    adventureMacro($location`The Black Forest`, Macro.kill());
   }
 
-  if (getStep('questL11Black') < 3) {
+  if (questStep('questL11Black') < 3) {
     retrieveItem(1, $item`forged identification documents`);
-    adv1($location`The Shore, Inc. Travel Agency`, -1, '');
+    adv1($location`The Shore, Inc.Travel Agency`, -1, '');
   }
 }
 
 export function shen() {
-  if (getStep('questL11Shen') < 1) {
+  if (questStep('questL11Shen') < 1) {
     maximizeCached('');
     adventureRunUnlessFree($location`The Copperhead Club`);
   }

@@ -28,8 +28,9 @@ import {
   getClanName,
   visitUrl,
   maximize,
+  myBasestat,
 } from 'kolmafia';
-import { $effect, $skill } from 'libram/src';
+import { $effect, $skill, $stat } from 'libram/src';
 
 export function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(n, max));
@@ -43,7 +44,7 @@ export function getPropertyString(name: string, def: string) {
 export function getPropertyInt(name: string, default_: number | null = null): number {
   const str = getProperty(name);
   if (str === '') {
-    if (default_ === null) abort(`Unknown property ${name}.`);
+    if (default_ === null) throw `Unknown property ${name}.`;
     else return default_;
   }
   return parseInt(str, 10);
@@ -52,7 +53,7 @@ export function getPropertyInt(name: string, default_: number | null = null): nu
 export function getPropertyBoolean(name: string, default_: boolean | null = null) {
   const str = getProperty(name);
   if (str === '') {
-    if (default_ === null) abort(`Unknown property ${name}.`);
+    if (default_ === null) throw `Unknown property ${name}.`;
     else return default_;
   }
   return str === 'true';
@@ -82,25 +83,28 @@ const priceCaps: { [index: string]: number } = {
   'blood-drive sticker': 210000,
   'spice melange': 500000,
   'splendid martini': 10000,
+  'stuffing fluffer': 25000,
+  'cornucopia': 30000,
+  'cashew': 9000,
 };
 
 export function getCapped(qty: number, item: Item, maxPrice: number) {
-  if (qty > 15) abort('bad get!');
+  if (qty > 30) throw 'bad get!';
 
-  let remaining = qty - itemAmount(item);
+  let remaining = Math.round(qty) - itemAmount(item);
   if (remaining <= 0) return;
 
   const getCloset = Math.min(remaining, closetAmount(item));
-  if (!takeCloset(getCloset, item)) abort('failed to remove from closet');
+  if (!takeCloset(getCloset, item)) throw 'failed to remove from closet';
   remaining -= getCloset;
   if (remaining <= 0) return;
 
   const getMall = Math.min(remaining, shopAmount(item));
-  if (!takeShop(getMall, item)) abort('failed to remove from shop');
+  if (!takeShop(getMall, item)) throw 'failed to remove from shop';
   remaining -= getMall;
   if (remaining <= 0) return;
 
-  if (buy(remaining, item, maxPrice) < remaining) abort(`Mall price too high for ${item.name}.`);
+  if (buy(remaining, item, maxPrice) < remaining) throw `Mall price too high for ${item.name}.`;
 }
 
 export function get(qty: number, item: Item) {
@@ -109,17 +113,17 @@ export function get(qty: number, item: Item) {
 
 export function eatSafe(qty: number, item: Item) {
   get(1, item);
-  if (!eat(qty, item)) abort('Failed to eat safely');
+  if (!eat(qty, item)) throw 'Failed to eat safely';
 }
 
 export function drinkSafe(qty: number, item: Item) {
   get(1, item);
-  if (!drink(qty, item)) abort('Failed to drink safely');
+  if (!drink(qty, item)) throw 'Failed to drink safely';
 }
 
 export function chewSafe(qty: number, item: Item) {
   get(1, item);
-  if (!chew(qty, item)) abort('Failed to chew safely');
+  if (!chew(qty, item)) throw 'Failed to chew safely';
 }
 
 function propTrue(prop: string | boolean) {
@@ -155,7 +159,7 @@ export function myFamiliarWeight() {
 
 export function ensureEffect(ef: Effect, turns = 1) {
   if (!tryEnsureEffect(ef, turns)) {
-    abort('Failed to get effect ' + ef.name + '.');
+    throw 'Failed to get effect ' + ef.name + '.';
   }
 }
 
@@ -212,17 +216,16 @@ export function tryEnsureSong(sk: Skill) {
   if (haveEffect(ef) === 0) {
     openSongSlot(ef);
     if (!cliExecute(ef.default) || haveEffect(ef) === 0) {
-      abort('Failed to get effect ' + ef.name + '.');
+      return false;
     }
-  } else {
-    print('Already have effect ' + ef.name + '.');
   }
+  return true;
 }
 
 export function ensureOde(turns = 1) {
   while (haveEffect($effect`Ode to Booze`) < turns) {
     openSongSlot($effect`Ode to Booze`);
-    if (!useSkill(1, $skill`The Ode to Booze`)) abort("Couldn't get Ode for some reason.");
+    if (!useSkill(1, $skill`The Ode to Booze`)) throw "Couldn't get Ode for some reason.";
   }
 }
 
@@ -231,25 +234,6 @@ export function tryUse(quantity: number, it: Item) {
     return use(quantity, it);
   } else {
     return false;
-  }
-}
-
-export function ensureItem(qty: number, it: Item, maxPrice: number) {
-  let remaining = qty - itemAmount(it);
-  if (remaining <= 0) return;
-
-  const getCloset = Math.min(remaining, closetAmount(it));
-  if (!takeCloset(getCloset, it)) abort();
-  remaining -= getCloset;
-  if (remaining <= 0) return;
-
-  const getMall = Math.min(remaining, shopAmount(it));
-  if (!takeShop(getMall, it)) abort();
-  remaining -= getMall;
-  if (remaining <= 0) return;
-
-  if (!retrieveItem(remaining, it)) {
-    if (buy(remaining, it, maxPrice) < remaining) abort(`Mall price too high for ${it.name}.`);
   }
 }
 
@@ -267,27 +251,29 @@ export function setClan(target: string) {
 
     visitUrl(`showclan.php?whichclan=${clanCache[target]}&action=joinclan&confirm=on&pwd`);
     if (getClanName() !== target) {
-      abort(`failed to switch clans to ${target}. Did you spell it correctly? Are you whitelisted?`);
+      throw `failed to switch clans to ${target}. Did you spell it correctly? Are you whitelisted?`;
     }
   }
   return true;
 }
 
 export function maximizeCached(objective: string) {
-  objective += objective.length > 0 ? ', equip Powerful Glove' : 'equip Powerful Glove';
+  if (myBasestat($stat`Muscle`) > 40) {
+    objective += objective.length > 0 ? ', equip mafia thumb ring' : 'equip mafia thumb ring';
+  }
   if (getProperty('bcas_objective') === objective) return;
   setProperty('bcas_objective', objective);
   maximize(objective, false);
 }
 
-export function getStep(questName: string) {
+export function questStep(questName: string) {
   const stringStep = getProperty(questName);
   if (stringStep === 'unstarted') return -1;
   else if (stringStep === 'started') return 0;
   else if (stringStep === 'finished') return 999;
   else {
     if (stringStep.substring(0, 4) !== 'step') {
-      abort('Quest state parsing error.');
+      throw 'Quest state parsing error.';
     }
     return parseInt(stringStep.substring(4), 10);
   }

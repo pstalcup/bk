@@ -23,8 +23,8 @@ import {
   print,
   myBasestat,
 } from 'kolmafia';
-import { $effect, $familiar, $item, $location, $monster, $skill, $stat } from 'libram/src';
-import { MODE_CUSTOM, MODE_NULL, adventureCopy, adventureKill, setMode, Macro } from './combat';
+import { $effect, $familiar, $item, $location, $monster, $skill, $stat, get } from 'libram/src';
+import { MODE_MACRO, MODE_NULL, adventureCopy, setMode, Macro, adventureMacro } from './combat';
 import { intro } from './intro';
 import {
   tryEnsureSong,
@@ -44,7 +44,6 @@ function levelMood() {
   }
 
   // Stats.
-  tryEnsureSong($skill`"Stevedave's Shanty of Superiority"`);
   tryEnsureSkill($skill`Song of Bravado`);
   tryEnsureSkill($skill`Get Big`);
   ensureEffect($effect`Having a Ball!`);
@@ -55,26 +54,24 @@ function levelMood() {
   tryEnsureEffect($effect`Starry-Eyed`);
   tryEnsureSkill($skill`CHEAT CODE: Triple Size`);
   tryEnsureEffect($effect`You Learned Something Maybe!`);
-  if (getPropertyBoolean('_daycareToday') && !getPropertyBoolean('_daycareSpa')) cliExecute('daycare {myPrimestat()}');
+  tryEnsureEffect($effect`That's Just Cloud-Talk, Man`);
+  if ((get('daycareOpen') || get('_daycareToday')) && !get('_daycareSpa')) cliExecute(`daycare ${myPrimestat()}`);
 
   if (myMp() < 200) {
     eat(1, $item`magical sausage`);
   }
   if (myPrimestat() === $stat`Muscle`) {
-    tryEnsureSong($skill`The Power Ballad of the Arrowsmith`);
     tryEnsureEffect($effect`Lack of Body-Building`);
     ensureEffect($effect`"Go Get 'Em, Tiger!"`);
     ensureEffect($effect`Phorcefullness`);
     ensureEffect($effect`Incredibly Hulking`);
   } else if (myPrimestat() === $stat`Mysticality`) {
-    tryEnsureSong($skill`The Magical Mojomuscular Melody`);
     tryEnsureEffect($effect`"We're All Made of Starfish"`);
     tryEnsureSkill($skill`Inscrutable Gaze`);
     ensureEffect($effect`Glittering Eyelashes`);
     ensureEffect($effect`Mystically Oiled`);
     ensureEffect($effect`On The Shoulders Of Giants`);
   } else if (myPrimestat() === $stat`Moxie`) {
-    tryEnsureSong($skill`The Moxious Madrigal`);
     tryEnsureEffect($effect`Pomp & Circumsands`);
     ensureEffect($effect`Butt-Rock Hair`);
     ensureEffect($effect`Superhuman Sarcasm`);
@@ -105,15 +102,12 @@ function levelMood() {
   tryEnsureSkill($skill`Astral Shell`);
 }
 
-export function level() {
+export function level(useResources = true) {
   if (myLevel() >= 13) return;
 
   // Put on some basic gear.
   maximizeCached('mp');
-  if (
-    myMp() < 200 &&
-    availableAmount($item`magical sausage`) + availableAmount($item`magical sausage casing`) > 0
-  ) {
+  if (myMp() < 200 && availableAmount($item`magical sausage`) + availableAmount($item`magical sausage casing`) > 0) {
     eat(1, $item`magical sausage`);
   }
 
@@ -134,7 +128,7 @@ export function level() {
 
   // Campsite
   if (haveEffect($effect`That's Just Cloud-Talk, Man`) === 0) {
-    visitUrl('place.php?whichplace=campaway&action=campawaySky');
+    visitUrl('place.php?whichplace=campaway&action=campaway_sky');
   }
 
   // Daycare
@@ -169,6 +163,37 @@ export function level() {
 
   cliExecute('breakfast');
 
+  // LOV Tunnel
+  if (get('loveTunnelAvailable') && !getPropertyBoolean('_loveTunnelUsed') && useResources) {
+    useFamiliar($familiar`Hovering Sombrero`);
+    const macro = Macro.if_(
+      'monstername LOV Enforcer',
+      Macro.while_('!pastround 20 && !hpbelow 200', Macro.attack().repeat()).kill()
+    )
+      .if_('monstername LOV Engineer', Macro.skill($skill`Saucegeyser`).repeat())
+      .kill();
+
+    setChoice(1222, 1); // Entrance
+    setChoice(1223, 1); // Fight LOV Enforcer
+    setChoice(1225, 1); // Fight LOV Engineer
+    setChoice(1226, 2); // Open Heart Surgery
+    setChoice(1227, 1); // Fight LOV Equivocator
+    setChoice(1228, 3); // Take chocolate
+
+    if (myPrimestat() === $stat`Muscle`) {
+      setChoice(1224, 1); // LOV Eardigan
+    } else if (myPrimestat() === $stat`Mysticality`) {
+      setChoice(1224, 2); // LOV Epaulettes
+    } else if (myPrimestat() === $stat`Moxie`) {
+      setChoice(1224, 3); // LOV Earrings
+    }
+
+    adventureMacro($location`The Tunnel of L.O.V.E.`, macro);
+    if (handlingChoice()) throw 'Did not get all the way through LOV.';
+    visitUrl('choice.php');
+    if (handlingChoice()) throw 'Did not get all the way through LOV.';
+  }
+
   if (haveFamiliar($familiar`God Lobster`) && getPropertyInt('_godLobsterFights') < 3) {
     useFamiliar($familiar`God Lobster`);
     const useGg = haveSkill($skill`Giant Growth`) && mallPrice($item`green mana`) < 8000;
@@ -181,12 +206,10 @@ export function level() {
       restoreHp(myMaxhp());
       if (useGg && haveEffect($effect`Giant Growth`) === 0) retrieveItem(1, $item`green mana`);
       visitUrl('main.php?fightgodlobster=1');
-      setMode(
-        MODE_CUSTOM,
-        Macro.externalIf(useGg && haveEffect($effect`Giant Growth`) === 0, 'skill Giant Growth')
-          .kill()
-          .toString()
-      );
+      setMode(MODE_MACRO);
+      Macro.externalIf(useGg && haveEffect($effect`Giant Growth`) === 0, 'skill Giant Growth')
+        .kill()
+        .save();
       runCombat();
       visitUrl('choice.php');
       if (handlingChoice()) runChoice(3);
@@ -200,10 +223,15 @@ export function level() {
     availableAmount($item`Kramco Sausage-o-Matic&trade;`) > 0
   ) {
     useFamiliar($familiar`Pocket Professor`);
-    maximizeCached('mainstat, 4exp, 10mainstat experience percent, 10familiar weight, equip makeshift garbage shirt, equip Pocket Professor memory chip, equip Kramco');
+    maximizeCached(
+      'mainstat, 4 exp, 30 mainstat experience percent, 30 familiar weight 50 min, equip makeshift garbage shirt, equip Pocket Professor memory chip, equip Kramco'
+    );
     levelMood();
     restoreHp(myMaxhp());
-    tryEnsureEffect($effect`Oiled, Slick`);
+    tryEnsureEffect($effect`Chorale of Companionship`);
+    tryEnsureEffect($effect`Billiards Belligerence`);
+    tryEnsureEffect($effect`Do I Know You From Somewhere?`);
+    tryEnsureEffect($effect`Oiled, Slick`) || tryEnsureEffect($effect`Oiled Up`);
     adventureCopy($location`"The Outskirts of Cobb's Knob"`, $monster`sausage goblin`);
   }
 
@@ -216,7 +244,7 @@ export function level() {
     maximizeCached('mainstat, 4exp, equip makeshift garbage shirt');
     setChoice(1324, 5);
     levelMood();
-    adventureKill($location`The Neverending Party`);
+    adventureMacro($location`The Neverending Party`, Macro.kill());
   }
 
   visitUrl('council.php');
@@ -228,5 +256,5 @@ export function level() {
 
 export function main() {
   intro();
-  level();
+  level(false);
 }

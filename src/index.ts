@@ -15,7 +15,7 @@ import {
 import { intro } from './intro';
 import { level } from './level';
 import { getPropertyBoolean } from './lib';
-import { billiards, war, dailyDungeon, ores, bridge, aboo, blackForest, shen } from './quests';
+import { billiards, war, dailyDungeon, ores, bridge, aboo, blackForest, shen, airship } from './quests';
 
 export function main() {
   setProperty('bcas_objective', '');
@@ -27,8 +27,10 @@ export function main() {
       print(`You have more than 5M liquid meat! Putting ${closetAmount} in the closet automatically.`, 'blue');
       cliExecute(`closet put ${closetAmount} meat`);
     } else {
-      throw 'You have more than 5M liquid meat! ' +
-        'Put it in the closet to avoid autoscend danger, or set bcas_autoClosetMeat to true and rerun.';
+      throw (
+        'You have more than 5M liquid meat! ' +
+        'Put it in the closet to avoid autoscend danger, or set bcas_autoClosetMeat to true and rerun.'
+      );
     }
   }
 
@@ -50,6 +52,7 @@ export function main() {
     setProperty('bcas_lastStockedUp', `${myAscensions()}`);
   }
 
+  airship();
   billiards();
 
   if (myInebriety() <= 5 && myFullness() <= 0) {

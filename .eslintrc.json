@@ -1,4 +1,14 @@
 {
   "extends": "./node_modules/gts/",
+  "rules": {
+    "prettier/prettier": "off",
+    "sort-imports": [
+      "error",
+      {
+        "ignoreCase": true,
+        "ignoreDeclarationSort": true
+      }
+    ]
+  },
   "sourceType": "module"
 }

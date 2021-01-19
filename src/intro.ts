@@ -1,6 +1,6 @@
 import { cliExecute, visitUrl, availableAmount, runChoice, getProperty, setProperty, use } from 'kolmafia';
 import { $item } from 'libram/src';
-import { setClan, tryUse, ensureItem } from './lib';
+import { setClan, tryUse, getCapped } from './lib';
 
 export function intro() {
   setClan('Bonus Adventures from Hell');
@@ -16,7 +16,7 @@ export function intro() {
   tryUse(1, $item`astral six-pack`);
 
   // Buy antique accordion
-  ensureItem(1, $item`antique accordion`, 2500);
+  getCapped(1, $item`antique accordion`, 2500);
 
   // Initialize council.
   visitUrl('council.php');
