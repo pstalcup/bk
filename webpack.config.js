@@ -3,14 +3,15 @@ var webpack = require('webpack');
 
 module.exports = {
   entry: {
-    bcas: './src/index.ts',
-    bcas_combat: './src/combat.ts',
-    bcas_level: './src/level.ts',
+    bkbuffs: './src/bkbuffs.ts',
+    bkchoice: './src/bkchoice.ts',
+    bkfights: './src/bkfights.ts',
+    combat: './src/combat.ts',
   },
   mode: 'development',
   devtool: false,
   output: {
-    path: path.resolve(__dirname, 'KoLmafia', 'scripts', 'bean-casual'),
+    path: path.resolve(__dirname, 'KoLmafia', 'scripts', 'bk'),
     filename: '[name].js',
     libraryTarget: 'commonjs',
   },

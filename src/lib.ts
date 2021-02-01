@@ -1,44 +1,51 @@
 import {
-  getProperty,
   abort,
-  itemAmount,
-  closetAmount,
-  takeCloset,
-  shopAmount,
-  takeShop,
-  buy,
-  eat,
-  drink,
-  chew,
-  mallPrice,
-  use,
-  print,
-  setProperty,
-  familiarWeight,
-  myFamiliar,
-  weightAdjustment,
-  haveEffect,
-  cliExecute,
-  toEffect,
-  haveSkill,
-  useSkill,
-  sweetSynthesis,
   availableAmount,
+  buy,
+  cliExecute,
+  closetAmount,
+  eat,
+  familiarWeight,
+  formatDateTime,
+  getProperty,
+  haveEffect,
+  itemAmount,
+  logprint,
+  mallPrice,
+  myAdventures,
+  myClass,
+  myFamiliar,
+  myLocation,
+  myMaxmp,
+  myMp,
+  myThrall,
+  myTurncount,
+  print,
+  printHtml,
   retrieveItem,
-  getClanName,
+  setAutoAttack,
+  setProperty,
+  shopAmount,
+  takeCloset,
+  takeShop,
+  timeToString,
+  todayToString,
+  urlEncode,
+  useSkill,
   visitUrl,
-  maximize,
-  myBasestat,
+  wait,
+  weightAdjustment,
 } from 'kolmafia';
-import { $effect, $skill, $stat } from 'libram/src';
+import { $class, $effect, $item, $items, $location, $skill, $thrall } from 'libram';
+import { getSewersState, throughSewers } from './sewers';
 
 export function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(n, max));
 }
 
-export function getPropertyString(name: string, def: string) {
+export function getPropertyString(name: string, def: string | null = null): string {
   const str = getProperty(name);
-  return str === '' ? def : str;
+  return str === '' && def !== null ? def : str;
 }
 
 export function getPropertyInt(name: string, default_: number | null = null): number {
@@ -63,218 +70,232 @@ export function setPropertyInt(name: string, value: number) {
   setProperty(name, value.toString());
 }
 
-export function itemPriority(...items: Item[]): Item {
-  if (items.length === 1) return items[0];
-  else return itemAmount(items[0]) > 0 ? items[0] : itemPriority(...items.slice(1));
-}
-
-export function cheaper(...items: Item[]) {
-  if (items.length === 1) return items[0];
-  else return itemAmount(items[0]) > 0 ? items[0] : itemPriority(...items.slice(1));
-}
-
-const priceCaps: { [index: string]: number } = {
-  'jar of fermented pickle juice': 75000,
-  "Frosty's frosty mug": 45000,
-  'extra-greasy slider': 45000,
-  "Ol' Scratch's salad fork": 45000,
-  'transdermal smoke patch': 7000,
-  'voodoo snuff': 36000,
-  'blood-drive sticker': 210000,
-  'spice melange': 500000,
-  'splendid martini': 10000,
-  'stuffing fluffer': 25000,
-  'cornucopia': 30000,
-  'cashew': 9000,
-};
-
-export function getCapped(qty: number, item: Item, maxPrice: number) {
-  if (qty > 30) throw 'bad get!';
-
-  let remaining = Math.round(qty) - itemAmount(item);
-  if (remaining <= 0) return;
-
-  const getCloset = Math.min(remaining, closetAmount(item));
-  if (!takeCloset(getCloset, item)) throw 'failed to remove from closet';
-  remaining -= getCloset;
-  if (remaining <= 0) return;
-
-  const getMall = Math.min(remaining, shopAmount(item));
-  if (!takeShop(getMall, item)) throw 'failed to remove from shop';
-  remaining -= getMall;
-  if (remaining <= 0) return;
-
-  if (buy(remaining, item, maxPrice) < remaining) throw `Mall price too high for ${item.name}.`;
-}
-
-export function get(qty: number, item: Item) {
-  getCapped(qty, item, priceCaps[item.name]);
-}
-
-export function eatSafe(qty: number, item: Item) {
-  get(1, item);
-  if (!eat(qty, item)) throw 'Failed to eat safely';
-}
-
-export function drinkSafe(qty: number, item: Item) {
-  get(1, item);
-  if (!drink(qty, item)) throw 'Failed to drink safely';
-}
-
-export function chewSafe(qty: number, item: Item) {
-  get(1, item);
-  if (!chew(qty, item)) throw 'Failed to chew safely';
-}
-
-function propTrue(prop: string | boolean) {
-  if (typeof prop === 'boolean') {
-    return prop as boolean;
-  } else {
-    return getPropertyBoolean(prop as string);
-  }
-}
-
-export function useIfUnused(item: Item, prop: string | boolean, maxPrice: number) {
-  if (!propTrue(prop)) {
-    if (mallPrice(item) <= maxPrice) {
-      getCapped(1, item, maxPrice);
-      use(1, item);
-    } else {
-      print(`Skipping ${item.name}; too expensive (${mallPrice(item)} > ${maxPrice}).`);
-    }
-  }
-}
-
-export function totalAmount(item: Item): number {
-  return shopAmount(item) + itemAmount(item);
-}
-
 export function setChoice(adv: number, choice: number) {
   setProperty(`choiceAdventure${adv}`, `${choice}`);
 }
 
-export function myFamiliarWeight() {
-  return familiarWeight(myFamiliar()) + weightAdjustment();
+export function getChoice(adv: number) {
+  return getPropertyInt(`choiceAdventure${adv}`);
 }
 
-export function ensureEffect(ef: Effect, turns = 1) {
-  if (!tryEnsureEffect(ef, turns)) {
-    throw 'Failed to get effect ' + ef.name + '.';
+export function cheapest(...items: Item[]) {
+  const prices = items.map(it => mallPrice(it));
+  const pricesChecked = prices.map(p => (p < 100 ? 999999999 : p));
+  const minIndex = pricesChecked.reduce((i, x, j) => (pricesChecked[i] < x ? i : j), 0);
+  return items[minIndex];
+}
+
+export function getItem(qty: number, item: Item, maxPrice: number) {
+  if (item !== $item`pocket wish` && qty * mallPrice(item) > 1000000) abort('bad get!');
+
+  try {
+    retrieveItem(qty, item);
+  } catch (e) { }
+
+  let remaining = qty - itemAmount(item);
+  if (remaining <= 0) return qty;
+
+  const getCloset = Math.min(remaining, closetAmount(item));
+  if (!takeCloset(getCloset, item)) abort('failed to remove from closet');
+  remaining -= getCloset;
+  if (remaining <= 0) return qty;
+
+  let getMall = Math.min(remaining, shopAmount(item));
+  if (!takeShop(getMall, item)) {
+    cliExecute('refresh shop');
+    cliExecute('refresh inventory');
+    remaining = qty - itemAmount(item);
+    getMall = Math.min(remaining, shopAmount(item));
+    if (!takeShop(getMall, item)) abort('failed to remove from shop');
+  }
+  remaining -= getMall;
+  if (remaining <= 0) return qty;
+
+  remaining -= buy(remaining, item, maxPrice);
+  if (remaining > 0) print(`Mall price too high for ${item}.`);
+  return qty - remaining;
+}
+
+export function sausageMp(target: number) {
+  if (
+    myMp() < target &&
+    myMaxmp() >= 400 &&
+    getPropertyInt('_sausagesEaten') < 23 &&
+    availableAmount($item`magical sausage casing`) > 0
+  ) {
+    eat(1, Item.get('magical sausage'));
   }
 }
 
-export function tryEnsureEffect(ef: Effect, turns = 1) {
-  if (haveEffect(ef) < turns) {
-    return cliExecute(ef.default) && haveEffect(ef) > 0;
-  }
-  return true;
+export function myFamiliarWeight(familiar: Familiar | null = null) {
+  if (familiar === null) familiar = myFamiliar();
+  return familiarWeight(familiar) + weightAdjustment();
 }
 
-export function tryEnsureSkill(sk: Skill) {
-  const ef = toEffect(sk);
-  if (haveSkill(sk) && ef !== $effect`none` && haveEffect(ef) === 0) {
-    useSkill(1, sk);
-  }
+export function lastWasCombat() {
+  return !myLocation().noncombatQueue.includes(getProperty('lastEncounter'));
 }
 
-export function trySynthesize(ef: Effect) {
-  if (haveEffect(ef) === 0 && haveSkill($skill`Sweet Synthesis`)) sweetSynthesis(ef);
-}
-
-export function shrug(ef: Effect) {
-  if (haveEffect(ef) > 0) {
-    cliExecute('shrug ' + ef.name);
+export function unclosetNickels() {
+  for (const item of $items`hobo nickel, sand dollar`) {
+    takeCloset(closetAmount(item), item);
   }
 }
 
-// Mechanics for managing song slots.
-// We have Stevedave's, Ur-Kel's on at all times during leveling; third and fourth slots are variable.
-const songSlots: Effect[][] = [
-  Effect.get(["Stevedave's Shanty of Superiority", "Fat Leon's Phat Loot Lyric"]),
-  Effect.get(["Ur-Kel's Aria of Annoyance"]),
-  Effect.get([
-    'Power Ballad of the Arrowsmith',
-    'The Magical Mojomuscular Melody',
-    'The Moxious Madrigal',
-    'Ode to Booze',
-    "Jackasses' Symphony of Destruction",
-  ]),
-  Effect.get(["Carlweather's Cantata of Confrontation", 'The Sonata of Sneakiness', 'Polka of Plenty']),
-];
-export function openSongSlot(song: Effect) {
-  for (const songSlot of songSlots) {
-    if (songSlot.includes(song)) {
-      for (const shruggable of songSlot) {
-        shrug(shruggable);
-      }
+export function stopAt(args: string) {
+  let stopTurncount = myTurncount() + myAdventures() * 1.1 + 50;
+  if (Number.isFinite(parseInt(args, 10))) {
+    stopTurncount = myTurncount() + parseInt(args, 10);
+  }
+  return Math.round(stopTurncount);
+}
+
+export function mustStop(stopTurncount: number) {
+  return myTurncount() >= stopTurncount || myAdventures() === 0;
+}
+
+let turbo = true;
+export function turboMode() {
+  return turbo;
+}
+
+export function ensureJingle() {
+  if (haveEffect($effect`Jingle Jangle Jingle`) === 0) {
+    cliExecute(`csend to buffy || ${Math.round(myAdventures() * 1.1 + 200)} jingle`);
+    for (let i = 0; i < 5; i++) {
+      wait(3);
+      cliExecute('refresh status');
+      if (haveEffect($effect`Jingle Jangle Jingle`) > 0) break;
+    }
+    if (haveEffect($effect`Jingle Jangle Jingle`) === 0) abort('Get Jingle Bells first.');
+  }
+}
+
+function writeWhiteboard(text: string) {
+  visitUrl(`clan_basement.php?pwd&action=whitewrite&whiteboard=${urlEncode(text)}`, true, true);
+}
+
+export function recordInstanceState() {
+  const lines = [
+    `Ol' Scratch at image ${getImage($location`Burnbarrel Blvd.`)}`,
+    `Frosty at image ${getImage($location`Exposure Esplanade`)}`,
+    `Oscus at image ${getImage($location`The Heap`)}`,
+    `Zombo at image ${getImage($location`The Ancient Hobo Burial Ground`)}`,
+    `Chester at image ${getImage($location`The Purple Light District`)}`,
+  ];
+  let whiteboard = '';
+  const date = formatDateTime('yyyyMMdd', todayToString(), 'yyyy-MM-dd');
+  whiteboard += `Status as of ${date} ${timeToString()}:\n`;
+  for (const line of lines) {
+    print(line);
+    whiteboard += `${line}\n`;
+  }
+  writeWhiteboard(whiteboard);
+  print('"Mining" complete.');
+}
+
+const places: { [index: string]: { name: string; number: number } } = {
+  'Hobopolis Town Square': {
+    name: 'townsquare',
+    number: 2,
+  },
+  'Burnbarrel Blvd.': {
+    name: 'burnbarrelblvd',
+    number: 4,
+  },
+  'Exposure Esplanade': {
+    name: 'exposureesplanade',
+    number: 5,
+  },
+  'The Heap': {
+    name: 'theheap',
+    number: 6,
+  },
+  'The Ancient Hobo Burial Ground': {
+    name: 'burialground',
+    number: 7,
+  },
+  'The Purple Light District': {
+    name: 'purplelightdistrict',
+    number: 8,
+  },
+};
+export function getImage(location: Location) {
+  const { name, number } = places[location.toString()];
+  const text = visitUrl(`clan_hobopolis.php?place=${number}`);
+  const match = text.match(new RegExp(`${name}([0-9]+)o?.gif`));
+  if (!match) return -1;
+  return parseInt(match[1], 10);
+}
+
+const memoizeStore = new Map<() => unknown, [number, unknown]>();
+export function memoizeTurncount<T>(func: (...args: []) => T, turnThreshold = 1) {
+  const forceUpdate = (...args: []) => {
+    const result = func(...args);
+    memoizeStore.set(func, [myTurncount(), result]);
+    return result;
+  };
+  const result = (...args: []) => {
+    const [lastTurncount, lastResult] = memoizeStore.get(func) || [-1, null];
+    if (myTurncount() >= lastTurncount + turnThreshold) {
+      return forceUpdate(...args);
+    } else {
+      return lastResult as T;
+    }
+  };
+  result.forceUpdate = forceUpdate;
+  return result;
+}
+
+export const getImageTownsquare = memoizeTurncount(() => getImage($location`Hobopolis Town Square`), 10);
+export const getImageBb = memoizeTurncount(() => getImage($location`Burnbarrel Blvd.`));
+export const getImageEe = memoizeTurncount(() => getImage($location`Exposure Esplanade`), 10);
+export const getImageHeap = memoizeTurncount(() => getImage($location`The Heap`), 10);
+export const getImagePld = memoizeTurncount(() => getImage($location`The Purple Light District`), 10);
+export const getImageAhbg = memoizeTurncount(() => getImage($location`The Ancient Hobo Burial Ground`), 10);
+
+export function wrapMain(args = '', action: () => void) {
+  try {
+    turbo = args.includes('turbo');
+    if (myClass() === $class`Pastamancer` && myThrall() !== $thrall`Elbow Macaroni`) {
+      useSkill(1, $skill`Bind Undead Elbow Macaroni`);
+    }
+    ensureJingle();
+    cliExecute('counters nowarn Fortune Cookie');
+    cliExecute('mood apathetic');
+    cliExecute('ccs minehobo2');
+    cliExecute('terminal educate digitize; terminal educate extract');
+    setProperty('hpAutoRecovery', turbo ? '0.5' : '0.8');
+    setProperty('hpAutoRecoveryTarget', '0.95');
+    action();
+    print('Done mining.');
+  } finally {
+    setAutoAttack(0);
+    setProperty('minehobo_lastObjective', '');
+    setProperty('minehobo_lastStats', '');
+    setProperty('minehobo_lastFamiliar', '');
+    unclosetNickels();
+    if (throughSewers()) recordInstanceState();
+  }
+}
+
+export function extractInt(regex: RegExp, text: string, group = 1) {
+  if (!regex.global) throw 'Regexes must be global.';
+  let result = 0;
+  let match;
+  while ((match = regex.exec(text)) !== null) {
+    if (match[group] === 'a') {
+      result += 1;
+    } else {
+      result += parseInt(match[group], 10);
     }
   }
+  return result;
 }
 
-export function tryEnsureSong(sk: Skill) {
-  const ef = toEffect(sk);
-  if (haveEffect(ef) === 0) {
-    openSongSlot(ef);
-    if (!cliExecute(ef.default) || haveEffect(ef) === 0) {
-      return false;
-    }
+export function printLines(...lines: string[]) {
+  for (const line of lines) {
+    logprint(line);
   }
-  return true;
-}
-
-export function ensureOde(turns = 1) {
-  while (haveEffect($effect`Ode to Booze`) < turns) {
-    openSongSlot($effect`Ode to Booze`);
-    if (!useSkill(1, $skill`The Ode to Booze`)) throw "Couldn't get Ode for some reason.";
-  }
-}
-
-export function tryUse(quantity: number, it: Item) {
-  if (availableAmount(it) > 0) {
-    return use(quantity, it);
-  } else {
-    return false;
-  }
-}
-
-const clanCache: { [index: string]: number } = {};
-export function setClan(target: string) {
-  if (getClanName() !== target) {
-    if (clanCache[target] === undefined) {
-      const recruiter = visitUrl('clan_signup.php');
-      const clanRe = /<option value=([0-9]+)>([^<]+)<\/option>/g;
-      let result;
-      while ((result = clanRe.exec(recruiter)) !== null) {
-        clanCache[result[2]] = parseInt(result[1], 10);
-      }
-    }
-
-    visitUrl(`showclan.php?whichclan=${clanCache[target]}&action=joinclan&confirm=on&pwd`);
-    if (getClanName() !== target) {
-      throw `failed to switch clans to ${target}. Did you spell it correctly? Are you whitelisted?`;
-    }
-  }
-  return true;
-}
-
-export function maximizeCached(objective: string) {
-  if (myBasestat($stat`Muscle`) > 40) {
-    objective += objective.length > 0 ? ', equip mafia thumb ring' : 'equip mafia thumb ring';
-  }
-  if (getProperty('bcas_objective') === objective) return;
-  setProperty('bcas_objective', objective);
-  maximize(objective, false);
-}
-
-export function questStep(questName: string) {
-  const stringStep = getProperty(questName);
-  if (stringStep === 'unstarted') return -1;
-  else if (stringStep === 'started') return 0;
-  else if (stringStep === 'finished') return 999;
-  else {
-    if (stringStep.substring(0, 4) !== 'step') {
-      throw 'Quest state parsing error.';
-    }
-    return parseInt(stringStep.substring(4), 10);
-  }
+  printHtml(lines.map(line => line.replace('<', '&lt;')).join('\n'));
 }
