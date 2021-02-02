@@ -24,7 +24,8 @@ import {
   useSkill,
   visitUrl,
 } from 'kolmafia';
-import { $effect, $familiar, $item, $items, $monster, $skill, Macro as LibramMacro, banishedMonsters } from 'libram';
+import { $effect, $familiar, $item, $items, $monster, $skill, Macro as LibramMacro, banishedMonsters, get as getLibram } from 'libram';
+import { get } from 'lodash-es';
 import { getPropertyBoolean, getPropertyInt, myFamiliarWeight, setPropertyInt, turboMode } from './lib';
 
 // multiFight() stolen from Aenimus: https://github.com/Aenimus/aen_cocoabo_farm/blob/master/scripts/aen_combat.ash.
@@ -78,24 +79,8 @@ export class Macro extends LibramMacro {
   }
 
   stasis() {
-    return this.externalIf(myInebriety() > inebrietyLimit(), 'attack')
-      .externalIf(
-        myFamiliar() === $familiar`Stocking Mimic`,
-        Macro.if_(
-          '!hpbelow 500',
-          Macro.skill($skill`Curse of Weaksauce`)
-            .skill($skill`Micrometeorite`)
-        )
-      )
-      .externalIf(!turboMode(), Macro.skill($skill`Entangling Noodles`))
-      .collect()
-      .externalIf(
-        myFamiliar() === $familiar`Stocking Mimic`,
-        Macro.while_(
-          '!pastround 9 && !hpbelow 500 && (!monstername "normal hobo" || monsterhpabove 200)',
-          Macro.item($item`seal tooth`)
-        )
-      );
+    let cocoaboLike = [$familiar`cocoabo`, $familiar`ninja pirate zombie robot`, $familiar`feather boa constrictor`, $familiar`stocking mimic`];
+
   }
 
   static stasis() {
@@ -180,13 +165,9 @@ export class Macro extends LibramMacro {
   }
 
   professor() {
-    let lecture = toInt($skill`lecture on relativity`);
+    let lecture = $skill`lecture on relativity`;
     return this.if_(`hasskill ${lecture}`, Macro.skill(`${lecture}`))
   }
-
-  /*profCopy() {
-    return this.if_('hasskill ')
-  }*/
 
   static tentacle() {
     return new Macro().tentacle();
@@ -294,15 +275,15 @@ export function adventureRunUnlessFree(loc: Location, preMacro: Macro, killMacro
 }
 
 export function adventureRunOrStasis(loc: Location, freeRun: boolean) {
-  if (freeRun) {
+  /*if (freeRun) {
     adventureRunUnlessFree(
       loc,
-      myFamiliar() === $familiar`Stocking Mimic` ? Macro.stasis() : Macro.collect(),
-      Macro.stasis().kill()
+      //myFamiliar() === $familiar`Stocking Mimic` ? Macro.stasis() : Macro.collect(),
+      //Macro.stasis().kill()
     );
   } else {
     adventureMacro(loc, Macro.stasis().kill());
-  }
+  }&*/
 }
 
 export function adventureMacro(loc: Location, macro: Macro) {

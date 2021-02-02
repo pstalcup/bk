@@ -74,6 +74,10 @@ export function setChoice(adv: number, choice: number) {
   setProperty(`choiceAdventure${adv}`, `${choice}`);
 }
 
+export function setChoices(choices: Map<number, number>) {
+  choices.forEach((adv, choice) => { setChoice(adv, choice)})
+}
+
 export function getChoice(adv: number) {
   return getPropertyInt(`choiceAdventure${adv}`);
 }

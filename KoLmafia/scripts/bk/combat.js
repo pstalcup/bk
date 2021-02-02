@@ -1024,38 +1024,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _lib__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./lib */ "./src/lib.ts");
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-function _templateObject35() {
-  var data = _taggedTemplateLiteral(["Stocking Mimic"]);
-
-  _templateObject35 = function _templateObject35() {
-    return data;
-  };
-
-  return data;
-}
-
-function _templateObject34() {
-  var data = _taggedTemplateLiteral(["Louder Than Bomb, divine champagne popper, tattered scrap of paper, GOTO, green smoke bomb"]);
-
-  _templateObject34 = function _templateObject34() {
-    return data;
-  };
-
-  return data;
-}
-
-function _templateObject33() {
-  var data = _taggedTemplateLiteral(["Pair of Stomping Boots"]);
-
-  _templateObject33 = function _templateObject33() {
-    return data;
-  };
-
-  return data;
-}
-
 function _templateObject32() {
-  var data = _taggedTemplateLiteral(["The Ode to Booze"]);
+  var data = _taggedTemplateLiteral(["Louder Than Bomb, divine champagne popper, tattered scrap of paper, GOTO, green smoke bomb"]);
 
   _templateObject32 = function _templateObject32() {
     return data;
@@ -1065,7 +1035,7 @@ function _templateObject32() {
 }
 
 function _templateObject31() {
-  var data = _taggedTemplateLiteral(["Frumious Bandersnatch"]);
+  var data = _taggedTemplateLiteral(["Pair of Stomping Boots"]);
 
   _templateObject31 = function _templateObject31() {
     return data;
@@ -1075,7 +1045,7 @@ function _templateObject31() {
 }
 
 function _templateObject30() {
-  var data = _taggedTemplateLiteral(["Extract Jelly"]);
+  var data = _taggedTemplateLiteral(["The Ode to Booze"]);
 
   _templateObject30 = function _templateObject30() {
     return data;
@@ -1085,7 +1055,7 @@ function _templateObject30() {
 }
 
 function _templateObject29() {
-  var data = _taggedTemplateLiteral(["Extract"]);
+  var data = _taggedTemplateLiteral(["Frumious Bandersnatch"]);
 
   _templateObject29 = function _templateObject29() {
     return data;
@@ -1095,7 +1065,7 @@ function _templateObject29() {
 }
 
 function _templateObject28() {
-  var data = _taggedTemplateLiteral(["lecture on relativity"]);
+  var data = _taggedTemplateLiteral(["Extract Jelly"]);
 
   _templateObject28 = function _templateObject28() {
     return data;
@@ -1105,7 +1075,7 @@ function _templateObject28() {
 }
 
 function _templateObject27() {
-  var data = _taggedTemplateLiteral(["Saucegeyser"]);
+  var data = _taggedTemplateLiteral(["Extract"]);
 
   _templateObject27 = function _templateObject27() {
     return data;
@@ -1115,7 +1085,7 @@ function _templateObject27() {
 }
 
 function _templateObject26() {
-  var data = _taggedTemplateLiteral(["Stuffed Mortar Shell"]);
+  var data = _taggedTemplateLiteral(["lecture on relativity"]);
 
   _templateObject26 = function _templateObject26() {
     return data;
@@ -1125,7 +1095,7 @@ function _templateObject26() {
 }
 
 function _templateObject25() {
-  var data = _taggedTemplateLiteral(["Lunging Thrust-Smack"]);
+  var data = _taggedTemplateLiteral(["Saucegeyser"]);
 
   _templateObject25 = function _templateObject25() {
     return data;
@@ -1135,7 +1105,7 @@ function _templateObject25() {
 }
 
 function _templateObject24() {
-  var data = _taggedTemplateLiteral(["Lunging Thrust-Smack"]);
+  var data = _taggedTemplateLiteral(["Stuffed Mortar Shell"]);
 
   _templateObject24 = function _templateObject24() {
     return data;
@@ -1155,7 +1125,7 @@ function _templateObject23() {
 }
 
 function _templateObject22() {
-  var data = _taggedTemplateLiteral(["Candyblast"]);
+  var data = _taggedTemplateLiteral(["Lunging Thrust-Smack"]);
 
   _templateObject22 = function _templateObject22() {
     return data;
@@ -1165,7 +1135,7 @@ function _templateObject22() {
 }
 
 function _templateObject21() {
-  var data = _taggedTemplateLiteral(["Asdon Martin: Missile Launcher"]);
+  var data = _taggedTemplateLiteral(["Lunging Thrust-Smack"]);
 
   _templateObject21 = function _templateObject21() {
     return data;
@@ -1175,7 +1145,7 @@ function _templateObject21() {
 }
 
 function _templateObject20() {
-  var data = _taggedTemplateLiteral(["Fire the Jokester's Gun"]);
+  var data = _taggedTemplateLiteral(["Candyblast"]);
 
   _templateObject20 = function _templateObject20() {
     return data;
@@ -1185,7 +1155,7 @@ function _templateObject20() {
 }
 
 function _templateObject19() {
-  var data = _taggedTemplateLiteral(["The Jokester's gun"]);
+  var data = _taggedTemplateLiteral(["Asdon Martin: Missile Launcher"]);
 
   _templateObject19 = function _templateObject19() {
     return data;
@@ -1195,7 +1165,7 @@ function _templateObject19() {
 }
 
 function _templateObject18() {
-  var data = _taggedTemplateLiteral(["Chest X-Ray"]);
+  var data = _taggedTemplateLiteral(["Fire the Jokester's Gun"]);
 
   _templateObject18 = function _templateObject18() {
     return data;
@@ -1205,7 +1175,7 @@ function _templateObject18() {
 }
 
 function _templateObject17() {
-  var data = _taggedTemplateLiteral(["Lil' Doctor\u2122 bag"]);
+  var data = _taggedTemplateLiteral(["The Jokester's gun"]);
 
   _templateObject17 = function _templateObject17() {
     return data;
@@ -1215,7 +1185,7 @@ function _templateObject17() {
 }
 
 function _templateObject16() {
-  var data = _taggedTemplateLiteral(["Gingerbread Mob Hit"]);
+  var data = _taggedTemplateLiteral(["Chest X-Ray"]);
 
   _templateObject16 = function _templateObject16() {
     return data;
@@ -1225,7 +1195,7 @@ function _templateObject16() {
 }
 
 function _templateObject15() {
-  var data = _taggedTemplateLiteral(["Shattering Punch"]);
+  var data = _taggedTemplateLiteral(["Lil' Doctor\u2122 bag"]);
 
   _templateObject15 = function _templateObject15() {
     return data;
@@ -1235,7 +1205,7 @@ function _templateObject15() {
 }
 
 function _templateObject14() {
-  var data = _taggedTemplateLiteral(["Saucegeyser"]);
+  var data = _taggedTemplateLiteral(["Gingerbread Mob Hit"]);
 
   _templateObject14 = function _templateObject14() {
     return data;
@@ -1245,7 +1215,7 @@ function _templateObject14() {
 }
 
 function _templateObject13() {
-  var data = _taggedTemplateLiteral(["seal tooth"]);
+  var data = _taggedTemplateLiteral(["Shattering Punch"]);
 
   _templateObject13 = function _templateObject13() {
     return data;
@@ -1255,7 +1225,7 @@ function _templateObject13() {
 }
 
 function _templateObject12() {
-  var data = _taggedTemplateLiteral(["Stocking Mimic"]);
+  var data = _taggedTemplateLiteral(["Saucegeyser"]);
 
   _templateObject12 = function _templateObject12() {
     return data;
@@ -1265,7 +1235,7 @@ function _templateObject12() {
 }
 
 function _templateObject11() {
-  var data = _taggedTemplateLiteral(["Entangling Noodles"]);
+  var data = _taggedTemplateLiteral(["stocking mimic"]);
 
   _templateObject11 = function _templateObject11() {
     return data;
@@ -1275,7 +1245,7 @@ function _templateObject11() {
 }
 
 function _templateObject10() {
-  var data = _taggedTemplateLiteral(["Micrometeorite"]);
+  var data = _taggedTemplateLiteral(["feather boa constrictor"]);
 
   _templateObject10 = function _templateObject10() {
     return data;
@@ -1285,7 +1255,7 @@ function _templateObject10() {
 }
 
 function _templateObject9() {
-  var data = _taggedTemplateLiteral(["Curse of Weaksauce"]);
+  var data = _taggedTemplateLiteral(["ninja pirate zombie robot"]);
 
   _templateObject9 = function _templateObject9() {
     return data;
@@ -1295,7 +1265,7 @@ function _templateObject9() {
 }
 
 function _templateObject8() {
-  var data = _taggedTemplateLiteral(["Stocking Mimic"]);
+  var data = _taggedTemplateLiteral(["cocoabo"]);
 
   _templateObject8 = function _templateObject8() {
     return data;
@@ -1444,12 +1414,12 @@ var Macro = /*#__PURE__*/function (_LibramMacro) {
   }, {
     key: "stasis",
     value: function stasis() {
-      return this.externalIf((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myInebriety)() > (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.inebrietyLimit)(), 'attack').externalIf((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myFamiliar)() === (0,libram__WEBPACK_IMPORTED_MODULE_2__.$familiar)(_templateObject8()), Macro.if_('!hpbelow 500', Macro.skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject9())).skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject10())))).externalIf(!(0,_lib__WEBPACK_IMPORTED_MODULE_1__.turboMode)(), Macro.skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject11()))).collect().externalIf((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myFamiliar)() === (0,libram__WEBPACK_IMPORTED_MODULE_2__.$familiar)(_templateObject12()), Macro.while_('!pastround 9 && !hpbelow 500 && (!monstername "normal hobo" || monsterhpabove 200)', Macro.item((0,libram__WEBPACK_IMPORTED_MODULE_2__.$item)(_templateObject13()))));
+      var cocoaboLike = [(0,libram__WEBPACK_IMPORTED_MODULE_2__.$familiar)(_templateObject8()), (0,libram__WEBPACK_IMPORTED_MODULE_2__.$familiar)(_templateObject9()), (0,libram__WEBPACK_IMPORTED_MODULE_2__.$familiar)(_templateObject10()), (0,libram__WEBPACK_IMPORTED_MODULE_2__.$familiar)(_templateObject11())];
     }
   }, {
     key: "kill",
     value: function kill() {
-      return this.externalIf((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myInebriety)() > (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.inebrietyLimit)(), 'attack').if_('monstername sleaze hobo', Macro.skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject14())).repeat()).externalIf((0,_lib__WEBPACK_IMPORTED_MODULE_1__.getPropertyInt)('_shatteringPunchUsed') < 3, Macro.if_(Macro.nonFree(), Macro.skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject15())))).externalIf(!(0,_lib__WEBPACK_IMPORTED_MODULE_1__.getPropertyBoolean)('_gingerbreadMobHitUsed'), Macro.if_(Macro.nonFree(), Macro.skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject16())))).externalIf((0,_lib__WEBPACK_IMPORTED_MODULE_1__.getPropertyInt)('_chestXRayUsed') < 3 && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEquipped)((0,libram__WEBPACK_IMPORTED_MODULE_2__.$item)(_templateObject17())), Macro.if_(Macro.nonFree(), Macro.skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject18())))).externalIf(!(0,_lib__WEBPACK_IMPORTED_MODULE_1__.getPropertyBoolean)('_firedJokestersGun') && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEquipped)((0,libram__WEBPACK_IMPORTED_MODULE_2__.$item)(_templateObject19())), Macro.if_(Macro.nonFree(), Macro.skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject20())))).externalIf(!(0,_lib__WEBPACK_IMPORTED_MODULE_1__.getPropertyBoolean)('_missileLauncherUsed') && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getCampground)()['Asdon Martin keyfob'] !== undefined && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getFuel)() >= 100, Macro.if_(Macro.nonFree(), Macro.skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject21())))).externalIf(!(0,_lib__WEBPACK_IMPORTED_MODULE_1__.turboMode)(), Macro.while_('!hpbelow 500 && !match "some of it is even intact"', Macro.skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject22())))).skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject23())).skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject24())).if_('monstername spooky hobo', Macro.skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject25())).repeat()).skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject26())).skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject27())).attack();
+      return this.externalIf((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myInebriety)() > (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.inebrietyLimit)(), 'attack').if_('monstername sleaze hobo', Macro.skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject12())).repeat()).externalIf((0,_lib__WEBPACK_IMPORTED_MODULE_1__.getPropertyInt)('_shatteringPunchUsed') < 3, Macro.if_(Macro.nonFree(), Macro.skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject13())))).externalIf(!(0,_lib__WEBPACK_IMPORTED_MODULE_1__.getPropertyBoolean)('_gingerbreadMobHitUsed'), Macro.if_(Macro.nonFree(), Macro.skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject14())))).externalIf((0,_lib__WEBPACK_IMPORTED_MODULE_1__.getPropertyInt)('_chestXRayUsed') < 3 && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEquipped)((0,libram__WEBPACK_IMPORTED_MODULE_2__.$item)(_templateObject15())), Macro.if_(Macro.nonFree(), Macro.skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject16())))).externalIf(!(0,_lib__WEBPACK_IMPORTED_MODULE_1__.getPropertyBoolean)('_firedJokestersGun') && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEquipped)((0,libram__WEBPACK_IMPORTED_MODULE_2__.$item)(_templateObject17())), Macro.if_(Macro.nonFree(), Macro.skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject18())))).externalIf(!(0,_lib__WEBPACK_IMPORTED_MODULE_1__.getPropertyBoolean)('_missileLauncherUsed') && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getCampground)()['Asdon Martin keyfob'] !== undefined && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getFuel)() >= 100, Macro.if_(Macro.nonFree(), Macro.skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject19())))).externalIf(!(0,_lib__WEBPACK_IMPORTED_MODULE_1__.turboMode)(), Macro.while_('!hpbelow 500 && !match "some of it is even intact"', Macro.skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject20())))).skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject21())).skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject22())).if_('monstername spooky hobo', Macro.skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject23())).repeat()).skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject24())).skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject25())).attack();
     }
   }, {
     key: "spellKill",
@@ -1464,13 +1434,9 @@ var Macro = /*#__PURE__*/function (_LibramMacro) {
   }, {
     key: "professor",
     value: function professor() {
-      var lecture = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.toInt)((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject28()));
+      var lecture = (0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject26());
       return this.if_("hasskill ".concat(lecture), Macro.skill("".concat(lecture)));
     }
-    /*profCopy() {
-      return this.if_('hasskill ')
-    }*/
-
   }], [{
     key: "collect",
     value: function collect() {
@@ -1494,7 +1460,7 @@ var Macro = /*#__PURE__*/function (_LibramMacro) {
   }, {
     key: "freeRun",
     value: function freeRun() {
-      return new Macro().skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject29())).skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject30())).externalIf((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveFamiliar)((0,libram__WEBPACK_IMPORTED_MODULE_2__.$familiar)(_templateObject31())) && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEffect)((0,libram__WEBPACK_IMPORTED_MODULE_2__.$effect)(_templateObject32())) > 0 || (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveFamiliar)((0,libram__WEBPACK_IMPORTED_MODULE_2__.$familiar)(_templateObject33())), 'runaway').trySkill('Spring-Loaded Front Bumper', 'Reflex Hammer', 'KGB tranquilizer dart', 'Throw Latte on Opponent', 'Snokebomb').tryItem('Louder Than Bomb', 'tattered scrap of paper', 'GOTO', 'green smoke bomb').abort();
+      return new Macro().skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject27())).skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject28())).externalIf((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveFamiliar)((0,libram__WEBPACK_IMPORTED_MODULE_2__.$familiar)(_templateObject29())) && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEffect)((0,libram__WEBPACK_IMPORTED_MODULE_2__.$effect)(_templateObject30())) > 0 || (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveFamiliar)((0,libram__WEBPACK_IMPORTED_MODULE_2__.$familiar)(_templateObject31())), 'runaway').trySkill('Spring-Loaded Front Bumper', 'Reflex Hammer', 'KGB tranquilizer dart', 'Throw Latte on Opponent', 'Snokebomb').tryItem('Louder Than Bomb', 'tattered scrap of paper', 'GOTO', 'green smoke bomb').abort();
     }
   }, {
     key: "spellKill",
@@ -1530,7 +1496,7 @@ function getArg1() {
 function getArg2() {
   return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getProperty)('minehobo_combatArg2');
 }
-var freeRunItems = (0,libram__WEBPACK_IMPORTED_MODULE_2__.$items)(_templateObject34());
+var freeRunItems = (0,libram__WEBPACK_IMPORTED_MODULE_2__.$items)(_templateObject32());
 function main(initialRound, foe) {
   var mode = getMode();
 
@@ -1611,11 +1577,15 @@ function adventureRunUnlessFree(loc, preMacro, killMacro) {
   adventureMode(loc, MODE_RUN_UNLESS_FREE, preMacro.toString(), killMacro.toString());
 }
 function adventureRunOrStasis(loc, freeRun) {
-  if (freeRun) {
-    adventureRunUnlessFree(loc, (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myFamiliar)() === (0,libram__WEBPACK_IMPORTED_MODULE_2__.$familiar)(_templateObject35()) ? Macro.stasis() : Macro.collect(), Macro.stasis().kill());
+  /*if (freeRun) {
+    adventureRunUnlessFree(
+      loc,
+      //myFamiliar() === $familiar`Stocking Mimic` ? Macro.stasis() : Macro.collect(),
+      //Macro.stasis().kill()
+    );
   } else {
     adventureMacro(loc, Macro.stasis().kill());
-  }
+  }&*/
 }
 function adventureMacro(loc, macro) {
   withMode(function () {
@@ -1649,6 +1619,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "getPropertyBoolean": () => (/* binding */ getPropertyBoolean),
 /* harmony export */   "setPropertyInt": () => (/* binding */ setPropertyInt),
 /* harmony export */   "setChoice": () => (/* binding */ setChoice),
+/* harmony export */   "setChoices": () => (/* binding */ setChoices),
 /* harmony export */   "getChoice": () => (/* binding */ getChoice),
 /* harmony export */   "cheapest": () => (/* binding */ cheapest),
 /* harmony export */   "getItem": () => (/* binding */ getItem),
@@ -1929,6 +1900,11 @@ function setPropertyInt(name, value) {
 }
 function setChoice(adv, choice) {
   (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.setProperty)("choiceAdventure".concat(adv), "".concat(choice));
+}
+function setChoices(choices) {
+  choices.forEach(function (adv, choice) {
+    setChoice(adv, choice);
+  });
 }
 function getChoice(adv) {
   return getPropertyInt("choiceAdventure".concat(adv));
