@@ -3,10 +3,14 @@ var webpack = require('webpack');
 
 module.exports = {
   entry: {
-    bkbuffs: './src/bkbuffs.ts',
+    /*bkbuffs: './src/bkbuffs.ts',
     bkchoice: './src/bkchoice.ts',
     bkfights: './src/bkfights.ts',
+    bkkill: './src/bkkill.ts',
     combat: './src/combat.ts',
+    sewers: './src/sewers.ts',
+    wl: './src/wl.ts',*/
+    bk: './src/index.ts',
   },
   mode: 'development',
   devtool: false,

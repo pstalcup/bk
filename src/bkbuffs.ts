@@ -20,6 +20,7 @@ import {
   numericModifier,
   print,
   printHtml,
+  retrieveItem,
   spleenLimit,
   toEffect,
   toInt,
@@ -29,8 +30,7 @@ import {
   useSkill,
 } from 'kolmafia';
 import { $class, $effect, $effects, $familiar, $item, $items, $skill, $skills, get, have } from 'libram';
-import { withStash } from './bkfights';
-import { clamp, getItem } from './lib';
+import { clamp, getItem, MayoClinic, Table, withStash, inClan } from './lib';
 //import { drive } from './asdon';
 
 function equipmentItem(itemOrString: Item | string) {
@@ -171,10 +171,10 @@ function safeUseItem(quantity: number, item: Item, maxPrice = 75000) {
 
   //if (!get('_distentionPillUsed')) use(1, $item`distention pill`);
   //if (!get('_syntheticDogHairPillUsed') && myInebriety() >= 1) use(1, $item`synthetic dog hair pill`);
-  if (!get('spiceMelangeUsed') && myFullness() >= 3 && myInebriety() >= 3) {
+  /*if (!get('spiceMelangeUsed') && myFullness() >= 3 && myInebriety() >= 3) {
     getItem(1, $item`spice melange`, 500000);
     use(1, $item`spice melange`);
-  }
+  }*/
 
   if (item.fullness > 0) {
     if (quantity * item.fullness + myFullness() <= fullnessLimit()) {
@@ -386,22 +386,6 @@ const passives = Skill.all().filter(
 
 const rolloverEquipment: Item[] = $items`octolus-skin cloak, ratskin pajama pants, Spacegate scientist insignia`;
 
-class Table {
-  rows: (object | string | number)[][] = [];
-
-  row(...cells: (object | string | number)[]) {
-    logprint(cells.join('\t'));
-    this.rows.push(cells);
-  }
-
-  render() {
-    const rowsHtml = this.rows.map(
-      cells => `<tr><td>${cells.map(cell => cell.toString()).join('</td><td>')}</td></tr>`
-    );
-    return `<table border="1"><tbody>${rowsHtml.join('')}</table></tbody>`;
-  }
-}
-
 export function main(argsString = '') {
   let itemFamiliar = haveFamiliar($familiar`Steam-powered Cheerleader`) ? $familiar`Steam-powered Cheerleader` : $familiar`Jumpsuited hound dog`;
   const args = argsString
@@ -493,10 +477,13 @@ export function main(argsString = '') {
 
     // Thanksgetting.
     if (myDaycount() > 1) {
+      const fullnessPerFood = MayoClinic.present() ? 1 : 2; 
       const fullnessAvailable =
         fullnessLimit() - myFullness() + (get('spiceMelangeUsed') ? 0 : 3) + (get('_distentionPillUsed') ? 0 : 1);
-      if (haveEffect($effect`Thanksgetting`) === 0 && fullnessAvailable >= 18) {
+      if (haveEffect($effect`Thanksgetting`) === 0 && fullnessAvailable >= 9 * fullnessPerFood) {
+        if(MayoClinic.present()) MayoClinic.set($item`Mayodiol`);
         for (const item of $items`candied sweet potatoes, green bean casserole, baked stuffing, cranberry cylinder, thanksgiving turkey, mince pie, mashed potatoes, warm gravy, bread roll`) {
+          if(MayoClinic.present()) retrieveItem(1, $item`Mayodiol`);
           safeUseItem(1, item, 40000);
         }
       } else {
@@ -524,7 +511,7 @@ export function main(argsString = '') {
 
     if (!get('_feastedFamiliars').includes(itemFamiliar.name)) {
       useFamiliar(itemFamiliar);
-      withStash([$item`moveable feast`], () => use($item`moevable feast`));
+      withStash([$item`moveable feast`], () => use($item`moveable feast`));
     }
   }
 }

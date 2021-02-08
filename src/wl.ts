@@ -71,15 +71,7 @@ export function printClanStatus() {
   print();
 }
 
-export const farmingClans = [
-  'The Beanery',
-  'The Marketeers',
-  'worthawholebean Side Clan',
-  'The Old Saloon',
-  'Aftercorers',
-  'Abstract Singleton Train',
-];
 export function main(target: string | null = null) {
   if (target !== null) setClan(target);
-  if (farmingClans.includes(getClanName())) printClanStatus();
+  printClanStatus();
 }

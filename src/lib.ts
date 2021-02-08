@@ -5,8 +5,11 @@ import {
   cliExecute,
   closetAmount,
   eat,
+  effectModifier,
   familiarWeight,
   formatDateTime,
+  getCampground,
+  getClanName,
   getProperty,
   haveEffect,
   itemAmount,
@@ -14,6 +17,8 @@ import {
   mallPrice,
   myAdventures,
   myClass,
+  myEffectiveFamiliar,
+  myEffects,
   myFamiliar,
   myLocation,
   myMaxmp,
@@ -22,22 +27,89 @@ import {
   myTurncount,
   print,
   printHtml,
+  putStash,
   retrieveItem,
   setAutoAttack,
   setProperty,
   shopAmount,
   takeCloset,
   takeShop,
+  takeStash,
   timeToString,
   todayToString,
+  toEffect,
+  toInt,
   urlEncode,
+  use,
   useSkill,
   visitUrl,
   wait,
   weightAdjustment,
 } from 'kolmafia';
-import { $class, $effect, $item, $items, $location, $skill, $thrall } from 'libram';
+import { $class, $effect, $effects, $item, $items, $location, $skill, $thrall, get, have } from 'libram';
 import { getSewersState, throughSewers } from './sewers';
+import { setClan } from './wl';
+
+export class MayoClinic {
+  static present() {
+    return getCampground()[$item`portable Mayo clinic`.name] !== undefined;  
+  }
+
+  static canPlace() {
+    return have($item`portable Mayo clinic`) && !get("_workshedItemUsed")
+  }
+
+  static set(item: Item) {
+    cliExecute(`mayominder ${item}`);
+  }
+
+  static tryPlace() {
+    if(!MayoClinic.present() && MayoClinic.canPlace()) {
+      use($item`portable Mayo clinic`); 
+    }
+    return MayoClinic.present(); 
+  }
+}
+
+const effectsLookup: Map<String, Map<Number, Effect>> = new Map();
+$effects``.forEach((e) => {
+  let currentMap = effectsLookup.get(e.name) || new Map<Number, Effect>(); 
+  currentMap.set(toInt(e), e);
+  effectsLookup.set(e.name, currentMap);
+})
+
+export function myEffectsClean() {
+  let currentEffects = myEffects();
+  let cleanEffects:Array<[Effect, number]> = new Array(); 
+  let duplicateEffectRegex = new RegExp(/^\[(\d*)\](.*)$/)
+
+  for(const effectStr in currentEffects) {
+    let effectMatch = effectStr.match(duplicateEffectRegex);
+    if(effectMatch && effectMatch.length > 1) {
+      let effectId = parseInt(effectMatch[1]);
+      cleanEffects.push([toEffect(effectId), currentEffects[effectStr]]); 
+    } else {
+      cleanEffects.push([toEffect(effectStr), currentEffects[effectStr]]);
+    }
+  }
+
+  return cleanEffects;
+}
+export class Table {
+  rows: (object | string | number)[][] = [];
+
+  row(...cells: (object | string | number)[]) {
+    logprint(cells.join('\t'));
+    this.rows.push(cells);
+  }
+
+  render() {
+    const rowsHtml = this.rows.map(
+      cells => `<tr><td>${cells.map(cell => cell.toString()).join('</td><td>')}</td></tr>`
+    );
+    return `<table border="1"><tbody>${rowsHtml.join('')}</table></tbody>`;
+  }
+}
 
 export function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(n, max));
@@ -302,4 +374,49 @@ export function printLines(...lines: string[]) {
     logprint(line);
   }
   printHtml(lines.map(line => line.replace('<', '&lt;')).join('\n'));
+}
+
+export function effectiveFamiliarWeight() {
+  return familiarWeight(myFamiliar()) + weightAdjustment(); 
+}
+
+export function inClan<T>(clanName: string, action: () => T) {
+  const startingClanName = getClanName();
+  setClan(clanName);
+  if (getClanName() !== clanName) throw `Failed to move to clan ${clanName}`;
+  try {
+    return action(); 
+  } finally {
+    setClan(startingClanName);
+  }
+}
+
+export function withStash<T>(itemsToTake: Item[], action: () => T) {
+  if (itemsToTake.every(item => availableAmount(item) > 0)) return action();
+
+  const stashClanName = get<string>('stashClan');
+  if (stashClanName === '') throw `No clan specified to borrow from the stash`;
+
+  return inClan(stashClanName, () => {
+    const quantitiesTaken = new Map<Item, number>();
+    try {
+      for (const item of itemsToTake) {
+        if (getClanName() !== stashClanName) throw "Wrong clan! Don't take stuff out of the stash here!";
+        const succeeded = takeStash(1, item);
+        if (succeeded) {
+          print(`Took ${item.plural} from stash.`, 'blue');
+          quantitiesTaken.set(item, (quantitiesTaken.get(item) ?? 0) + (succeeded ? 1 : 0));
+        }
+      }
+      return action();
+    } finally {
+      for (const [item, quantityTaken] of quantitiesTaken.entries()) {
+        // eslint-disable-next-line no-unsafe-finally
+        if (getClanName() !== stashClanName) throw "Wrong clan! Don't put stuff back in the stash here!";
+        retrieveItem(quantityTaken, item);
+        putStash(quantityTaken, item);
+        print(`Returned ${quantityTaken} ${item.plural} to stash.`, 'blue');
+      }
+    }
+  })
 }

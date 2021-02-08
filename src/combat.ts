@@ -24,9 +24,9 @@ import {
   useSkill,
   visitUrl,
 } from 'kolmafia';
-import { $effect, $familiar, $item, $items, $monster, $skill, Macro as LibramMacro, banishedMonsters, get as getLibram } from 'libram';
-import { get } from 'lodash-es';
-import { getPropertyBoolean, getPropertyInt, myFamiliarWeight, setPropertyInt, turboMode } from './lib';
+import { $effect, $familiar, $item, $items, $monster, $skill, Macro as LibramMacro, banishedMonsters, get as getLibram, get } from 'libram';
+// import { get } from 'lodash-es';
+import { effectiveFamiliarWeight, getPropertyBoolean, getPropertyInt, myFamiliarWeight, setPropertyInt, turboMode } from './lib';
 
 // multiFight() stolen from Aenimus: https://github.com/Aenimus/aen_cocoabo_farm/blob/master/scripts/aen_combat.ash.
 // Thanks! Licensed under MIT license.
@@ -76,15 +76,6 @@ export class Macro extends LibramMacro {
 
   static collect() {
     return new Macro().collect();
-  }
-
-  stasis() {
-    let cocoaboLike = [$familiar`cocoabo`, $familiar`ninja pirate zombie robot`, $familiar`feather boa constrictor`, $familiar`stocking mimic`];
-
-  }
-
-  static stasis() {
-    return new Macro().stasis();
   }
 
   static nonFree() {
@@ -153,24 +144,57 @@ export class Macro extends LibramMacro {
   }
 
   spellKill() {
-    return this.skill('Curse of Weaksauce', 'Micrometeorite', 'Stuffed Mortar Shell', 'Saucegeyser').repeat();
+    return this.trySkill('Curse of Weaksauce', 'Micrometeorite', 'Stuffed Mortar Shell', 'Saucegeyser').repeat();
   }
 
   static spellKill() {
     return new Macro().spellKill();
   }
 
-  tentacle() {
-    return this.if_('monstername eldritch tentacle', Macro.skill('Curse of Weaksauce', 'Micrometeorite', 'Stuffed Mortar Shell', 'Saucestorm').repeat());
+  stasis(...steps:Macro[]) {
+    // this method assumes you have enough ml that hte monster will survive for at least 4 rounds
+    return this.trySkill('Curse of Weaksauce', 'Micrometeorite', 'Love Mosquito').item('time-spinner').step(...steps);
+  }
+
+  static stasis(...steps:Macro[]) {
+    return new Macro().stasis(...steps);
+  }
+
+  safeStasis(...steps:Macro[]) {
+    return this.stasis(Macro.while_(`monsterhpabove ${Math.ceil(effectiveFamiliarWeight() * 1.1)} and !pastround 10`, Macro.item($item`seal tooth`)), ...steps)
+  }
+
+  perpetualStasis(...steps:Macro[]) {
+    return this.stasis(Macro.while_(`!pastround 10`, Macro.item($item`seal tooth`)), ...steps)
+  }
+
+  static perpetualStasis() {
+    return new Macro().perpetualStasis();
+  }
+
+  tentacle(...steps:Macro[]) {
+    return this.if_('monstername eldritch tentacle', Macro.perpetualStasis().spellKill())
+    //return this.if_('monstername eldritch tentacle', Macro.step(...steps).skill('Curse of Weaksauce', 'Micrometeorite', 'Stuffed Mortar Shell', 'Saucestorm').repeat());
+  }
+
+  static tentacle(...steps:Macro[]) {
+    return new Macro().tentacle(...steps);
   }
 
   professor() {
     let lecture = $skill`lecture on relativity`;
     return this.if_(`hasskill ${lecture}`, Macro.skill(`${lecture}`))
   }
+  static professor() {
+    return new Macro().professor(); 
+  }
 
-  static tentacle() {
-    return new Macro().tentacle();
+  kramco(...steps: Macro[]) {
+    return this.if_('monstername sausage goblin', Macro.step(...steps).spellKill());
+  }
+
+  static kramco(...step: Macro[]) {
+    return new Macro().kramco(...step);
   }
 }
 
