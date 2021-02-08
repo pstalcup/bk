@@ -108,7 +108,6 @@ function step(name: string, condition: () => boolean | null | undefined, setup?:
         if (before) before();
         if (condition()) {
           pickFreeFightFamiliar();
-
           outfit();
 
           maybeBjorn($familiar`Golden Monkey`);
@@ -120,21 +119,8 @@ function step(name: string, condition: () => boolean | null | undefined, setup?:
             step_fun();
           }
 
-          //maximize(MAXIMIZER_STRING, false);
-          //cachedMaximize(MAXIMIZER_STRING);          equip($slot`hat`, $item`Crown of Thrones`);
-          equip($slot`back`, $item`Buddy Bjorn`);
-          equip($slot`shirt`, $item`Stephen's Lab Coat`);
-          equip($slot`pants`, $item`pantogram pants`);
-          equip($slot`weapon`, $item`Thor's pliers`);
-          equip($slot`acc1`, $item`Mr. Cheeng's Spectacles`);
-          equip($slot`acc2`, $item`Mr. Screege's Spectacles`);
-          equip($slot`acc3`, $item`lucky gold ring`);
-          useFamiliar($familiar`Unspeakachu`);
-          equip($slot`familiar`, $item`ittah bittah hookah`);
           pickFreeFightFamiliar();
-          maybeBjorn($familiar`Golden Monkey`);
-          maybeEnthrone($familiar`Warbear Drone`);
-
+          outfit();
           heavyRainFreeFights();
         }
       } else {
@@ -166,6 +152,8 @@ function pickFreeFightFamiliar() {
   ] = relevantBuffs.reduce(([aggEffect, aggTurns]: [Effect, number], [curEffect, curTurns]: [Effect, number]) =>
     aggTurns > curTurns ? [curEffect, curTurns] : [aggEffect, aggTurns]
   );
+
+  print(`${minEffect} Has ${minTurns} turns`);
 
   if (minTurns >= MINIMUM_BUFF_TURNS) {
     let freeFightFamiliar = get<Familiar>('freeFightFamiliar');
@@ -793,7 +781,7 @@ step(
   () =>
     get('_banderRunaways') < maxFamiliarRuns() ||
     (CosplaySaber.canGive(SaberUpgrade.FamiliarWeight) &&
-      equippedAmount($item`May the Fourth Cosplay Saber`) === 0 &&
+      equippedAmount($item`Fourth of May Cosplay Saber`) === 0 &&
       get('_banderRunaways') == maxFamiliarRuns()),
   () => {
     useFamiliar($familiar`Pair of Stomping Boots`);
@@ -805,11 +793,11 @@ step(
   }
   if (
     get('_banderRunaways') == maxFamiliarRuns() &&
-    equippedAmount($item`May the Fourth Cosplay Saber`) == 0 &&
+    equippedAmount($item`Fourth of May Cosplay Saber`) == 0 &&
     CosplaySaber.canGive(SaberUpgrade.FamiliarWeight)
   ) {
     CosplaySaber.upgrade(SaberUpgrade.FamiliarWeight);
-    equip($slot`weapon`, $item`May the Fourth Cosplay Saber`);
+    equip($slot`weapon`, $item`Fourth of May Cosplay Saber`);
   }
   adventureMacro(
     $location`Menagerie Level 1`,
