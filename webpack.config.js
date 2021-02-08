@@ -6,9 +6,9 @@ module.exports = {
     /*bkbuffs: './src/bkbuffs.ts',
     bkchoice: './src/bkchoice.ts',
     bkfights: './src/bkfights.ts',
-    bkkill: './src/bkkill.ts',
+    bkkill: './src/bkkill.ts',*/
     combat: './src/combat.ts',
-    sewers: './src/sewers.ts',
+    /*sewers: './src/sewers.ts',
     wl: './src/wl.ts',*/
     bk: './src/index.ts',
   },

@@ -24,9 +24,27 @@ import {
   useSkill,
   visitUrl,
 } from 'kolmafia';
-import { $effect, $familiar, $item, $items, $monster, $skill, Macro as LibramMacro, banishedMonsters, get as getLibram, get } from 'libram';
+import {
+  $effect,
+  $familiar,
+  $item,
+  $items,
+  $monster,
+  $skill,
+  Macro as LibramMacro,
+  banishedMonsters,
+  get as getLibram,
+  get,
+} from 'libram';
 // import { get } from 'lodash-es';
-import { effectiveFamiliarWeight, getPropertyBoolean, getPropertyInt, myFamiliarWeight, setPropertyInt, turboMode } from './lib';
+import {
+  effectiveFamiliarWeight,
+  getPropertyBoolean,
+  getPropertyInt,
+  myFamiliarWeight,
+  setPropertyInt,
+  turboMode,
+} from './lib';
 
 // multiFight() stolen from Aenimus: https://github.com/Aenimus/aen_cocoabo_farm/blob/master/scripts/aen_combat.ash.
 // Thanks! Licensed under MIT license.
@@ -58,12 +76,9 @@ export class Macro extends LibramMacro {
       )
       .externalIf(
         getPropertyInt('_sourceTerminalDigitizeMonsterCount') >= 7 &&
-        getPropertyInt('_sourceTerminalDigitizeUses') < 3 &&
-        getCounters('Digitize Monster', 0, 0) !== '',
-        Macro.if_(
-          `monstername ${getProperty('_sourceTerminalDigitizeMonster')}`,
-          Macro.skill($skill`Digitize`)
-        )
+          getPropertyInt('_sourceTerminalDigitizeUses') < 3 &&
+          getCounters('Digitize Monster', 0, 0) !== '',
+        Macro.if_(`monstername ${getProperty('_sourceTerminalDigitizeMonster')}`, Macro.skill($skill`Digitize`))
       )
       .externalIf(
         !turboMode(),
@@ -103,8 +118,8 @@ export class Macro extends LibramMacro {
       )
       .externalIf(
         !getPropertyBoolean('_missileLauncherUsed') &&
-        getCampground()['Asdon Martin keyfob'] !== undefined &&
-        getFuel() >= 100,
+          getCampground()['Asdon Martin keyfob'] !== undefined &&
+          getFuel() >= 100,
         Macro.if_(Macro.nonFree(), Macro.skill($skill`Asdon Martin: Missile Launcher`))
       )
       .externalIf(
@@ -129,7 +144,7 @@ export class Macro extends LibramMacro {
       .skill($skill`Extract Jelly`)
       .externalIf(
         (haveFamiliar($familiar`Frumious Bandersnatch`) && haveEffect($effect`The Ode to Booze`) > 0) ||
-        haveFamiliar($familiar`Pair of Stomping Boots`),
+          haveFamiliar($familiar`Pair of Stomping Boots`),
         'runaway'
       )
       .trySkill(
@@ -137,7 +152,7 @@ export class Macro extends LibramMacro {
         'Reflex Hammer',
         'KGB tranquilizer dart',
         'Throw Latte on Opponent',
-        'Snokebomb',
+        'Snokebomb'
       )
       .tryItem('Louder Than Bomb', 'tattered scrap of paper', 'GOTO', 'green smoke bomb')
       .abort();
@@ -151,42 +166,50 @@ export class Macro extends LibramMacro {
     return new Macro().spellKill();
   }
 
-  stasis(...steps:Macro[]) {
+  stasis(...steps: Macro[]) {
     // this method assumes you have enough ml that hte monster will survive for at least 4 rounds
-    return this.trySkill('Curse of Weaksauce', 'Micrometeorite', 'Love Mosquito').item('time-spinner').step(...steps);
+    return this.trySkill('Curse of Weaksauce', 'Micrometeorite', 'Love Mosquito')
+      .item('time-spinner')
+      .step(...steps);
   }
 
-  static stasis(...steps:Macro[]) {
+  static stasis(...steps: Macro[]) {
     return new Macro().stasis(...steps);
   }
 
-  safeStasis(...steps:Macro[]) {
-    return this.stasis(Macro.while_(`monsterhpabove ${Math.ceil(effectiveFamiliarWeight() * 1.1)} and !pastround 10`, Macro.item($item`seal tooth`)), ...steps)
+  safeStasis(...steps: Macro[]) {
+    return this.stasis(
+      Macro.while_(
+        `monsterhpabove ${Math.ceil(effectiveFamiliarWeight() * 1.1)} and !pastround 10`,
+        Macro.item($item`seal tooth`)
+      ),
+      ...steps
+    );
   }
 
-  perpetualStasis(...steps:Macro[]) {
-    return this.stasis(Macro.while_(`!pastround 10`, Macro.item($item`seal tooth`)), ...steps)
+  perpetualStasis(...steps: Macro[]) {
+    return this.stasis(Macro.while_(`!pastround 10`, Macro.item($item`seal tooth`)), ...steps);
   }
 
   static perpetualStasis() {
     return new Macro().perpetualStasis();
   }
 
-  tentacle(...steps:Macro[]) {
-    return this.if_('monstername eldritch tentacle', Macro.perpetualStasis().spellKill())
+  tentacle(...steps: Macro[]) {
+    return this.if_('monstername eldritch tentacle', Macro.perpetualStasis().spellKill());
     //return this.if_('monstername eldritch tentacle', Macro.step(...steps).skill('Curse of Weaksauce', 'Micrometeorite', 'Stuffed Mortar Shell', 'Saucestorm').repeat());
   }
 
-  static tentacle(...steps:Macro[]) {
+  static tentacle(...steps: Macro[]) {
     return new Macro().tentacle(...steps);
   }
 
   professor() {
     let lecture = $skill`lecture on relativity`;
-    return this.if_(`hasskill ${lecture}`, Macro.skill(`${lecture}`))
+    return this.if_(`hasskill ${lecture}`, Macro.skill(`${lecture}`));
   }
   static professor() {
-    return new Macro().professor(); 
+    return new Macro().professor();
   }
 
   kramco(...steps: Macro[]) {
@@ -256,7 +279,9 @@ export function main(initialRound: number, foe: Monster) {
       } else if (myMp() >= 50 && haveSkill(Skill.get('Snokebomb')) && getPropertyInt('_snokebombUsed') < 3) {
         useSkill(1, Skill.get('Snokebomb'));
       } else if (freeRunItems.some((item: Item) => itemAmount(item) > 0)) {
-        Macro.item(freeRunItems.find((item: Item) => itemAmount(item) > 0) as Item).repeat().submit();
+        Macro.item(freeRunItems.find((item: Item) => itemAmount(item) > 0) as Item)
+          .repeat()
+          .submit();
       } else {
         // non-free, whatever
         throw "Couldn't find a way to run away for free!";
@@ -289,9 +314,14 @@ export function withMacro<T>(macro: Macro, action: () => T) {
 }
 
 export function adventureMode(loc: Location, mode: CombatMode, arg1: string | null = null, arg2: string | null = null) {
-  return withMode(() => {
-    adv1(loc, -1, '');
-  }, mode, arg1, arg2);
+  return withMode(
+    () => {
+      adv1(loc, -1, '');
+    },
+    mode,
+    arg1,
+    arg2
+  );
 }
 
 export function adventureRunUnlessFree(loc: Location, preMacro: Macro, killMacro: Macro) {

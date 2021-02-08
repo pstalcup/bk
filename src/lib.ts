@@ -52,11 +52,11 @@ import { setClan } from './wl';
 
 export class MayoClinic {
   static present() {
-    return getCampground()[$item`portable Mayo clinic`.name] !== undefined;  
+    return getCampground()[$item`portable Mayo clinic`.name] !== undefined;
   }
 
   static canPlace() {
-    return have($item`portable Mayo clinic`) && !get("_workshedItemUsed")
+    return have($item`portable Mayo clinic`) && !get('_workshedItemUsed');
   }
 
   static set(item: Item) {
@@ -64,30 +64,30 @@ export class MayoClinic {
   }
 
   static tryPlace() {
-    if(!MayoClinic.present() && MayoClinic.canPlace()) {
-      use($item`portable Mayo clinic`); 
+    if (!MayoClinic.present() && MayoClinic.canPlace()) {
+      use($item`portable Mayo clinic`);
     }
-    return MayoClinic.present(); 
+    return MayoClinic.present();
   }
 }
 
 const effectsLookup: Map<String, Map<Number, Effect>> = new Map();
-$effects``.forEach((e) => {
-  let currentMap = effectsLookup.get(e.name) || new Map<Number, Effect>(); 
+$effects``.forEach(e => {
+  let currentMap = effectsLookup.get(e.name) || new Map<Number, Effect>();
   currentMap.set(toInt(e), e);
   effectsLookup.set(e.name, currentMap);
-})
+});
 
 export function myEffectsClean() {
   let currentEffects = myEffects();
-  let cleanEffects:Array<[Effect, number]> = new Array(); 
-  let duplicateEffectRegex = new RegExp(/^\[(\d*)\](.*)$/)
+  let cleanEffects: Array<[Effect, number]> = new Array();
+  let duplicateEffectRegex = new RegExp(/^\[(\d*)\](.*)$/);
 
-  for(const effectStr in currentEffects) {
+  for (const effectStr in currentEffects) {
     let effectMatch = effectStr.match(duplicateEffectRegex);
-    if(effectMatch && effectMatch.length > 1) {
+    if (effectMatch && effectMatch.length > 1) {
       let effectId = parseInt(effectMatch[1]);
-      cleanEffects.push([toEffect(effectId), currentEffects[effectStr]]); 
+      cleanEffects.push([toEffect(effectId), currentEffects[effectStr]]);
     } else {
       cleanEffects.push([toEffect(effectStr), currentEffects[effectStr]]);
     }
@@ -147,7 +147,9 @@ export function setChoice(adv: number, choice: number) {
 }
 
 export function setChoices(choices: Map<number, number>) {
-  choices.forEach((adv, choice) => { setChoice(adv, choice)})
+  choices.forEach((adv, choice) => {
+    setChoice(adv, choice);
+  });
 }
 
 export function getChoice(adv: number) {
@@ -166,7 +168,7 @@ export function getItem(qty: number, item: Item, maxPrice: number) {
 
   try {
     retrieveItem(qty, item);
-  } catch (e) { }
+  } catch (e) {}
 
   let remaining = qty - itemAmount(item);
   if (remaining <= 0) return qty;
@@ -377,7 +379,7 @@ export function printLines(...lines: string[]) {
 }
 
 export function effectiveFamiliarWeight() {
-  return familiarWeight(myFamiliar()) + weightAdjustment(); 
+  return familiarWeight(myFamiliar()) + weightAdjustment();
 }
 
 export function inClan<T>(clanName: string, action: () => T) {
@@ -385,7 +387,7 @@ export function inClan<T>(clanName: string, action: () => T) {
   setClan(clanName);
   if (getClanName() !== clanName) throw `Failed to move to clan ${clanName}`;
   try {
-    return action(); 
+    return action();
   } finally {
     setClan(startingClanName);
   }
@@ -418,5 +420,5 @@ export function withStash<T>(itemsToTake: Item[], action: () => T) {
         print(`Returned ${quantityTaken} ${item.plural} to stash.`, 'blue');
       }
     }
-  })
+  });
 }

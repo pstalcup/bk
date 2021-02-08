@@ -387,7 +387,9 @@ const passives = Skill.all().filter(
 const rolloverEquipment: Item[] = $items`octolus-skin cloak, ratskin pajama pants, Spacegate scientist insignia`;
 
 export function main(argsString = '') {
-  let itemFamiliar = haveFamiliar($familiar`Steam-powered Cheerleader`) ? $familiar`Steam-powered Cheerleader` : $familiar`Jumpsuited hound dog`;
+  let itemFamiliar = haveFamiliar($familiar`Steam-powered Cheerleader`)
+    ? $familiar`Steam-powered Cheerleader`
+    : $familiar`Jumpsuited hound dog`;
   const args = argsString
     .trim()
     .split(' ')
@@ -396,7 +398,10 @@ export function main(argsString = '') {
   if (args.length === 0) {
     print('usage: bkbuffs ( list | reminders | rollover | execute )');
   } else if (args.includes('rollover')) {
-    maximize(`adventures, ${rolloverEquipment.map(equip => `equip ${equip.name}`).join(', ')} +switch trick-or-treat`, false);
+    maximize(
+      `adventures, ${rolloverEquipment.map(equip => `equip ${equip.name}`).join(', ')} +switch trick-or-treat`,
+      false
+    );
   } else if (args.includes('reminder') || args.includes('reminders')) {
     for (const [effect, effectOptions] of options.entries()) {
       if (haveEffect(effect) === 0 && effectOptions.length === 1) {
@@ -410,7 +415,7 @@ export function main(argsString = '') {
       print('Feast familiar.');
     }
   } else if (args.includes('list')) {
-    let currentEffects = myEffects()
+    let currentEffects = myEffects();
     let runningItemDrop = 0;
     let runningFamiliarWeight = 30; // moveable feast
     const table = new Table();
@@ -444,9 +449,11 @@ export function main(argsString = '') {
       );
     }
 
-    let effectTurns = (effect: Effect) => currentEffects[effect.name] || currentEffects[`[${toInt(effect)}]${effect.name}`]
-    let threshold = 25; 
-    let highlight = (turns: Number) => turns < threshold ? `<span style='font-color: red'>${turns}</span>` : (turns || 0);
+    let effectTurns = (effect: Effect) =>
+      currentEffects[effect.name] || currentEffects[`[${toInt(effect)}]${effect.name}`];
+    let threshold = 25;
+    let highlight = (turns: Number) =>
+      turns < threshold ? `<span style='font-color: red'>${turns}</span>` : turns || 0;
 
     for (const option of selectedOptions) {
       runningItemDrop += itemDrop(option.effect);
@@ -477,13 +484,13 @@ export function main(argsString = '') {
 
     // Thanksgetting.
     if (myDaycount() > 1) {
-      const fullnessPerFood = MayoClinic.present() ? 1 : 2; 
+      const fullnessPerFood = MayoClinic.present() ? 1 : 2;
       const fullnessAvailable =
         fullnessLimit() - myFullness() + (get('spiceMelangeUsed') ? 0 : 3) + (get('_distentionPillUsed') ? 0 : 1);
       if (haveEffect($effect`Thanksgetting`) === 0 && fullnessAvailable >= 9 * fullnessPerFood) {
-        if(MayoClinic.present()) MayoClinic.set($item`Mayodiol`);
+        if (MayoClinic.present()) MayoClinic.set($item`Mayodiol`);
         for (const item of $items`candied sweet potatoes, green bean casserole, baked stuffing, cranberry cylinder, thanksgiving turkey, mince pie, mashed potatoes, warm gravy, bread roll`) {
-          if(MayoClinic.present()) retrieveItem(1, $item`Mayodiol`);
+          if (MayoClinic.present()) retrieveItem(1, $item`Mayodiol`);
           safeUseItem(1, item, 40000);
         }
       } else {
@@ -492,7 +499,7 @@ export function main(argsString = '') {
     }
 
     //drive($effect`Driving Observantly`, 1);
-    //cliExecute("asdonmartin drive observantly"); 
+    //cliExecute("asdonmartin drive observantly");
 
     // Stock up on pocket wishes.
     const wishCount = selectedOptions.filter(
