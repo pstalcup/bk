@@ -3313,7 +3313,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "printLines": () => (/* binding */ printLines),
 /* harmony export */   "effectiveFamiliarWeight": () => (/* binding */ effectiveFamiliarWeight),
 /* harmony export */   "inClan": () => (/* binding */ inClan),
-/* harmony export */   "withStash": () => (/* binding */ withStash)
+/* harmony export */   "withStash": () => (/* binding */ withStash),
+/* harmony export */   "minimumRelevantBuff": () => (/* binding */ minimumRelevantBuff)
 /* harmony export */ });
 /* harmony import */ var kolmafia__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! kolmafia */ "kolmafia");
 /* harmony import */ var kolmafia__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(kolmafia__WEBPACK_IMPORTED_MODULE_0__);
@@ -4050,6 +4051,35 @@ function withStash(itemsToTake, action) {
       }
     }
   });
+}
+function minimumRelevantBuff() {
+  var myEffects = myEffectsClean();
+  var relevantBuffs = myEffects.filter(function (_ref3) {
+    var _ref4 = _slicedToArray(_ref3, 2),
+        effect = _ref4[0],
+        turns = _ref4[1];
+
+    return ['Item Drop', 'Meat Drop', 'Monster Level'].some(function (modifier) {
+      return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.numericModifier)(effect, modifier) > 0;
+    });
+  });
+
+  var _relevantBuffs$reduce = relevantBuffs.reduce(function (_ref5, _ref6) {
+    var _ref7 = _slicedToArray(_ref5, 2),
+        aggEffect = _ref7[0],
+        aggTurns = _ref7[1];
+
+    var _ref8 = _slicedToArray(_ref6, 2),
+        curEffect = _ref8[0],
+        curTurns = _ref8[1];
+
+    return aggTurns > curTurns ? [curEffect, curTurns] : [aggEffect, aggTurns];
+  }),
+      _relevantBuffs$reduce2 = _slicedToArray(_relevantBuffs$reduce, 2),
+      minEffect = _relevantBuffs$reduce2[0],
+      minTurns = _relevantBuffs$reduce2[1];
+
+  return [minEffect, minTurns];
 }
 
 /***/ }),

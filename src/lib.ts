@@ -25,6 +25,7 @@ import {
   myMp,
   myThrall,
   myTurncount,
+  numericModifier,
   print,
   printHtml,
   putStash,
@@ -421,4 +422,19 @@ export function withStash<T>(itemsToTake: Item[], action: () => T) {
       }
     }
   });
+}
+
+export function minimumRelevantBuff() {
+  let myEffects = myEffectsClean();
+  let relevantBuffs = myEffects.filter(([effect, turns]: [Effect, number]) =>
+    ['Item Drop', 'Meat Drop', 'Monster Level'].some(modifier => numericModifier(effect, modifier) > 0)
+  );
+
+  let [
+    minEffect,
+    minTurns,
+  ] = relevantBuffs.reduce(([aggEffect, aggTurns]: [Effect, number], [curEffect, curTurns]: [Effect, number]) =>
+    aggTurns > curTurns ? [curEffect, curTurns] : [aggEffect, aggTurns]
+  );
+  return [minEffect, minTurns];
 }

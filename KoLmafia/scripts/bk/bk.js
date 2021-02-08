@@ -3216,7 +3216,7 @@ function _templateObject183() {
 }
 
 function _templateObject182() {
-  var data = _taggedTemplateLiteral(["May the Fourth Cosplay Saber"]);
+  var data = _taggedTemplateLiteral(["Fourth of May Cosplay Saber"]);
 
   _templateObject182 = function _templateObject182() {
     return data;
@@ -3236,7 +3236,7 @@ function _templateObject181() {
 }
 
 function _templateObject180() {
-  var data = _taggedTemplateLiteral(["May the Fourth Cosplay Saber"]);
+  var data = _taggedTemplateLiteral(["Fourth of May Cosplay Saber"]);
 
   _templateObject180 = function _templateObject180() {
     return data;
@@ -3286,7 +3286,7 @@ function _templateObject176() {
 }
 
 function _templateObject175() {
-  var data = _taggedTemplateLiteral(["May the Fourth Cosplay Saber"]);
+  var data = _taggedTemplateLiteral(["Fourth of May Cosplay Saber"]);
 
   _templateObject175 = function _templateObject175() {
     return data;
@@ -5149,31 +5149,10 @@ function maybeMacro(property, target) {
 }
 
 function pickFreeFightFamiliar() {
-  var myEffects = (0,_lib__WEBPACK_IMPORTED_MODULE_3__.myEffectsClean)();
-  var relevantBuffs = myEffects.filter(function (_ref) {
-    var _ref2 = _slicedToArray(_ref, 2),
-        effect = _ref2[0],
-        turns = _ref2[1];
-
-    return ['Item Drop', 'Meat Drop', 'Monster Level'].some(function (modifier) {
-      return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.numericModifier)(effect, modifier) > 0;
-    });
-  });
-
-  var _relevantBuffs$reduce = relevantBuffs.reduce(function (_ref3, _ref4) {
-    var _ref5 = _slicedToArray(_ref3, 2),
-        aggEffect = _ref5[0],
-        aggTurns = _ref5[1];
-
-    var _ref6 = _slicedToArray(_ref4, 2),
-        curEffect = _ref6[0],
-        curTurns = _ref6[1];
-
-    return aggTurns > curTurns ? [curEffect, curTurns] : [aggEffect, aggTurns];
-  }),
-      _relevantBuffs$reduce2 = _slicedToArray(_relevantBuffs$reduce, 2),
-      minEffect = _relevantBuffs$reduce2[0],
-      minTurns = _relevantBuffs$reduce2[1];
+  var _minimumRelevantBuff = (0,_lib__WEBPACK_IMPORTED_MODULE_3__.minimumRelevantBuff)(),
+      _minimumRelevantBuff2 = _slicedToArray(_minimumRelevantBuff, 2),
+      minEffect = _minimumRelevantBuff2[0],
+      minTurns = _minimumRelevantBuff2[1];
 
   (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("".concat(minEffect, " Has ").concat(minTurns, " turns"));
 
@@ -7271,6 +7250,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sewers__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./sewers */ "./src/sewers.ts");
 /* harmony import */ var _lib__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./lib */ "./src/lib.ts");
 /* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/property.js");
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _iterableToArrayLimit(arr, i) { if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -7308,7 +7295,7 @@ function help() {
   table.row('', 'status', 'show the status of the hobo bosses');
   table.row('', 'kill', 'kill the bosses, printing out consumable drops');
   table.row('wl', 'whitelist to the provided clan, list sewer status (valves/grates)', '');
-  table.row('buff', '(DEPRECATED)', 'unmaintained');
+  table.row('minbuff', 'show the minimum buff', '');
   (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.printHtml)(table.render());
 }
 
@@ -7372,6 +7359,14 @@ function main(args) {
         case 'whitelist':
           (0,_wl__WEBPACK_IMPORTED_MODULE_3__.main)(modeArgs);
           break;
+
+        case 'minbuff':
+          var _minimumRelevantBuff = (0,_lib__WEBPACK_IMPORTED_MODULE_5__.minimumRelevantBuff)(),
+              _minimumRelevantBuff2 = _slicedToArray(_minimumRelevantBuff, 2),
+              minEffect = _minimumRelevantBuff2[0],
+              minTurns = _minimumRelevantBuff2[1];
+
+          (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("".concat(minEffect, ": ").concat(minTurns));
       }
     } else {
       (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("Invalid args ".concat(args));
@@ -7424,7 +7419,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "printLines": () => (/* binding */ printLines),
 /* harmony export */   "effectiveFamiliarWeight": () => (/* binding */ effectiveFamiliarWeight),
 /* harmony export */   "inClan": () => (/* binding */ inClan),
-/* harmony export */   "withStash": () => (/* binding */ withStash)
+/* harmony export */   "withStash": () => (/* binding */ withStash),
+/* harmony export */   "minimumRelevantBuff": () => (/* binding */ minimumRelevantBuff)
 /* harmony export */ });
 /* harmony import */ var kolmafia__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! kolmafia */ "kolmafia");
 /* harmony import */ var kolmafia__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(kolmafia__WEBPACK_IMPORTED_MODULE_0__);
@@ -8161,6 +8157,35 @@ function withStash(itemsToTake, action) {
       }
     }
   });
+}
+function minimumRelevantBuff() {
+  var myEffects = myEffectsClean();
+  var relevantBuffs = myEffects.filter(function (_ref3) {
+    var _ref4 = _slicedToArray(_ref3, 2),
+        effect = _ref4[0],
+        turns = _ref4[1];
+
+    return ['Item Drop', 'Meat Drop', 'Monster Level'].some(function (modifier) {
+      return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.numericModifier)(effect, modifier) > 0;
+    });
+  });
+
+  var _relevantBuffs$reduce = relevantBuffs.reduce(function (_ref5, _ref6) {
+    var _ref7 = _slicedToArray(_ref5, 2),
+        aggEffect = _ref7[0],
+        aggTurns = _ref7[1];
+
+    var _ref8 = _slicedToArray(_ref6, 2),
+        curEffect = _ref8[0],
+        curTurns = _ref8[1];
+
+    return aggTurns > curTurns ? [curEffect, curTurns] : [aggEffect, aggTurns];
+  }),
+      _relevantBuffs$reduce2 = _slicedToArray(_relevantBuffs$reduce, 2),
+      minEffect = _relevantBuffs$reduce2[0],
+      minTurns = _relevantBuffs$reduce2[1];
+
+  return [minEffect, minTurns];
 }
 
 /***/ }),

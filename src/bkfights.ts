@@ -58,7 +58,7 @@ import {
 } from 'libram';
 import { fillAsdonMartinTo } from './asdon';
 import { adventureMacro, Macro, withMacro } from './combat';
-import { getItem, MayoClinic, myEffectsClean, setChoice, setChoices, withStash } from './lib';
+import { getItem, MayoClinic, minimumRelevantBuff, myEffectsClean, setChoice, setChoices, withStash } from './lib';
 
 //const FREE_FIGHT_COST = 40000; // TODO: don't hardcode this
 const FREE_FIGHT_COST = get<number>('freeFightValue');
@@ -141,17 +141,7 @@ function maybeMacro(property: string, target: Item) {
 }
 
 function pickFreeFightFamiliar() {
-  let myEffects = myEffectsClean();
-  let relevantBuffs = myEffects.filter(([effect, turns]: [Effect, number]) =>
-    ['Item Drop', 'Meat Drop', 'Monster Level'].some(modifier => numericModifier(effect, modifier) > 0)
-  );
-
-  let [
-    minEffect,
-    minTurns,
-  ] = relevantBuffs.reduce(([aggEffect, aggTurns]: [Effect, number], [curEffect, curTurns]: [Effect, number]) =>
-    aggTurns > curTurns ? [curEffect, curTurns] : [aggEffect, aggTurns]
-  );
+  let [minEffect, minTurns] = minimumRelevantBuff();
 
   print(`${minEffect} Has ${minTurns} turns`);
 

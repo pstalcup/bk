@@ -4,7 +4,7 @@ import { main as killMain } from './bkkill';
 import { main as buffMain } from './bkbuffs';
 import { main as wlMain } from './wl';
 import { main as sewerMain } from './sewers';
-import { Table } from './lib';
+import { minimumRelevantBuff, Table } from './lib';
 import { get, set } from 'libram';
 
 function help() {
@@ -24,7 +24,7 @@ function help() {
   table.row('', 'status', 'show the status of the hobo bosses');
   table.row('', 'kill', 'kill the bosses, printing out consumable drops');
   table.row('wl', 'whitelist to the provided clan, list sewer status (valves/grates)', '');
-  table.row('buff', '(DEPRECATED)', 'unmaintained');
+  table.row('minbuff', 'show the minimum buff', '');
   printHtml(table.render());
 }
 
@@ -112,6 +112,9 @@ export function main(args: string) {
         case 'whitelist':
           wlMain(modeArgs);
           break;
+        case 'minbuff':
+          let [minEffect, minTurns] = minimumRelevantBuff();
+          print(`${minEffect}: ${minTurns}`);
       }
     } else {
       print(`Invalid args ${args}`);
