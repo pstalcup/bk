@@ -36,6 +36,7 @@ import {
   numericModifier,
   myFamiliar,
   toMonster,
+  toFamiliar,
 } from 'kolmafia';
 import {
   $class,
@@ -64,10 +65,8 @@ import { getItem, MayoClinic, minimumRelevantBuff, myEffectsClean, setChoice, se
 //const FREE_FIGHT_COST = 40000; // TODO: don't hardcode this
 const FREE_FIGHT_COST = get<number>('freeFightValue');
 const FREE_FIGHT_COPY_TARGET = toMonster(get('freeCopyFight'));
-
-print(`1&whichmonster=${FREE_FIGHT_COPY_TARGET.id}`);
-
 const MINIMUM_BUFF_TURNS = get<number>('freeBuffThreshold');
+
 const MAXIMIZER_STRING =
   "item +equip thor's pliers +equip kol con snowglobe +equip lucky gold ring +equip cheeng +equip screege +equip ittah bittah hookah -back -hat";
 
@@ -149,7 +148,7 @@ function pickFreeFightFamiliar() {
   print(`${minEffect} Has ${minTurns} turns`);
 
   if (minTurns >= MINIMUM_BUFF_TURNS) {
-    let freeFightFamiliar = get<Familiar>('freeFightFamiliar');
+    let freeFightFamiliar = toFamiliar(get('freeFightFamiliar'));
     useFamiliar(freeFightFamiliar);
     cliExecute('refresh inv');
     visitUrl('charpane.php');
@@ -391,8 +390,12 @@ class FreeRun {
 }
 
 class GingerbreadCity {
+  static retailUnlocked() {
+    return get('gingerRetailUnlocked');
+  }
+
   static totalTurns() {
-    return get('gingerExtraAdventures') ? 30 : 20;
+    return get('gingerbreadCityAvailable') ? (get('gingerExtraAdventures') ? 30 : 20) : 0;
   }
 
   static turnsToday() {
@@ -404,7 +407,7 @@ class GingerbreadCity {
   }
 
   static hasTurns() {
-    return GingerbreadCity.turnsLeft() > 0;
+    return get('gingerbreadCityAvailable') && GingerbreadCity.turnsLeft() > 0;
   }
 
   static isNoon() {
@@ -672,32 +675,43 @@ step(
 
 step(
   'power pill',
-  () => get('_powerPillUses') < 20 && availableAmount($item`power pill`) > 0,
-  () => {
-    useFamiliar($familiar`puck man`);
-    equip($slot`familiar`, $item`orange boxing gloves`);
-  },
   () =>
-    getItem(
-      Math.max(0, 20 - get('_powerPillUses') - availableAmount($item`power pill`)),
-      $item`power pill`,
-      FREE_FIGHT_COST
-    )
+    (have($familiar`puck man`) || have($familiar`ms. puck man`)) &&
+    get('_powerPillUses') < 20 &&
+    availableAmount($item`power pill`) > 0,
+  () => {
+    if (have($familiar`puck man`)) {
+      useFamiliar($familiar`puck man`);
+      equip($slot`familiar`, $item`orange boxing gloves`);
+    } else {
+      useFamiliar($familiar`ms. puck man`);
+      equip($slot`familiar`, $item`blue pumps`);
+    }
+  },
+  () => {
+    if (have($familiar`puck man`) || have($familiar`ms. puck man`)) {
+      getItem(
+        Math.max(0, 20 - get('_powerPillUses') - availableAmount($item`power pill`)),
+        $item`power pill`,
+        FREE_FIGHT_COST
+      );
+    }
+  }
 )(() => {
   drumMachineWithMacro(Macro.item($item`power pill`));
 });
 
 step(
   'gingerbread city',
-  () => GingerbreadCity.hasTurns() && have($item`gingerbread cigarette`),
+  () => GingerbreadCity.retailUnlocked() && GingerbreadCity.hasTurns() && have($item`gingerbread cigarette`),
   () => {},
   () => getItem(GingerbreadCity.turnsLeft(), $item`gingerbread cigarette`, FREE_FIGHT_COST)
 )(() => {
   if (GingerbreadCity.isNoon()) {
-    setChoice(1204, 1); // for now, find out choice number later
+    setChoice(1204, 1); // find candy
     adv1($location`Gingerbread Train Station`, 1, '');
   } else if (GingerbreadCity.isMidnight()) {
-    setChoice(1203, 4); // for now, find out choice number later
+    setChoice(1203, 4); // buy cigarettes
     adv1($location`Gingerbread Civic Center`, 1, '');
   } else {
     adventureMacro(

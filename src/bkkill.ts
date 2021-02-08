@@ -8,6 +8,7 @@ import {
   retrieveItem,
   stringModifier,
   toItem,
+  toMonster,
   use,
   useFamiliar,
   visitUrl,
@@ -61,7 +62,7 @@ const hoboLocations: Map<Location, HoboLocation> = new Map<Location, HoboLocatio
     },
   ],
   [
-    $location`The Ancient Hobo Burial Ground`,
+    $location`The Heap`,
     {
       boss: $monster`Oscus`,
       bossImage: 10,
@@ -72,7 +73,7 @@ const hoboLocations: Map<Location, HoboLocation> = new Map<Location, HoboLocatio
     },
   ],
   [
-    $location`Hobopolis Town Square`,
+    $location`The Ancient Hobo Burial Ground`,
     {
       boss: $monster`Zombo`,
       bossImage: 10,
@@ -94,7 +95,7 @@ const hoboLocations: Map<Location, HoboLocation> = new Map<Location, HoboLocatio
     },
   ],
   [
-    $location`The Heap`,
+    $location`Hobopolis Town Square`,
     {
       boss: $monster`Hodgman, The Hoboverlord`,
       bossImage: 25,
@@ -136,15 +137,15 @@ function bestItemFamiliar() {
 }
 
 function setupOutfit() {
-  if (get<Item>('bk.weapon') == $item`scratch 'n' sniff sword`) {
+  if (toItem(get('bk.weapon')) == $item`scratch 'n' sniff sword`) {
     // refresh the sticker weapon
     retrieveItem(3, $item`scratch 'n' sniff unicorn sticker`);
     cliExecute('sticker unicorn, unicorn, unicorn');
   }
-  if (get<Item>('bk.shirt') == $item`tunac` && !have($item`tunac`)) {
+  if (toItem(get('bk.shirt')) == $item`tunac` && !have($item`tunac`)) {
     inClan(get<string>('fishClan'), () => cliExecute('acquire tunac'));
   }
-  if (get<Item>('bk.familiar') == $item`luck incense` && !have($item`luck incense`)) {
+  if (toItem(get('bk.familiar')) == $item`luck incense` && !have($item`luck incense`)) {
     useFamiliar($familiar`mu`);
     retrieveItem(1, $item`box of familiar jacks`);
     use($item`box of familiar jacks`);
@@ -152,9 +153,11 @@ function setupOutfit() {
 }
 
 function outfit() {
-  $slots`hat, back, shirt, weapon, offhand, pants, acc1, acc2, acc3, familiar`.forEach(slot =>
-    equip(slot, toItem(get(`bk.${slot}`)))
-  );
+  $slots`hat,back,shirt,weapon,off-hand,pants,acc1,acc2,acc3,familiar`.forEach(slot => {
+    let it = toItem(get(`bk.${slot}`));
+    print(`${slot} ${it}`);
+    equip(slot, it);
+  });
 }
 
 function kill(location: Location) {
@@ -164,7 +167,7 @@ function kill(location: Location) {
     setupOutfit();
     useFamiliar(itemFamiliar);
     outfit();
-    if (hoboLocation.boss == get<Monster>('otoBoss')) {
+    if (hoboLocation.boss == toMonster(get('otoscopeBoss'))) {
       equip($slot`acc3`, $item`Lil' Doctor™ bag`);
     }
 
@@ -172,7 +175,7 @@ function kill(location: Location) {
       withStash([$item`moveable feast`], () => use($item`moveable feast`));
     }
 
-    if (location == $location`Exposure Esplanade`) {
+    if (location == $location`Exposure Esplanade` && !have($effect`Chilled to the Bone`)) {
       if (!retrieveItem(1, $item`Louder Than Bomb`)) {
         throw 'Unable to get a louder than bomb for getting Chilled to the Bone!';
       } else {
