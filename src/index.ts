@@ -44,7 +44,7 @@ function preferences(args: String) {
     ['free.back', 'Buddy Bjorn', 'Freefight outfit Back'],
     ['free.shirt', "Stephen's Lab Coat", 'Freefight outfit Shirt'],
     ['free.weapon', "Thor's Pliers", 'Freefight outfit Weapon'],
-    ['free.offhand', 'KoL Con 13 snowglobe', 'Bosskilling outfit Offhand'],
+    ['free.offhand', 'KoL Con 13 snowglobe', 'Freefight outfit Offhand'],
     ['free.pants', 'pantogram pants', 'Freefight outfit Pants'],
     ['free.acc1', "Mr. Screege's Spectacles", 'Freefight outfit Accessory (1)'],
     ['free.acc2', "Mr. Cheeng's Spectacles", 'Freefight outfit Accessory (2)'],
@@ -85,11 +85,9 @@ export function main(args: string) {
     print("run 'bk help' for help");
   } else {
     let matchedArgs = args.match(RegExp(/(\w+) ?(.*)/));
-    print(`${matchedArgs}`);
     if (matchedArgs) {
       let mode = matchedArgs[1].trim();
       let modeArgs = matchedArgs[2] || '';
-      print(`${mode} ${modeArgs}`);
 
       switch (mode) {
         case 'pref':

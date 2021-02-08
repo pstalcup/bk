@@ -35,6 +35,7 @@ import {
   banishedMonsters,
   get as getLibram,
   get,
+  $familiars,
 } from 'libram';
 // import { get } from 'lodash-es';
 import {
@@ -187,12 +188,31 @@ export class Macro extends LibramMacro {
     );
   }
 
+  static safeStasis(...steps: Macro[]) {
+    return new Macro().safeStasis(...steps);
+  }
+
   perpetualStasis(...steps: Macro[]) {
     return this.stasis(Macro.while_(`!pastround 10`, Macro.item($item`seal tooth`)), ...steps);
   }
 
   static perpetualStasis() {
     return new Macro().perpetualStasis();
+  }
+
+  maybeStasis(...steps: Macro[]) {
+    let stasisFamiliars = $familiars`Cocoabo,Ninja Pirate Zombie Robot,Stocking Mimic,Feather Boa Constrictor`;
+
+    return this.externalIf(
+      stasisFamiliars.includes(myFamiliar()) ||
+        (myFamiliar() === $familiar`Comma Chameleon` &&
+          stasisFamiliars.map(f => `${f}`).includes(get('commaFamiliar'))),
+      Macro.safeStasis(...steps)
+    );
+  }
+
+  static maybeStasis(...steps: Macro[]) {
+    return new Macro().maybeStasis(...steps);
   }
 
   tentacle(...steps: Macro[]) {

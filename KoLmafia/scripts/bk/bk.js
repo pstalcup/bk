@@ -5062,8 +5062,9 @@ function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(
  //const FREE_FIGHT_COST = 40000; // TODO: don't hardcode this
 
 var FREE_FIGHT_COST = (0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('freeFightValue');
-var FREE_FIGHT_COPY_TARGET = (0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('freeCopyFight');
-var MINIMUM_BUFF_TURNS = 16;
+var FREE_FIGHT_COPY_TARGET = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.toMonster)((0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('freeCopyFight'));
+(0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("1&whichmonster=".concat(FREE_FIGHT_COPY_TARGET.id));
+var MINIMUM_BUFF_TURNS = (0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('freeBuffThreshold');
 var MAXIMIZER_STRING = "item +equip thor's pliers +equip kol con snowglobe +equip lucky gold ring +equip cheeng +equip screege +equip ittah bittah hookah -back -hat";
 
 function maybeBjorn(f) {
@@ -5179,7 +5180,7 @@ function pickFreeFightFamiliar() {
 }
 
 function drumMachineWithMacro(macro) {
-  (0,_combat__WEBPACK_IMPORTED_MODULE_2__.withMacro)(_combat__WEBPACK_IMPORTED_MODULE_2__.Macro.tentacle().step(macro).abort(), function () {
+  (0,_combat__WEBPACK_IMPORTED_MODULE_2__.withMacro)(_combat__WEBPACK_IMPORTED_MODULE_2__.Macro.tentacle().maybeStasis().step(macro).abort(), function () {
     return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$item)(_templateObject15()));
   });
 }
@@ -5466,28 +5467,28 @@ step('fax', function () {
 }, function () {
   return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.faxbot)(FREE_FIGHT_COPY_TARGET, 'Cheesefax');
 })(function () {
-  (0,_combat__WEBPACK_IMPORTED_MODULE_2__.withMacro)(_combat__WEBPACK_IMPORTED_MODULE_2__.Macro.tentacle().step(maybeMacro('_iceSculptureUsed', (0,libram__WEBPACK_IMPORTED_MODULE_5__.$item)(_templateObject95()))).step(maybeMacro('_cameraUsed', (0,libram__WEBPACK_IMPORTED_MODULE_5__.$item)(_templateObject96()))).step(SpookyPutty.maybeMacro()).spellKill(), function () {
+  (0,_combat__WEBPACK_IMPORTED_MODULE_2__.withMacro)(_combat__WEBPACK_IMPORTED_MODULE_2__.Macro.tentacle().step(maybeMacro('_iceSculptureUsed', (0,libram__WEBPACK_IMPORTED_MODULE_5__.$item)(_templateObject95()))).step(maybeMacro('_cameraUsed', (0,libram__WEBPACK_IMPORTED_MODULE_5__.$item)(_templateObject96()))).step(SpookyPutty.maybeMacro()).maybeStasis().spellKill(), function () {
     return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$item)(_templateObject97()));
   });
 });
 step('spooky putty', function () {
   return SpookyPutty.hasFight();
 })(function () {
-  (0,_combat__WEBPACK_IMPORTED_MODULE_2__.withMacro)(_combat__WEBPACK_IMPORTED_MODULE_2__.Macro.tentacle(_combat__WEBPACK_IMPORTED_MODULE_2__.Macro.externalIf((0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('_feelNostalgicUsed') < 3, _combat__WEBPACK_IMPORTED_MODULE_2__.Macro.skill((0,libram__WEBPACK_IMPORTED_MODULE_5__.$skill)(_templateObject98())))).externalIf(SpookyPutty.hasCopies(), SpookyPutty.copyMacro()).spellKill(), function () {
+  (0,_combat__WEBPACK_IMPORTED_MODULE_2__.withMacro)(_combat__WEBPACK_IMPORTED_MODULE_2__.Macro.tentacle(_combat__WEBPACK_IMPORTED_MODULE_2__.Macro.externalIf((0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('_feelNostalgicUsed') < 3, _combat__WEBPACK_IMPORTED_MODULE_2__.Macro.skill((0,libram__WEBPACK_IMPORTED_MODULE_5__.$skill)(_templateObject98())))).externalIf(SpookyPutty.hasCopies(), SpookyPutty.copyMacro()).maybeStasis().spellKill(), function () {
     return SpookyPutty.fight();
   });
 });
 step('camera', function () {
   return (0,libram__WEBPACK_IMPORTED_MODULE_6__.have)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$item)(_templateObject99()));
 })(function () {
-  (0,_combat__WEBPACK_IMPORTED_MODULE_2__.withMacro)(_combat__WEBPACK_IMPORTED_MODULE_2__.Macro.tentacle().spellKill(), function () {
+  (0,_combat__WEBPACK_IMPORTED_MODULE_2__.withMacro)(_combat__WEBPACK_IMPORTED_MODULE_2__.Macro.tentacle().maybeStasis().spellKill(), function () {
     return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$item)(_templateObject100()));
   });
 });
 step('sculpture', function () {
   return (0,libram__WEBPACK_IMPORTED_MODULE_6__.have)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$item)(_templateObject101()));
 })(function () {
-  (0,_combat__WEBPACK_IMPORTED_MODULE_2__.withMacro)(_combat__WEBPACK_IMPORTED_MODULE_2__.Macro.tentacle().spellKill(), function () {
+  (0,_combat__WEBPACK_IMPORTED_MODULE_2__.withMacro)(_combat__WEBPACK_IMPORTED_MODULE_2__.Macro.tentacle().maybeStasis().spellKill(), function () {
     return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$item)(_templateObject102()));
   });
 });
@@ -6619,12 +6620,33 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var kolmafia__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! kolmafia */ "kolmafia");
 /* harmony import */ var kolmafia__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(kolmafia__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/template-string.js");
-/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/combat.js");
+/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/property.js");
+/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/combat.js");
 /* harmony import */ var _lib__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./lib */ "./src/lib.ts");
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-function _templateObject30() {
+function _templateObject32() {
   var data = _taggedTemplateLiteral(["Louder Than Bomb, divine champagne popper, tattered scrap of paper, GOTO, green smoke bomb"]);
+
+  _templateObject32 = function _templateObject32() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject31() {
+  var data = _taggedTemplateLiteral(["Pair of Stomping Boots"]);
+
+  _templateObject31 = function _templateObject31() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject30() {
+  var data = _taggedTemplateLiteral(["The Ode to Booze"]);
 
   _templateObject30 = function _templateObject30() {
     return data;
@@ -6634,7 +6656,7 @@ function _templateObject30() {
 }
 
 function _templateObject29() {
-  var data = _taggedTemplateLiteral(["Pair of Stomping Boots"]);
+  var data = _taggedTemplateLiteral(["Frumious Bandersnatch"]);
 
   _templateObject29 = function _templateObject29() {
     return data;
@@ -6644,7 +6666,7 @@ function _templateObject29() {
 }
 
 function _templateObject28() {
-  var data = _taggedTemplateLiteral(["The Ode to Booze"]);
+  var data = _taggedTemplateLiteral(["Extract Jelly"]);
 
   _templateObject28 = function _templateObject28() {
     return data;
@@ -6654,7 +6676,7 @@ function _templateObject28() {
 }
 
 function _templateObject27() {
-  var data = _taggedTemplateLiteral(["Frumious Bandersnatch"]);
+  var data = _taggedTemplateLiteral(["Extract"]);
 
   _templateObject27 = function _templateObject27() {
     return data;
@@ -6664,7 +6686,7 @@ function _templateObject27() {
 }
 
 function _templateObject26() {
-  var data = _taggedTemplateLiteral(["Extract Jelly"]);
+  var data = _taggedTemplateLiteral(["lecture on relativity"]);
 
   _templateObject26 = function _templateObject26() {
     return data;
@@ -6674,7 +6696,7 @@ function _templateObject26() {
 }
 
 function _templateObject25() {
-  var data = _taggedTemplateLiteral(["Extract"]);
+  var data = _taggedTemplateLiteral(["Comma Chameleon"]);
 
   _templateObject25 = function _templateObject25() {
     return data;
@@ -6684,7 +6706,7 @@ function _templateObject25() {
 }
 
 function _templateObject24() {
-  var data = _taggedTemplateLiteral(["lecture on relativity"]);
+  var data = _taggedTemplateLiteral(["Cocoabo,Ninja Pirate Zombie Robot,Stocking Mimic,Feather Boa Constrictor"]);
 
   _templateObject24 = function _templateObject24() {
     return data;
@@ -7028,6 +7050,14 @@ var Macro = /*#__PURE__*/function (_LibramMacro) {
       return this.stasis.apply(this, [Macro.while_("!pastround 10", Macro.item((0,libram__WEBPACK_IMPORTED_MODULE_2__.$item)(_templateObject23())))].concat(steps));
     }
   }, {
+    key: "maybeStasis",
+    value: function maybeStasis() {
+      var stasisFamiliars = (0,libram__WEBPACK_IMPORTED_MODULE_2__.$familiars)(_templateObject24());
+      return this.externalIf(stasisFamiliars.includes((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myFamiliar)()) || (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myFamiliar)() === (0,libram__WEBPACK_IMPORTED_MODULE_2__.$familiar)(_templateObject25()) && stasisFamiliars.map(function (f) {
+        return "".concat(f);
+      }).includes((0,libram__WEBPACK_IMPORTED_MODULE_3__.get)('commaFamiliar')), Macro.safeStasis.apply(Macro, arguments));
+    }
+  }, {
     key: "tentacle",
     value: function tentacle() {
       return this.if_('monstername eldritch tentacle', Macro.perpetualStasis().spellKill()); //return this.if_('monstername eldritch tentacle', Macro.step(...steps).skill('Curse of Weaksauce', 'Micrometeorite', 'Stuffed Mortar Shell', 'Saucestorm').repeat());
@@ -7035,7 +7065,7 @@ var Macro = /*#__PURE__*/function (_LibramMacro) {
   }, {
     key: "professor",
     value: function professor() {
-      var lecture = (0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject24());
+      var lecture = (0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject26());
       return this.if_("hasskill ".concat(lecture), Macro.skill("".concat(lecture)));
     }
   }, {
@@ -7061,7 +7091,7 @@ var Macro = /*#__PURE__*/function (_LibramMacro) {
   }, {
     key: "freeRun",
     value: function freeRun() {
-      return new Macro().skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject25())).skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject26())).externalIf((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveFamiliar)((0,libram__WEBPACK_IMPORTED_MODULE_2__.$familiar)(_templateObject27())) && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEffect)((0,libram__WEBPACK_IMPORTED_MODULE_2__.$effect)(_templateObject28())) > 0 || (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveFamiliar)((0,libram__WEBPACK_IMPORTED_MODULE_2__.$familiar)(_templateObject29())), 'runaway').trySkill('Spring-Loaded Front Bumper', 'Reflex Hammer', 'KGB tranquilizer dart', 'Throw Latte on Opponent', 'Snokebomb').tryItem('Louder Than Bomb', 'tattered scrap of paper', 'GOTO', 'green smoke bomb').abort();
+      return new Macro().skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject27())).skill((0,libram__WEBPACK_IMPORTED_MODULE_2__.$skill)(_templateObject28())).externalIf((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveFamiliar)((0,libram__WEBPACK_IMPORTED_MODULE_2__.$familiar)(_templateObject29())) && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEffect)((0,libram__WEBPACK_IMPORTED_MODULE_2__.$effect)(_templateObject30())) > 0 || (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveFamiliar)((0,libram__WEBPACK_IMPORTED_MODULE_2__.$familiar)(_templateObject31())), 'runaway').trySkill('Spring-Loaded Front Bumper', 'Reflex Hammer', 'KGB tranquilizer dart', 'Throw Latte on Opponent', 'Snokebomb').tryItem('Louder Than Bomb', 'tattered scrap of paper', 'GOTO', 'green smoke bomb').abort();
     }
   }, {
     key: "spellKill",
@@ -7076,16 +7106,30 @@ var Macro = /*#__PURE__*/function (_LibramMacro) {
       return (_Macro = new Macro()).stasis.apply(_Macro, arguments);
     }
   }, {
+    key: "safeStasis",
+    value: function safeStasis() {
+      var _Macro2;
+
+      return (_Macro2 = new Macro()).safeStasis.apply(_Macro2, arguments);
+    }
+  }, {
     key: "perpetualStasis",
     value: function perpetualStasis() {
       return new Macro().perpetualStasis();
     }
   }, {
+    key: "maybeStasis",
+    value: function maybeStasis() {
+      var _Macro3;
+
+      return (_Macro3 = new Macro()).maybeStasis.apply(_Macro3, arguments);
+    }
+  }, {
     key: "tentacle",
     value: function tentacle() {
-      var _Macro2;
+      var _Macro4;
 
-      return (_Macro2 = new Macro()).tentacle.apply(_Macro2, arguments);
+      return (_Macro4 = new Macro()).tentacle.apply(_Macro4, arguments);
     }
   }, {
     key: "professor",
@@ -7095,14 +7139,14 @@ var Macro = /*#__PURE__*/function (_LibramMacro) {
   }, {
     key: "kramco",
     value: function kramco() {
-      var _Macro3;
+      var _Macro5;
 
-      return (_Macro3 = new Macro()).kramco.apply(_Macro3, arguments);
+      return (_Macro5 = new Macro()).kramco.apply(_Macro5, arguments);
     }
   }]);
 
   return Macro;
-}(libram__WEBPACK_IMPORTED_MODULE_3__.Macro);
+}(libram__WEBPACK_IMPORTED_MODULE_4__.Macro);
 var MODE_NULL = '';
 var MODE_MACRO = 'macro';
 var MODE_FIND_MONSTER_THEN = 'findthen';
@@ -7123,7 +7167,7 @@ function getArg1() {
 function getArg2() {
   return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getProperty)('minehobo_combatArg2');
 }
-var freeRunItems = (0,libram__WEBPACK_IMPORTED_MODULE_2__.$items)(_templateObject30());
+var freeRunItems = (0,libram__WEBPACK_IMPORTED_MODULE_2__.$items)(_templateObject32());
 function main(initialRound, foe) {
   var mode = getMode();
 
@@ -7300,7 +7344,7 @@ function help() {
 }
 
 function preferences(args) {
-  var prefDefaults = [['freeFightValue', 40000, 'The Maximimum amount to spend buying free fights'], ['fishClan', '', 'The clan to pull fish equipment from'], ['stashClan', '', "The clan to pull shared stash items (moveable feast, bag o' tricks, PYEC)"], ['fishClan', '', 'The clan to pull Clan Fishery Equipment'], ['chilledClan', '', 'The clan with a setup High Kiss Castle, tuned Cold'], ['freeCopyFight', 'Witchess Bishop', 'The monster to rainman/fax for free fights'], ['freeStasisFamiliar', 'Comma Chameleon', 'The familiar to use when running stasis'], ['freeBuffThreshold', 25, 'The amount of turns to guarantee of a buff before you run your stasis familiar'], ['freeCrownOfThrones', 'Warbear Drone', 'The familiar to put into your Crown of Thrones (if it is used)'], ['freeBuddyBjorn', 'Golden Monkey', 'The familiar to put in your Buddy Bjorn (if it is used)'], ['free.hat', 'Crown of Thrones', 'Freefight outfit Hat'], ['free.back', 'Buddy Bjorn', 'Freefight outfit Back'], ['free.shirt', "Stephen's Lab Coat", 'Freefight outfit Shirt'], ['free.weapon', "Thor's Pliers", 'Freefight outfit Weapon'], ['free.offhand', 'KoL Con 13 snowglobe', 'Bosskilling outfit Offhand'], ['free.pants', 'pantogram pants', 'Freefight outfit Pants'], ['free.acc1', "Mr. Screege's Spectacles", 'Freefight outfit Accessory (1)'], ['free.acc2', "Mr. Cheeng's Spectacles", 'Freefight outfit Accessory (2)'], ['free.acc3', 'Lucky gold ring', 'Freefight outfit Accessory (3) (this will be flexed out for accessoies as needed in some free fights)'], ['free.familiar', 'Ittah Bittah Hookah', 'Freefight outfit Familiar Eqiupment (will be equipped if possible)'], ['bk.hat', 'Training helmet', 'Bosskilling outfit Hat'], ['bk.back', 'Vampyric Cloake', 'Bosskilling outfit Back'], ['bk.shirt', 'tunac', 'Bosskilling outfit Shirt'], ['bk.weapon', "scratch 'n' sniff sword", 'Bosskilling outfit Weapon'], ['bk.offhand', 'A Light that Never Goes Out', 'Bosskilling outfit Offhand'], ['bk.pants', 'pantogram pants', 'Bosskilling outfit Pants'], ['bk.acc1', "Mayor Ghost's Sash", 'Bosskilling outfit Accessory (1)'], ['bk.acc2', 'Old Soft Shoes', 'Bosskilling outfit Accessory (2)'], ['bk.acc3', 'Ring of the Skeleton Lord', 'Bosskilling outfit Accessory (3) (this will be flexed out for Lil Doctor Bag as needed)'], ['bk.familiar', 'Luck Incense', 'Bosskilling outfit Familiar']];
+  var prefDefaults = [['freeFightValue', 40000, 'The Maximimum amount to spend buying free fights'], ['fishClan', '', 'The clan to pull fish equipment from'], ['stashClan', '', "The clan to pull shared stash items (moveable feast, bag o' tricks, PYEC)"], ['fishClan', '', 'The clan to pull Clan Fishery Equipment'], ['chilledClan', '', 'The clan with a setup High Kiss Castle, tuned Cold'], ['freeCopyFight', 'Witchess Bishop', 'The monster to rainman/fax for free fights'], ['freeStasisFamiliar', 'Comma Chameleon', 'The familiar to use when running stasis'], ['freeBuffThreshold', 25, 'The amount of turns to guarantee of a buff before you run your stasis familiar'], ['freeCrownOfThrones', 'Warbear Drone', 'The familiar to put into your Crown of Thrones (if it is used)'], ['freeBuddyBjorn', 'Golden Monkey', 'The familiar to put in your Buddy Bjorn (if it is used)'], ['free.hat', 'Crown of Thrones', 'Freefight outfit Hat'], ['free.back', 'Buddy Bjorn', 'Freefight outfit Back'], ['free.shirt', "Stephen's Lab Coat", 'Freefight outfit Shirt'], ['free.weapon', "Thor's Pliers", 'Freefight outfit Weapon'], ['free.offhand', 'KoL Con 13 snowglobe', 'Freefight outfit Offhand'], ['free.pants', 'pantogram pants', 'Freefight outfit Pants'], ['free.acc1', "Mr. Screege's Spectacles", 'Freefight outfit Accessory (1)'], ['free.acc2', "Mr. Cheeng's Spectacles", 'Freefight outfit Accessory (2)'], ['free.acc3', 'Lucky gold ring', 'Freefight outfit Accessory (3) (this will be flexed out for accessoies as needed in some free fights)'], ['free.familiar', 'Ittah Bittah Hookah', 'Freefight outfit Familiar Eqiupment (will be equipped if possible)'], ['bk.hat', 'Training helmet', 'Bosskilling outfit Hat'], ['bk.back', 'Vampyric Cloake', 'Bosskilling outfit Back'], ['bk.shirt', 'tunac', 'Bosskilling outfit Shirt'], ['bk.weapon', "scratch 'n' sniff sword", 'Bosskilling outfit Weapon'], ['bk.offhand', 'A Light that Never Goes Out', 'Bosskilling outfit Offhand'], ['bk.pants', 'pantogram pants', 'Bosskilling outfit Pants'], ['bk.acc1', "Mayor Ghost's Sash", 'Bosskilling outfit Accessory (1)'], ['bk.acc2', 'Old Soft Shoes', 'Bosskilling outfit Accessory (2)'], ['bk.acc3', 'Ring of the Skeleton Lord', 'Bosskilling outfit Accessory (3) (this will be flexed out for Lil Doctor Bag as needed)'], ['bk.familiar', 'Luck Incense', 'Bosskilling outfit Familiar']];
 
   if (args.trim() == 'list') {
     var table = new _lib__WEBPACK_IMPORTED_MODULE_5__.Table();
@@ -7326,12 +7370,10 @@ function main(args) {
     (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("run 'bk help' for help");
   } else {
     var matchedArgs = args.match(RegExp(/(\w+) ?(.*)/));
-    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("".concat(matchedArgs));
 
     if (matchedArgs) {
       var mode = matchedArgs[1].trim();
       var modeArgs = matchedArgs[2] || '';
-      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("".concat(mode, " ").concat(modeArgs));
 
       switch (mode) {
         case 'pref':

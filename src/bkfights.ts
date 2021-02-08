@@ -35,6 +35,7 @@ import {
   toItem,
   numericModifier,
   myFamiliar,
+  toMonster,
 } from 'kolmafia';
 import {
   $class,
@@ -62,9 +63,11 @@ import { getItem, MayoClinic, minimumRelevantBuff, myEffectsClean, setChoice, se
 
 //const FREE_FIGHT_COST = 40000; // TODO: don't hardcode this
 const FREE_FIGHT_COST = get<number>('freeFightValue');
-const FREE_FIGHT_COPY_TARGET = get<Monster>('freeCopyFight');
+const FREE_FIGHT_COPY_TARGET = toMonster(get('freeCopyFight'));
 
-const MINIMUM_BUFF_TURNS = 16;
+print(`1&whichmonster=${FREE_FIGHT_COPY_TARGET.id}`);
+
+const MINIMUM_BUFF_TURNS = get<number>('freeBuffThreshold');
 const MAXIMIZER_STRING =
   "item +equip thor's pliers +equip kol con snowglobe +equip lucky gold ring +equip cheeng +equip screege +equip ittah bittah hookah -back -hat";
 
@@ -167,7 +170,7 @@ function pickFreeFightFamiliar() {
 }
 
 function drumMachineWithMacro(macro: Macro) {
-  withMacro(Macro.tentacle().step(macro).abort(), () => use($item`drum machine`));
+  withMacro(Macro.tentacle().maybeStasis().step(macro).abort(), () => use($item`drum machine`));
 }
 
 class SpookyPutty {
@@ -439,6 +442,7 @@ step(
       .step(maybeMacro('_iceSculptureUsed', $item`unfinished ice sculpture`))
       .step(maybeMacro('_cameraUsed', $item`4-d camera`))
       .step(SpookyPutty.maybeMacro())
+      .maybeStasis()
       .spellKill(),
     () => use($item`photocopied monster`)
   );
@@ -448,17 +452,18 @@ step('spooky putty', () => SpookyPutty.hasFight())(() => {
   withMacro(
     Macro.tentacle(Macro.externalIf(get('_feelNostalgicUsed') < 3, Macro.skill($skill`Feel Nostalgic`)))
       .externalIf(SpookyPutty.hasCopies(), SpookyPutty.copyMacro())
+      .maybeStasis()
       .spellKill(),
     () => SpookyPutty.fight()
   );
 });
 
 step('camera', () => have($item`shaking 4-d camera`))(() => {
-  withMacro(Macro.tentacle().spellKill(), () => use($item`shaking 4-d camera`));
+  withMacro(Macro.tentacle().maybeStasis().spellKill(), () => use($item`shaking 4-d camera`));
 });
 
 step('sculpture', () => have($item`ice sculpture`))(() => {
-  withMacro(Macro.tentacle().spellKill(), () => use($item`ice sculpture`));
+  withMacro(Macro.tentacle().maybeStasis().spellKill(), () => use($item`ice sculpture`));
 });
 
 step(
