@@ -181,7 +181,7 @@ export class Macro extends LibramMacro {
   safeStasis(...steps: Macro[]) {
     return this.stasis(
       Macro.while_(
-        `monsterhpabove ${Math.ceil(effectiveFamiliarWeight() * 1.1)} and !pastround 10`,
+        `monsterhpabove ${Math.ceil(effectiveFamiliarWeight() * 1.25)} and !pastround 10`,
         Macro.item($item`seal tooth`)
       ),
       ...steps

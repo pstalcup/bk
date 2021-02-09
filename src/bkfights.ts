@@ -37,6 +37,7 @@ import {
   myFamiliar,
   toMonster,
   toFamiliar,
+  availableChoiceOptions,
 } from 'kolmafia';
 import {
   $class,
@@ -93,7 +94,7 @@ function heavyRainFreeFights() {
 
 function outfit() {
   $slots`hat,back,shirt,weapon,offhand,pants,acc1,acc2,acc3`.forEach(slot => equip(slot, toItem(get(`free.${slot}`))));
-  if (myFamiliar() !== $familiar`Comma Chameleon`) {
+  if (myFamiliar() !== $familiar`none` && myFamiliar() !== $familiar`Comma Chameleon`) {
     equip($slot`familiar`, toItem(get('free.familiar')));
   }
 }
@@ -119,6 +120,7 @@ function step(name: string, condition: () => boolean | null | undefined, setup?:
 
           while (condition()) {
             step_fun();
+            refreshComma(); // this will only refresh if the active familiar is comma chameleon
           }
 
           pickFreeFightFamiliar();
@@ -142,26 +144,31 @@ function maybeMacro(property: string, target: Item) {
   return Macro.externalIf(!get<boolean>(property) && availableAmount(target) > 0, Macro.item(target));
 }
 
+function refreshComma() {
+  if (myFamiliar() === $familiar`Comma Chameleon`) {
+    visitUrl('charpane.php');
+    cliExecute('refresh inv');
+    if (get('commaFamiliar') !== 'Feather Boa Constrictor') {
+      // borrowed from phyllis
+      visitUrl('charpane.php');
+      cliExecute('refresh inv');
+      visitUrl('inv_equip.php?pwd&action=equip&whichitem=962');
+      visitUrl('charpane.php');
+      cliExecute('refresh inv');
+    }
+  }
+}
+
 function pickFreeFightFamiliar() {
   let [minEffect, minTurns] = minimumRelevantBuff();
 
   print(`${minEffect} Has ${minTurns} turns`);
 
   if (minTurns >= MINIMUM_BUFF_TURNS) {
-    let freeFightFamiliar = toFamiliar(get('freeFightFamiliar'));
+    let freeFightFamiliar = toFamiliar(get('freeStasisFamiliar'));
+    print(`${freeFightFamiliar}`);
     useFamiliar(freeFightFamiliar);
-    cliExecute('refresh inv');
-    visitUrl('charpane.php');
-    if (freeFightFamiliar === $familiar`Comma Chameleon`) {
-      if (get('commaFamiliar') !== 'Feather Boa Constrictor') {
-        // borrowed from phyllis
-        visitUrl('inv_equip.php?pwd&action=equip&whichitem=962');
-        visitUrl('charpane.php');
-        cliExecute('refresh inv');
-        visitUrl('charpane.php');
-        cliExecute('refresh inv');
-      }
-    }
+    refreshComma();
   } else {
     useFamiliar($familiar`Unspeakachu`);
     equip($slot`familiar`, $item`ittah bittah hookah`);
@@ -475,7 +482,11 @@ step(
 )(() => {
   visitUrl('place.php?whichplace=forestvillage&action=fv_scientist', false);
   if (!handlingChoice()) throw 'No choice?';
-  withMacro(Macro.tentacle().spellKill(), () => runChoice(1));
+  let options = availableChoiceOptions();
+  let choice = [1, 2, 3, 4, 5].find(i => options[i] == 'Can I fight that tentacle you saved for science?') || 0;
+  if (choice) {
+    withMacro(Macro.tentacle().spellKill(), () => runChoice(choice));
+  }
 });
 
 step(
@@ -717,6 +728,7 @@ step(
     adventureMacro(
       $location`Gingerbread Upscale Retail District`,
       Macro.tentacle()
+        .maybeStasis()
         .item($item`gingerbread cigarette`)
         .abort()
     );
@@ -735,7 +747,7 @@ step(
   'witchess',
   () => Witchess.fightsDone() < 5
 )(() => {
-  withMacro(Macro.tentacle().spellKill(), () => Witchess.fightPiece($monster`Witchess Bishop`));
+  withMacro(Macro.tentacle().maybeStasis().spellKill(), () => Witchess.fightPiece($monster`Witchess Bishop`));
 });
 
 step(
@@ -777,7 +789,10 @@ step(
   () => equip($item`Kramco Sausage-o-Matic™`)
 )(() => {
   FreeRun.wrapFreeRun(() => {
-    adventureMacro($location`Menagerie Level 1`, Macro.tentacle().kramco().step(FreeRun.maybeMacro()).abort());
+    adventureMacro(
+      $location`Menagerie Level 1`,
+      Macro.tentacle().kramco(Macro.maybeStasis()).step(FreeRun.maybeMacro()).abort()
+    );
   });
 });
 

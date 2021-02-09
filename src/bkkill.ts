@@ -24,7 +24,7 @@ function parseImageN(hoboPlace: string) {
   if (match) {
     return parseInt(match[1]);
   }
-  return 0;
+  return -1;
 }
 
 type ImageN = number;
@@ -122,7 +122,7 @@ export function status(location: Location) {
       return HoboStatus.BossKilled;
     } else if (imageN == hoboLocation.bossImage) {
       return HoboStatus.BossReady;
-    } else if (imageN > 0) {
+    } else if (imageN > -1) {
       return HoboStatus.NotReady;
     }
   }
@@ -167,7 +167,8 @@ function kill(location: Location) {
     setupOutfit();
     useFamiliar(itemFamiliar);
     outfit();
-    if (hoboLocation.boss == toMonster(get('otoscopeBoss'))) {
+    let otoscopeBoss = toMonster(get('otoscopeBoss'));
+    if (hoboLocation.boss == otoscopeBoss) {
       equip($slot`acc3`, $item`Lil' Doctor™ bag`);
     }
 
@@ -188,19 +189,25 @@ function kill(location: Location) {
       }
     }
     setChoice(hoboLocation.choiceAdventure, 1);
-    adventureMacro(
-      location,
-      Macro.if_('monstername eldritch tentacle', Macro.item($item`Louder Than Bomb`))
-        .if_(
-          `monstername ${hoboLocation.boss}`,
-          Macro.externalIf(hoboLocation.boss == $monster`Oscus`, Macro.skill($skill`otoscope`))
-            .attack()
-            .repeat()
-        )
-        .abort()
-    );
-    print(`Killed ${hoboLocation.boss}`);
-    setChoice(hoboLocation.choiceAdventure, 0);
+    while (status(location) == HoboStatus.BossReady) {
+      adventureMacro(
+        location,
+        Macro.if_('monstername eldritch tentacle', Macro.item($item`Louder Than Bomb`))
+          .if_(
+            `monstername ${hoboLocation.boss}`,
+            Macro.externalIf(hoboLocation.boss == otoscopeBoss, Macro.skill($skill`otoscope`))
+              .attack()
+              .repeat()
+          )
+          .abort()
+      );
+      print(`Killed ${hoboLocation.boss}`);
+      setChoice(hoboLocation.choiceAdventure, 0);
+      if (have($effect`Chilled to the Bone`)) {
+        retrieveItem(1, $item`hot Dreadsylvanian cocoa`);
+        use($item`hot Dreadsylvanian cocoa`);
+      }
+    }
   }
 }
 

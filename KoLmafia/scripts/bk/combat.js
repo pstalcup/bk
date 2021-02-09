@@ -3075,7 +3075,7 @@ var Macro = /*#__PURE__*/function (_LibramMacro) {
         steps[_key] = arguments[_key];
       }
 
-      return this.stasis.apply(this, [Macro.while_("monsterhpabove ".concat(Math.ceil((0,_lib__WEBPACK_IMPORTED_MODULE_1__.effectiveFamiliarWeight)() * 1.1), " and !pastround 10"), Macro.item((0,libram__WEBPACK_IMPORTED_MODULE_2__.$item)(_templateObject22())))].concat(steps));
+      return this.stasis.apply(this, [Macro.while_("monsterhpabove ".concat(Math.ceil((0,_lib__WEBPACK_IMPORTED_MODULE_1__.effectiveFamiliarWeight)() * 1.25), " and !pastround 10"), Macro.item((0,libram__WEBPACK_IMPORTED_MODULE_2__.$item)(_templateObject22())))].concat(steps));
     }
   }, {
     key: "perpetualStasis",
