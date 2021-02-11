@@ -424,10 +424,22 @@ export function withStash<T>(itemsToTake: Item[], action: () => T) {
   });
 }
 
-export function minimumRelevantBuff() {
+export function buffsBelowThreshold(threshold: number, modifierStr?: string) {
   let myEffects = myEffectsClean();
+  let modifiers = modifierStr ? modifierStr.split(';') : [];
+  modifiers = modifiers.length === 0 ? ['Item Drop', 'Meat Drop', 'Monster Level'] : modifiers;
+
+  return myEffects.filter(([effect, turns]: [Effect, number]) =>
+    modifiers.some(modifier => numericModifier(effect, modifier) > 0 && turns < threshold)
+  );
+}
+
+export function minimumRelevantBuff(modifierStr?: string) {
+  let myEffects = myEffectsClean();
+  let modifiers = modifierStr ? modifierStr.split(';') : [];
+  modifiers = modifiers.length === 0 ? ['Item Drop', 'Meat Drop', 'Monster Level'] : modifiers;
   let relevantBuffs = myEffects.filter(([effect, turns]: [Effect, number]) =>
-    ['Item Drop', 'Meat Drop', 'Monster Level'].some(modifier => numericModifier(effect, modifier) > 0)
+    modifiers.some(modifier => numericModifier(effect, modifier) > 0)
   );
 
   let [

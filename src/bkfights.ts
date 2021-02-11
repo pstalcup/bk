@@ -21,7 +21,6 @@ import {
   setProperty as setPropertyMafia,
   adv1,
   getProperty,
-  maximize,
   myBjornedFamiliar,
   bjornifyFamiliar,
   myEnthronedFamiliar,
@@ -33,11 +32,12 @@ import {
   eat,
   effectModifier,
   toItem,
-  numericModifier,
   myFamiliar,
   toMonster,
   toFamiliar,
   availableChoiceOptions,
+  buy,
+  totalTurnsPlayed,
 } from 'kolmafia';
 import {
   $class,
@@ -61,15 +61,44 @@ import {
 } from 'libram';
 import { fillAsdonMartinTo } from './asdon';
 import { adventureMacro, Macro, withMacro } from './combat';
-import { getItem, MayoClinic, minimumRelevantBuff, myEffectsClean, setChoice, setChoices, withStash } from './lib';
+import { getItem, MayoClinic, minimumRelevantBuff, setChoice, setChoices, withStash } from './lib';
 
 //const FREE_FIGHT_COST = 40000; // TODO: don't hardcode this
 const FREE_FIGHT_COST = get<number>('freeFightValue');
 const FREE_FIGHT_COPY_TARGET = toMonster(get('freeCopyFight'));
 const MINIMUM_BUFF_TURNS = get<number>('freeBuffThreshold');
 
-const MAXIMIZER_STRING =
-  "item +equip thor's pliers +equip kol con snowglobe +equip lucky gold ring +equip cheeng +equip screege +equip ittah bittah hookah -back -hat";
+enum LogLevel {
+  None = -1,
+  Info = 0,
+  Debug = 1,
+}
+
+let log = (function () {
+  let printLevel = LogLevel.None;
+  switch (get<string>('bkLogLevel').toLowerCase()) {
+    case 'debug':
+      printLevel = LogLevel.Debug;
+      break;
+    case 'info':
+      printLevel = LogLevel.Info;
+      break;
+  }
+
+  return function (level: LogLevel, message: string, color?: string | null) {
+    if (printLevel >= level) {
+      if (color) {
+        print(message, color);
+      } else {
+        print(message);
+      }
+    }
+  };
+})();
+
+let debug = function (message: string) {
+  log(LogLevel.Debug, message, 'red');
+};
 
 function maybeBjorn(f: Familiar) {
   if (equippedAmount($item`buddy bjorn`) > 0 && myBjornedFamiliar() != f) {
@@ -92,22 +121,40 @@ function heavyRainFreeFights() {
   }
 }
 
+function bustGhost() {
+  if (have($item`protonic accelerator pack`) && get('questPAGhost') !== 'unstarted') {
+    let ghostLocation = get('ghostLocation');
+    if (ghostLocation && ghostLocation != $location`none`) {
+      adventureMacro(ghostLocation, Macro.tentacle().perpetualStasis());
+    }
+  }
+}
+
 function outfit() {
   $slots`hat,back,shirt,weapon,offhand,pants,acc1,acc2,acc3`.forEach(slot => equip(slot, toItem(get(`free.${slot}`))));
   if (myFamiliar() !== $familiar`none` && myFamiliar() !== $familiar`Comma Chameleon`) {
     equip($slot`familiar`, toItem(get('free.familiar')));
   }
+  if (
+    have($item`protonic accelerator pack`) &&
+    totalTurnsPlayed() > get('nextParanormalActivity') &&
+    get('questPAGhost') === 'unstarted'
+  ) {
+    equip($slot`back`, $item`protonic accelerator pack`);
+  }
 }
 
 let steps: Array<(skiplist: Array<string>, list: boolean) => void> = [];
 let finalSteps: Array<(skiplist: Array<string>, list: boolean) => void> = [];
+let postSteps: Array<() => void> = [];
+
 function step(name: string, condition: () => boolean | null | undefined, setup?: () => void, before?: () => void) {
   return function (step_fun: () => void) {
     let wrappedStep = function (skiplist: Array<string>, list: boolean) {
       if (list) {
-        print(`${name}`);
+        log(LogLevel.None, `${name}`);
       } else if (skiplist.indexOf(name) === -1) {
-        print(`executing ${name}`);
+        log(LogLevel.Info, `executing ${name}`);
         if (before) before();
         if (condition()) {
           pickFreeFightFamiliar();
@@ -118,17 +165,25 @@ function step(name: string, condition: () => boolean | null | undefined, setup?:
 
           if (setup) setup();
 
+          let infiniteLoopCheck = 0;
+
           while (condition()) {
             step_fun();
             refreshComma(); // this will only refresh if the active familiar is comma chameleon
+            infiniteLoopCheck += 1;
+            if (infiniteLoopCheck == 100) {
+              throw `${name} encountered an infinite loop (maybe?)`;
+            }
           }
 
-          pickFreeFightFamiliar();
-          outfit();
-          heavyRainFreeFights();
+          postSteps.forEach(post_step_cb => {
+            pickFreeFightFamiliar();
+            outfit();
+            post_step_cb();
+          });
         }
       } else {
-        print(`skipping ${name}`);
+        log(LogLevel.Info, `skipping ${name}`);
       }
     };
     if (name.startsWith('final')) {
@@ -138,6 +193,9 @@ function step(name: string, condition: () => boolean | null | undefined, setup?:
     }
   };
 }
+
+postSteps.push(heavyRainFreeFights);
+postSteps.push(bustGhost);
 
 function maybeMacro(property: string, target: Item) {
   if (!get(property)) retrieveItem(1, target);
@@ -162,11 +220,11 @@ function refreshComma() {
 function pickFreeFightFamiliar() {
   let [minEffect, minTurns] = minimumRelevantBuff();
 
-  print(`${minEffect} Has ${minTurns} turns`);
+  log(LogLevel.Info, `${minEffect} Has ${minTurns} turns`);
 
   if (minTurns >= MINIMUM_BUFF_TURNS) {
     let freeFightFamiliar = toFamiliar(get('freeStasisFamiliar'));
-    print(`${freeFightFamiliar}`);
+    log(LogLevel.Debug, `Free Fight Familiar: ${freeFightFamiliar}`);
     useFamiliar(freeFightFamiliar);
     refreshComma();
   } else {
@@ -182,7 +240,7 @@ function drumMachineWithMacro(macro: Macro) {
 class SpookyPutty {
   static hasCopies() {
     // TODO: add support for all the spooky items here
-    print(`${get('spookyPuttyCopiesMade') + get('_raindohCopiesMade')}`);
+    log(LogLevel.Debug, `Foldable Copies: ${get('spookyPuttyCopiesMade') + get('_raindohCopiesMade')}`);
     return get('spookyPuttyCopiesMade') + get('_raindohCopiesMade') < 6;
   }
 
@@ -219,11 +277,11 @@ class DrunkPygmy {
   static freeBanishes() {
     return (
       get('questL11Worship') !== 'unstarted' &&
-      (get('_drunkPygmyBanishes') < 10 || (get('_drunkPygmyBanishes') == 10 && have($item`miniature crystal ball `)))
+      (get('_drunkPygmyBanishes') < 10 || (get('_drunkPygmyBanishes') == 10 && have($item`miniature crystal ball`)))
     );
   }
 
-  static shouldSaber() {
+  static shouldSaber(): boolean {
     return (
       get('questL11Worship') !== 'unstarted' &&
       ((get('_drunkPygmyBanishes') == 10 && !have($item`miniature crystal ball`)) ||
@@ -237,9 +295,11 @@ class DrunkPygmy {
     putCloset(itemAmount($item`bowling ball`), $item`bowling ball`);
     fights ||= 1;
     retrieveItem(fights, $item`Bowl of Scorpions`);
-    if (get('_drunkPygmyBanishes') == 10 && have($item`miniature crystal ball `)) {
+    if (get('_drunkPygmyBanishes') == 10 && have($item`miniature crystal ball`)) {
       useFamiliar($familiar`unspeakachu`);
-      equip($slot`familiar`, $item`miniature crystal ball `);
+      equip($slot`familiar`, $item`miniature crystal ball`);
+    } else if (get('_drunkPygmyBanishes') == 10) {
+      throw 'HOW';
     }
   }
 
@@ -291,6 +351,7 @@ class CosplaySaber {
     if (have($item`Fourth of May Cosplay Saber`) && CosplaySaber.getUpgrade() == SaberUpgrade.Unupgraded) {
       setChoice(1386, mode);
       visitUrl('main.php?action=may4');
+      if (handlingChoice()) runChoice(mode);
       setChoice(1386, 0);
     }
   }
@@ -298,13 +359,27 @@ class CosplaySaber {
 
 class FreeKill {
   static hasFreeKills() {
-    return !get('_gingerbreadMobHitUsed') || get('_shatteringPunchUsed') < 3 || get('_usedReplicaBatoomerang') < 3;
+    return (
+      !get('_gingerbreadMobHitUsed') ||
+      get('_shatteringPunchUsed') < 3 ||
+      (have($item`replica bat-oomerang`) && get('_usedReplicaBatoomerang') < 3) ||
+      availableAmount($item`Superduperheated metal`) > 0 ||
+      availableAmount($item`Daily Affirmation: Think Win-Lose`) > 0
+    );
   }
 
   static maybeMacro() {
     return Macro.externalIf(!get('_gingerbreadMobHitUsed'), Macro.skill($skill`gingerbread mob hit`))
       .externalIf(get('_shatteringPunchUsed') < 3, Macro.skill($skill`shattering punch`))
-      .externalIf(get('_usedReplicaBatoomerang') < 3, Macro.item($item`replica bat-oomerang`));
+      .externalIf(
+        have($item`replica bat-oomerang`) && get('_usedReplicaBatoomerang') < 3,
+        Macro.item($item`replica bat-oomerang`)
+      )
+      .externalIf(availableAmount($item`Superduperheated metal`) > 0, Macro.item($item`Superduperheated metal`))
+      .externalIf(
+        availableAmount($item`Daily Affirmation: Think Win-Lose`) > 0,
+        Macro.item($item`Daily Affirmation: Think Win-Lose`)
+      );
   }
 }
 
@@ -317,14 +392,22 @@ let withEquip = (slot: Slot, item: Item, action: () => void) => {
 
 class FreeRun {
   static hasFreeRuns() {
-    // total: 19 free runs
+    debug(`Navel ${get('_navelRunaways') < 3}`);
+    debug(`V Mask ${have($item`V for Vivala Mask`) && !get('_vmaskBanisherUsed')}`);
+    debug(`Stinky Cheese ${have($item`stinky cheese eye`) && !get('_stinkyCheeseBanisherUsed')}`);
+    debug(`Lil' Doctor Bag ${have($item`Lil' Doctor™ bag`) && get('_reflexHammerUsed') < 3}`);
+    debug(`snokebomb ${have($skill`snokebomb`) && get('_snokebombUsed') < 3}`);
+    debug(`hatred ${have($skill`Feel Hatred`) && get('_feelHatredUsed') < 3}`);
+    debug(`KGB ${have($item`Kremlin's Greatest Briefcase`) && get('_kgbTranquilizerDartUses') < 3}`);
+    debug(`MMFR ${have($item`mafia middle finger ring`) && !get('_mafiaMiddleFingerRingUsed')}`);
+    debug(`nano ${have($familiar`nanorhino`) && get('_nanorhinoCharge') == 100}`);
     return (
       get('_navelRunaways') < 3 ||
       (have($item`V for Vivala Mask`) && !get('_vmaskBanisherUsed')) ||
       (have($item`stinky cheese eye`) && !get('_stinkyCheeseBanisherUsed')) ||
       (have($item`Lil' Doctor™ bag`) && get('_reflexHammerUsed') < 3) ||
       (have($skill`snokebomb`) && get('_snokebombUsed') < 3) ||
-      (have($skill`Feel Hatred`) && get('_feelHatred') < 3) ||
+      (have($skill`Feel Hatred`) && get('_feelHatredUsed') < 3) ||
       (have($item`Kremlin's Greatest Briefcase`) && get('_kgbTranquilizerDartUses') < 3) ||
       (have($item`mafia middle finger ring`) && !get('_mafiaMiddleFingerRingUsed')) ||
       (have($familiar`nanorhino`) && get('_nanorhinoCharge') == 100)
@@ -391,7 +474,12 @@ class FreeRun {
     } else if (have($item`mafia middle finger ring`) && !get('_mafiaMiddleFingerRingUsed')) {
       withEquip($slot`acc3`, $item`mafia middle finger ring`, action);
     } else if (have($familiar`nanorhino`) && get('_nanorhinoCharge') == 100) {
+      let f = myFamiliar();
       useFamiliar($familiar`nanorhino`);
+      action();
+      useFamiliar(f);
+    } else {
+      action();
     }
   }
 }
@@ -541,10 +629,10 @@ step('drunk pygmy saber copies', () => DrunkPygmy.didSaber())(() => {
   adventureMacro($location`The Hidden Bowling Alley`, Macro.tentacle().abort());
   putCloset(itemAmount($item`Bowl of Scorpions`), $item`Bowl of Scorpions`);
   if (get('_saberForceUses') < 5) {
-    print('Sabering pygmies');
+    log(LogLevel.Debug, 'Sabering pygmies');
     adventureMacro($location`The Hidden Bowling Alley`, Macro.tentacle().skill('Use the Force'));
   } else {
-    print('Just killing pygmies');
+    log(LogLevel.Debug, 'Just killing pygmies');
     DrunkPygmy.setupFreeFight(1);
     adventureMacro($location`The Hidden Bowling Alley`, Macro.tentacle().abort());
   }
@@ -581,9 +669,13 @@ step(
 });
 
 step(
-  'drum machine',
+  'free kills',
   () => FreeKill.hasFreeKills(),
-  () => pickFreeFightFamiliar()
+  () => pickFreeFightFamiliar(),
+  () => {
+    buy(100, $item`Daily Affirmation: Think Win-Lose`, FREE_FIGHT_COST);
+    buy(100, $item`Superduperheated Metal`, FREE_FIGHT_COST);
+  }
 )(() => {
   drumMachineWithMacro(FreeKill.maybeMacro());
 });
@@ -919,10 +1011,8 @@ export function main(argString = '') {
     finalSteps.forEach(step_cb => step_cb(skiplist, true));
     steps.forEach(step_cb => step_cb(skiplist, true));
   } else if (skiplist.includes('final')) {
-    print('running final steps...');
     finalSteps.forEach(step_cb => step_cb(skiplist, false));
   } else {
-    print('running steps...');
     steps.forEach(step_cb => step_cb(skiplist, false));
   }
 }

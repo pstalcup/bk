@@ -1,10 +1,9 @@
-import { print, printHtml } from 'kolmafia';
+import { getInventory, mallPrice, print, printHtml, toInt, toItem } from 'kolmafia';
 import { main as fightMain } from './bkfights';
 import { main as killMain } from './bkkill';
-import { main as buffMain } from './bkbuffs';
 import { main as wlMain } from './wl';
 import { main as sewerMain } from './sewers';
-import { minimumRelevantBuff, Table } from './lib';
+import { buffsBelowThreshold, minimumRelevantBuff, Table } from './lib';
 import { get, set } from 'libram';
 
 function help() {
@@ -41,7 +40,11 @@ function preferences(args: String) {
     ['freeCrownOfThrones', 'Warbear Drone', 'The familiar to put into your Crown of Thrones (if it is used)'],
     ['freeBuddyBjorn', 'Golden Monkey', 'The familiar to put in your Buddy Bjorn (if it is used)'],
     ['free.hat', 'Crown of Thrones', 'Freefight outfit Hat'],
-    ['free.back', 'Buddy Bjorn', 'Freefight outfit Back'],
+    [
+      'free.back',
+      'Buddy Bjorn',
+      'Freefight outfit Back (will be flexed to Protonic Accelerator Pack if needed for quest)',
+    ],
     ['free.shirt', "Stephen's Lab Coat", 'Freefight outfit Shirt'],
     ['free.weapon', "Thor's Pliers", 'Freefight outfit Weapon'],
     ['free.off-hand', 'KoL Con 13 snowglobe', 'Freefight outfit Offhand'],
@@ -81,6 +84,30 @@ function preferences(args: String) {
   }
 }
 
+function getWrappedInventory(): Map<Item, number> {
+  let inventory = new Map<Item, number>();
+  let mafiaInventory = getInventory();
+  for (let itemStr in mafiaInventory) {
+    let item = toItem(itemStr);
+    inventory.set(item, mafiaInventory[itemStr]);
+  }
+  return inventory;
+}
+
+function mall() {
+  let inventory = getInventory();
+  let expensiveItems: Array<Item> = [];
+  for (let itemStr in inventory) {
+    let item = toItem(itemStr);
+    let price = mallPrice(item);
+    if (price > 10000) {
+      expensiveItems.push(item);
+    }
+  }
+  print(`You have ${expensiveItems.length} items. Here are 10:`);
+  expensiveItems.slice(10).forEach(i => print(`${i}:${mallPrice(i)}`));
+}
+
 export function main(args: string) {
   if (!args || args.length == 0) {
     print("run 'bk help' for help");
@@ -112,8 +139,12 @@ export function main(args: string) {
           wlMain(modeArgs);
           break;
         case 'minbuff':
-          let [minEffect, minTurns] = minimumRelevantBuff();
-          print(`${minEffect}: ${minTurns}`);
+          let thresholdEffects = buffsBelowThreshold(get('freeBuffThreshold'), modeArgs);
+          thresholdEffects.forEach(([minEffect, minTurns]: [Effect, number]) => print(`${minEffect}: ${minTurns}`));
+          break;
+        case 'mall':
+          mall();
+          break;
       }
     } else {
       print(`Invalid args ${args}`);

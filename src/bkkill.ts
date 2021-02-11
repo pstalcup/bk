@@ -2,18 +2,18 @@ import {
   availableAmount,
   cliExecute,
   equip,
+  getClanName,
   haveEffect,
-  maximize,
   print,
+  printHtml,
   retrieveItem,
-  stringModifier,
   toItem,
   toMonster,
   use,
   useFamiliar,
   visitUrl,
 } from 'kolmafia';
-import { $effect, $familiar, $item, $location, $monster, $skill, $slot, $slots, Clan, get, have } from 'libram';
+import { $effect, $familiar, $item, $items, $location, $monster, $skill, $slot, $slots, Clan, get, have } from 'libram';
 import { Macro, adventureMacro } from './combat';
 import { inClan, setChoice, withStash } from './lib';
 
@@ -34,9 +34,10 @@ type HoboLocation = {
   bossImage: ImageN;
   container: HoboContainer;
   choiceAdventure: number;
-  bossDrop: Item;
-  bossDrop2: Item | null;
 };
+
+const consumables = $items`Ol' Scratch's Salad Fork,Frosty's Frosty Mug,Jar of Fermented Pickle Juice,Voodoo Snuff,Extra-Greasy Slider,Hodgman's Blanket,Tin Cup of Mulligan Stew,hobo fortress blueprints,stuffed Hodgman`;
+const skills = $items`Elron's Explosive Etude,Benetton's Medley of Diversity,The Ballad of Richie Thingfinder,Prelude of Precision,Chorale of Companionship,Hodgman's journal #1: The Lean Times,Hodgman's journal #2: Entrepreneurythmics,Hodgman's journal #3: Pumping Tin,Hodgman's journal #4: View From The Big Top`;
 
 const hoboLocations: Map<Location, HoboLocation> = new Map<Location, HoboLocation>([
   [
@@ -46,8 +47,6 @@ const hoboLocations: Map<Location, HoboLocation> = new Map<Location, HoboLocatio
       bossImage: 10,
       container: 4,
       choiceAdventure: 201,
-      bossDrop: $item`ol' scratch's salad fork`,
-      bossDrop2: null,
     },
   ],
   [
@@ -57,8 +56,6 @@ const hoboLocations: Map<Location, HoboLocation> = new Map<Location, HoboLocatio
       bossImage: 10,
       container: 5,
       choiceAdventure: 202,
-      bossDrop: $item`frosty's frosty mug`,
-      bossDrop2: null,
     },
   ],
   [
@@ -68,8 +65,6 @@ const hoboLocations: Map<Location, HoboLocation> = new Map<Location, HoboLocatio
       bossImage: 10,
       container: 6,
       choiceAdventure: 203,
-      bossDrop: $item`jar of fermented pickle juice`,
-      bossDrop2: null,
     },
   ],
   [
@@ -79,8 +74,6 @@ const hoboLocations: Map<Location, HoboLocation> = new Map<Location, HoboLocatio
       bossImage: 10,
       container: 7,
       choiceAdventure: 204,
-      bossDrop: $item`voodoo snuff`,
-      bossDrop2: null,
     },
   ],
   [
@@ -90,8 +83,6 @@ const hoboLocations: Map<Location, HoboLocation> = new Map<Location, HoboLocatio
       bossImage: 10,
       container: 8,
       choiceAdventure: 205,
-      bossDrop: $item`extra-greasy slider`,
-      bossDrop2: null,
     },
   ],
   [
@@ -101,8 +92,6 @@ const hoboLocations: Map<Location, HoboLocation> = new Map<Location, HoboLocatio
       bossImage: 25,
       container: 2,
       choiceAdventure: 200,
-      bossDrop: $item`Hodgman's blanket`,
-      bossDrop2: $item`tin cup of mulligan stew`,
     },
   ],
 ]);
@@ -188,8 +177,8 @@ function kill(location: Location) {
         throw "Did not get Chilled to the Bone, so we can't kill frosty!";
       }
     }
-    setChoice(hoboLocation.choiceAdventure, 1);
     while (status(location) == HoboStatus.BossReady) {
+      setChoice(hoboLocation.choiceAdventure, 1);
       adventureMacro(
         location,
         Macro.if_('monstername eldritch tentacle', Macro.item($item`Louder Than Bomb`))
@@ -203,10 +192,10 @@ function kill(location: Location) {
       );
       print(`Killed ${hoboLocation.boss}`);
       setChoice(hoboLocation.choiceAdventure, 0);
-      if (have($effect`Chilled to the Bone`)) {
-        retrieveItem(1, $item`hot Dreadsylvanian cocoa`);
-        use($item`hot Dreadsylvanian cocoa`);
-      }
+    }
+    if (have($effect`Chilled to the Bone`)) {
+      retrieveItem(1, $item`hot Dreadsylvanian cocoa`);
+      use($item`hot Dreadsylvanian cocoa`);
     }
   }
 }
@@ -228,6 +217,7 @@ function statusString(location: Location) {
 export function main(args: string) {
   args ||= 'status';
   if (args.trim() == 'status') {
+    print(`In clan ${Clan.get().name}`);
     for (let key of hoboLocations.keys()) {
       print(`${key}: ${statusString(key)}`);
     }
@@ -237,24 +227,35 @@ export function main(args: string) {
     retrieveItem(10 - ltb, $item`Louder Than Bomb`);
 
     let drops = new Map<Item, number>();
+
+    consumables.forEach(i => drops.set(i, availableAmount(i)));
+    skills.forEach(i => drops.set(i, availableAmount(i)));
+
     for (let key of hoboLocations.keys()) {
       let lookup = hoboLocations.get(key);
 
       if (lookup && status(key) == HoboStatus.BossReady) {
-        print(`Killing ${key}`);
-        let bossdrop = availableAmount(lookup.bossDrop);
-        let bossdrop2 = lookup.bossDrop2 ? availableAmount(lookup.bossDrop2) : 0;
+        printHtml(`<b>Killing ${key}</b>`);
         kill(key);
-        drops.set(lookup.bossDrop, availableAmount(lookup.bossDrop) - bossdrop);
-        if (lookup.bossDrop2) {
-          drops.set(lookup.bossDrop, availableAmount(lookup.bossDrop2) - bossdrop2);
-        }
       } else {
         print(`Skipping ${key}`);
       }
     }
-    for (let [drop, amount] of drops.entries()) {
-      print(`${drop}: ${amount}`);
-    }
+    printHtml('<b>Consumable Drops</b>');
+    consumables.forEach(i => {
+      let current = availableAmount(i);
+      let prior = drops.get(i) || 0;
+      if (current > prior) {
+        print(`${i}: ${current - prior}`);
+      }
+    });
+    printHtml('<b>Skill Drops</b>');
+    skills.forEach(i => {
+      let current = availableAmount(i);
+      let prior = drops.get(i) || 0;
+      if (current > prior) {
+        print(`${i}: ${current - prior}`);
+      }
+    });
   }
 }
