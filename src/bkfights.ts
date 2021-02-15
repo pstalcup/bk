@@ -64,40 +64,12 @@ import {
 } from 'libram';
 import { fillAsdonMartinTo } from './asdon';
 import { adventureMacro, Macro, withMacro } from './combat';
-import { getItem, MayoClinic, minimumRelevantBuff, setChoice, setChoices, withStash } from './lib';
+import { getItem, inClan, log, LogLevel, minimumRelevantBuff, setChoice, setChoices } from './lib';
 
 //const FREE_FIGHT_COST = 40000; // TODO: don't hardcode this
 const FREE_FIGHT_COST = get<number>('freeFightValue');
 const FREE_FIGHT_COPY_TARGET = toMonster(get('freeCopyFight'));
 const MINIMUM_BUFF_TURNS = get<number>('freeBuffThreshold');
-
-enum LogLevel {
-  None = -1,
-  Info = 0,
-  Debug = 1,
-}
-
-let log = (function () {
-  let printLevel = LogLevel.None;
-  switch (get<string>('bkLogLevel').toLowerCase()) {
-    case 'debug':
-      printLevel = LogLevel.Debug;
-      break;
-    case 'info':
-      printLevel = LogLevel.Info;
-      break;
-  }
-
-  return function (level: LogLevel, message: string, color?: string | null) {
-    if (printLevel >= level) {
-      if (color) {
-        print(message, color);
-      } else {
-        print(message);
-      }
-    }
-  };
-})();
 
 let debug = function (message: string) {
   log(LogLevel.Debug, message, 'red');
@@ -532,7 +504,7 @@ step(
 step(
   'fax',
   () => !get('_photocopyUsed'),
-  () => faxbot(FREE_FIGHT_COPY_TARGET, 'Cheesefax')
+  () => inClan(get('faxClan'), () => faxbot(FREE_FIGHT_COPY_TARGET, 'Cheesefax'))
 )(() => {
   withMacro(
     Macro.tentacle()
@@ -934,7 +906,7 @@ step(
   'final asdon martin',
   () =>
     (!get('_missileLauncherUsed') && getCampground()['Asdon Martin keyfob'] !== undefined) ||
-    (!get('_workshedItemUsed') && get('_')),
+    (!get('_workshedItemUsed') && have($item`Asdon Martin keyfob`)),
   () => {
     if (getCampground()['Asdon Martin keyfob'] === undefined) {
       use($item`Asdon Martin keyfob`);

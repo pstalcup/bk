@@ -5044,6 +5044,51 @@ var templateObject_1;
 
 /***/ }),
 
+/***/ "./node_modules/libram/dist/console.js":
+/*!*********************************************!*\
+  !*** ./node_modules/libram/dist/console.js ***!
+  \*********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "log": () => (/* binding */ log),
+/* harmony export */   "info": () => (/* binding */ info),
+/* harmony export */   "warn": () => (/* binding */ warn),
+/* harmony export */   "error": () => (/* binding */ error)
+/* harmony export */ });
+/* harmony import */ var kolmafia__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! kolmafia */ "kolmafia");
+/* harmony import */ var kolmafia__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(kolmafia__WEBPACK_IMPORTED_MODULE_0__);
+ // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+var logColor = function logColor(color) {
+  return function () {
+    var args = [];
+
+    for (var _i = 0; _i < arguments.length; _i++) {
+      args[_i] = arguments[_i];
+    }
+
+    var output = args.map(function (x) {
+      return x.toString();
+    }).join(" ");
+
+    if (color) {
+      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)(output, color);
+    } else {
+      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)(output);
+    }
+  };
+};
+
+var log = logColor();
+var info = logColor("blue");
+var warn = logColor("red");
+var error = logColor("red");
+
+/***/ }),
+
 /***/ "./node_modules/libram/dist/lib.js":
 /*!*****************************************!*\
   !*** ./node_modules/libram/dist/lib.js ***!
@@ -9473,10 +9518,121 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var kolmafia__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! kolmafia */ "kolmafia");
 /* harmony import */ var kolmafia__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(kolmafia__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/template-string.js");
-/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/property.js");
-/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/lib.js");
+/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/template-string.js");
+/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/property.js");
+/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/lib.js");
+/* harmony import */ var libram_dist_console__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! libram/dist/console */ "./node_modules/libram/dist/console.js");
 /* harmony import */ var _lib__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./lib */ "./src/lib.ts");
+function _templateObject13() {
+  var data = _taggedTemplateLiteral(["Summon Alice's Army Cards"]);
+
+  _templateObject13 = function _templateObject13() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject12() {
+  var data = _taggedTemplateLiteral(["Summon Alice's Army Cards"]);
+
+  _templateObject12 = function _templateObject12() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject11() {
+  var data = _taggedTemplateLiteral(["Summon Clip Art"]);
+
+  _templateObject11 = function _templateObject11() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject10() {
+  var data = _taggedTemplateLiteral(["Summon Clip Art"]);
+
+  _templateObject10 = function _templateObject10() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject9() {
+  var data = _taggedTemplateLiteral(["Summon Smithsness"]);
+
+  _templateObject9 = function _templateObject9() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject8() {
+  var data = _taggedTemplateLiteral(["Summon Smithsness"]);
+
+  _templateObject8 = function _templateObject8() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject7() {
+  var data = _taggedTemplateLiteral(["Summon Sugar Sheets"]);
+
+  _templateObject7 = function _templateObject7() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject6() {
+  var data = _taggedTemplateLiteral(["Summon Sugar Sheets"]);
+
+  _templateObject6 = function _templateObject6() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject5() {
+  var data = _taggedTemplateLiteral(["Summon Stickers"]);
+
+  _templateObject5 = function _templateObject5() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject4() {
+  var data = _taggedTemplateLiteral(["Summon Stickers"]);
+
+  _templateObject4 = function _templateObject4() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject3() {
+  var data = _taggedTemplateLiteral(["bag of park garbage"]);
+
+  _templateObject3 = function _templateObject3() {
+    return data;
+  };
+
+  return data;
+}
+
 function _templateObject2() {
   var data = _taggedTemplateLiteral(["Bag o' Tricks"]);
 
@@ -9502,10 +9658,12 @@ function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(
 
 
 
+
 var tasks = new Array();
 
 function dailyTask(name, condition, action) {
   var wrappedTask = function wrappedTask() {
+    (0,libram_dist_console__WEBPACK_IMPORTED_MODULE_2__.log)(_lib__WEBPACK_IMPORTED_MODULE_1__.LogLevel.Debug, "Running Task ".concat(name));
     var loopCount = 0;
 
     while (condition()) {
@@ -9521,21 +9679,61 @@ function dailyTask(name, condition, action) {
   tasks.push(wrappedTask);
 }
 
-var pyec = (0,libram__WEBPACK_IMPORTED_MODULE_2__.$item)(_templateObject());
+var pyec = (0,libram__WEBPACK_IMPORTED_MODULE_3__.$item)(_templateObject());
 dailyTask('pyec', function () {
-  return !(0,libram__WEBPACK_IMPORTED_MODULE_3__.get)('expressCardUsed');
+  return !(0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('expressCardUsed');
 }, function () {
   return (0,_lib__WEBPACK_IMPORTED_MODULE_1__.withStash)([pyec], function () {
     return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)(pyec);
   });
 });
-var bot = (0,libram__WEBPACK_IMPORTED_MODULE_2__.$item)(_templateObject2());
+var bot = (0,libram__WEBPACK_IMPORTED_MODULE_3__.$item)(_templateObject2());
 dailyTask("bag o' tricks", function () {
-  return !(0,libram__WEBPACK_IMPORTED_MODULE_3__.get)('_bagOTricksUsed') && (0,libram__WEBPACK_IMPORTED_MODULE_4__.have)(bot);
+  return !(0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('_bagOTricksUsed') && (0,libram__WEBPACK_IMPORTED_MODULE_5__.have)(bot);
 }, function () {
   return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)(bot);
 });
+dailyTask('dinsey garbage', function () {
+  return ((0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('stenchAirportAlways') || (0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('_stenchAirportToday')) && !(0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('_dinseyGarbageDisposed');
+}, function () {
+  (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.retrieveItem)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$item)(_templateObject3()));
+  (0,_lib__WEBPACK_IMPORTED_MODULE_1__.setChoice)(1067, 6);
+  (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.visitUrl)('place.php?whichplace=airport_stench&action=airport3_tunnels');
+});
+dailyTask('towering inferno', function () {
+  return ((0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('hotAirportAlways') || (0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('_hotAirportToday')) && !(0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('_infernoDiscoVisited');
+}, function () {
+  (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.maximize)('disco style', false);
+  (0,_lib__WEBPACK_IMPORTED_MODULE_1__.setChoice)(1090, 7);
+  (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.visitUrl)('place.php?whichplace=airport_hot&action=airport4_zone1');
+});
+dailyTask('stickers', function () {
+  return (0,libram__WEBPACK_IMPORTED_MODULE_5__.have)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$skill)(_templateObject4())) && (0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('_stickerSummons') < 3;
+}, function () {
+  return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useSkill)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$skill)(_templateObject5()));
+});
+dailyTask('sugar', function () {
+  return (0,libram__WEBPACK_IMPORTED_MODULE_5__.have)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$skill)(_templateObject6())) && (0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('_sugarSummons') < 3;
+}, function () {
+  return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useSkill)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$skill)(_templateObject7()));
+});
+dailyTask('smiths', function () {
+  return (0,libram__WEBPACK_IMPORTED_MODULE_5__.have)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$skill)(_templateObject8())) && (0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('_smithsnessSummons') < 3;
+}, function () {
+  return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useSkill)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$skill)(_templateObject9()));
+});
+dailyTask('clip art', function () {
+  return (0,libram__WEBPACK_IMPORTED_MODULE_5__.have)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$skill)(_templateObject10())) && (0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('_clipartSummons') < 3;
+}, function () {
+  return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useSkill)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$skill)(_templateObject11()));
+});
+dailyTask("Alice's Army", function () {
+  return (0,libram__WEBPACK_IMPORTED_MODULE_5__.have)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$skill)(_templateObject12())) && (0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('grimoire3Summons') < 1;
+}, function () {
+  return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useSkill)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$skill)(_templateObject13()));
+});
 function main() {
+  (0,libram_dist_console__WEBPACK_IMPORTED_MODULE_2__.log)(_lib__WEBPACK_IMPORTED_MODULE_1__.LogLevel.None, 'Running Daily Tasks...');
   tasks.forEach(function (task) {
     return task();
   });
@@ -9557,11 +9755,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var kolmafia__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! kolmafia */ "kolmafia");
 /* harmony import */ var kolmafia__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(kolmafia__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/property.js");
-/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/lib.js");
-/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/template-string.js");
+/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/template-string.js");
+/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/lib.js");
 /* harmony import */ var _lib__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./lib */ "./src/lib.ts");
-function _templateObject5() {
+function _templateObject6() {
   var data = _taggedTemplateLiteral(["spice melange"]);
+
+  _templateObject6 = function _templateObject6() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject5() {
+  var data = _taggedTemplateLiteral(["Thanksgetting"]);
 
   _templateObject5 = function _templateObject5() {
     return data;
@@ -9571,7 +9779,7 @@ function _templateObject5() {
 }
 
 function _templateObject4() {
-  var data = _taggedTemplateLiteral(["Thanksgetting"]);
+  var data = _taggedTemplateLiteral([""]);
 
   _templateObject4 = function _templateObject4() {
     return data;
@@ -9581,7 +9789,7 @@ function _templateObject4() {
 }
 
 function _templateObject3() {
-  var data = _taggedTemplateLiteral([""]);
+  var data = _taggedTemplateLiteral(["Mayodiol"]);
 
   _templateObject3 = function _templateObject3() {
     return data;
@@ -9591,7 +9799,7 @@ function _templateObject3() {
 }
 
 function _templateObject2() {
-  var data = _taggedTemplateLiteral(["Mayodiol"]);
+  var data = _taggedTemplateLiteral(["Mayonex"]);
 
   _templateObject2 = function _templateObject2() {
     return data;
@@ -9601,7 +9809,7 @@ function _templateObject2() {
 }
 
 function _templateObject() {
-  var data = _taggedTemplateLiteral(["Mayonex"]);
+  var data = _taggedTemplateLiteral(["Mayodiol"]);
 
   _templateObject = function _templateObject() {
     return data;
@@ -9640,6 +9848,7 @@ function fillBooze(amount) {
 function fillFood(amount) {
   if (libram__WEBPACK_IMPORTED_MODULE_2__.getString('fillerBooze') == 'mayo') {
     _lib__WEBPACK_IMPORTED_MODULE_1__.MayoClinic.tryPlace();
+    _lib__WEBPACK_IMPORTED_MODULE_1__.MayoClinic.set((0,libram__WEBPACK_IMPORTED_MODULE_3__.$item)(_templateObject()));
   }
 
   var fillerFood = (0,libram__WEBPACK_IMPORTED_MODULE_2__.get)('fillerFood', '').split(',').map(function (i) {
@@ -9654,8 +9863,8 @@ function fillFood(amount) {
         (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.retrieveItem)(i);
         (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.eat)(i);
 
-        if (libram__WEBPACK_IMPORTED_MODULE_2__.getString('fillerBooze') == 'mayo' && (0,libram__WEBPACK_IMPORTED_MODULE_3__.getRemainingLiver)() == 0) {
-          _lib__WEBPACK_IMPORTED_MODULE_1__.MayoClinic.set((0,libram__WEBPACK_IMPORTED_MODULE_4__.$item)(_templateObject()));
+        if (libram__WEBPACK_IMPORTED_MODULE_2__.getString('fillerBooze') == 'mayo' && (0,libram__WEBPACK_IMPORTED_MODULE_4__.getRemainingLiver)() == 0) {
+          _lib__WEBPACK_IMPORTED_MODULE_1__.MayoClinic.set((0,libram__WEBPACK_IMPORTED_MODULE_3__.$item)(_templateObject2()));
         }
       });
     }
@@ -9663,21 +9872,21 @@ function fillFood(amount) {
 }
 
 function thanksgetting() {
-  if (libram__WEBPACK_IMPORTED_MODULE_2__.getString('additionalFullness') == 'mayo' && _lib__WEBPACK_IMPORTED_MODULE_1__.MayoClinic.present()) {
-    _lib__WEBPACK_IMPORTED_MODULE_1__.MayoClinic.tryPlace();
-    _lib__WEBPACK_IMPORTED_MODULE_1__.MayoClinic.set((0,libram__WEBPACK_IMPORTED_MODULE_4__.$item)(_templateObject2()));
+  if (libram__WEBPACK_IMPORTED_MODULE_2__.getString('additionalFullness') === 'mayo') {
+    if (!_lib__WEBPACK_IMPORTED_MODULE_1__.MayoClinic.tryPlace()) throw 'Failed to get Mayo Clinic!';
+    _lib__WEBPACK_IMPORTED_MODULE_1__.MayoClinic.set((0,libram__WEBPACK_IMPORTED_MODULE_3__.$item)(_templateObject3()));
   }
 
-  var thanksGettingFood = (0,libram__WEBPACK_IMPORTED_MODULE_4__.$items)(_templateObject3()).filter(function (i) {
-    return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.effectModifier)(i, 'effect') == (0,libram__WEBPACK_IMPORTED_MODULE_4__.$effect)(_templateObject4());
+  var thanksGettingFood = (0,libram__WEBPACK_IMPORTED_MODULE_3__.$items)(_templateObject4()).filter(function (i) {
+    return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.effectModifier)(i, 'effect') == (0,libram__WEBPACK_IMPORTED_MODULE_3__.$effect)(_templateObject5());
   });
   thanksGettingFood.forEach(function (i) {
-    if ((0,libram__WEBPACK_IMPORTED_MODULE_3__.getRemainingStomach)() < 2 && libram__WEBPACK_IMPORTED_MODULE_2__.getString('additionalFullness') == 'melange' && !(0,libram__WEBPACK_IMPORTED_MODULE_2__.get)('spiceMelangeUsed')) {
+    if ((0,libram__WEBPACK_IMPORTED_MODULE_4__.getRemainingStomach)() < 2 && libram__WEBPACK_IMPORTED_MODULE_2__.getString('additionalFullness') == 'melange' && !(0,libram__WEBPACK_IMPORTED_MODULE_2__.get)('spiceMelangeUsed')) {
       if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myInebriety)() < 3) {
         fillBooze(3 - (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myInebriety)());
       }
 
-      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)((0,libram__WEBPACK_IMPORTED_MODULE_4__.$item)(_templateObject5()));
+      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$item)(_templateObject6()));
     }
 
     (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.eat)(i);
@@ -9693,8 +9902,8 @@ function main(args) {
     thanksgetting();
   }
 
-  if ((0,libram__WEBPACK_IMPORTED_MODULE_3__.getRemainingStomach)() > 0) fillFood((0,libram__WEBPACK_IMPORTED_MODULE_3__.getRemainingStomach)());
-  if ((0,libram__WEBPACK_IMPORTED_MODULE_3__.getRemainingLiver)() > 0) fillBooze((0,libram__WEBPACK_IMPORTED_MODULE_3__.getRemainingLiver)());
+  if ((0,libram__WEBPACK_IMPORTED_MODULE_4__.getRemainingStomach)() > 0) fillFood((0,libram__WEBPACK_IMPORTED_MODULE_4__.getRemainingStomach)());
+  if ((0,libram__WEBPACK_IMPORTED_MODULE_4__.getRemainingLiver)() > 0) fillBooze((0,libram__WEBPACK_IMPORTED_MODULE_4__.getRemainingLiver)());
 }
 
 /***/ }),
@@ -9721,8 +9930,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _asdon__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./asdon */ "./src/asdon.ts");
 /* harmony import */ var _combat__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./combat */ "./src/combat.ts");
 /* harmony import */ var _lib__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./lib */ "./src/lib.ts");
-function _templateObject227() {
+function _templateObject228() {
   var data = _taggedTemplateLiteral(["Eldritch Attunement"]);
+
+  _templateObject228 = function _templateObject228() {
+    return data;
+  };
+
+  return data;
+}
+
+function _templateObject227() {
+  var data = _taggedTemplateLiteral(["Steely-Eyed Squint"]);
 
   _templateObject227 = function _templateObject227() {
     return data;
@@ -9732,7 +9951,7 @@ function _templateObject227() {
 }
 
 function _templateObject226() {
-  var data = _taggedTemplateLiteral(["Steely-Eyed Squint"]);
+  var data = _taggedTemplateLiteral(["Cobb's Knob Treasury"]);
 
   _templateObject226 = function _templateObject226() {
     return data;
@@ -9742,7 +9961,7 @@ function _templateObject226() {
 }
 
 function _templateObject225() {
-  var data = _taggedTemplateLiteral(["Cobb's Knob Treasury"]);
+  var data = _taggedTemplateLiteral(["drive-by shooting"]);
 
   _templateObject225 = function _templateObject225() {
     return data;
@@ -9752,7 +9971,7 @@ function _templateObject225() {
 }
 
 function _templateObject224() {
-  var data = _taggedTemplateLiteral(["drive-by shooting"]);
+  var data = _taggedTemplateLiteral(["robortender"]);
 
   _templateObject224 = function _templateObject224() {
     return data;
@@ -9762,7 +9981,7 @@ function _templateObject224() {
 }
 
 function _templateObject223() {
-  var data = _taggedTemplateLiteral(["robortender"]);
+  var data = _taggedTemplateLiteral(["Robortender"]);
 
   _templateObject223 = function _templateObject223() {
     return data;
@@ -9772,7 +9991,7 @@ function _templateObject223() {
 }
 
 function _templateObject222() {
-  var data = _taggedTemplateLiteral(["Robortender"]);
+  var data = _taggedTemplateLiteral(["Asdon Martin: Missile Launcher"]);
 
   _templateObject222 = function _templateObject222() {
     return data;
@@ -9782,7 +10001,7 @@ function _templateObject222() {
 }
 
 function _templateObject221() {
-  var data = _taggedTemplateLiteral(["Asdon Martin: Missile Launcher"]);
+  var data = _taggedTemplateLiteral(["Asdon Martin keyfob"]);
 
   _templateObject221 = function _templateObject221() {
     return data;
@@ -12020,40 +12239,9 @@ function _taggedTemplateLiteral(strings, raw) { if (!raw) { raw = strings.slice(
 var FREE_FIGHT_COST = (0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('freeFightValue');
 var FREE_FIGHT_COPY_TARGET = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.toMonster)((0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('freeCopyFight'));
 var MINIMUM_BUFF_TURNS = (0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('freeBuffThreshold');
-var LogLevel;
-
-(function (LogLevel) {
-  LogLevel[LogLevel["None"] = -1] = "None";
-  LogLevel[LogLevel["Info"] = 0] = "Info";
-  LogLevel[LogLevel["Debug"] = 1] = "Debug";
-})(LogLevel || (LogLevel = {}));
-
-var log = function () {
-  var printLevel = LogLevel.None;
-
-  switch ((0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('bkLogLevel').toLowerCase()) {
-    case 'debug':
-      printLevel = LogLevel.Debug;
-      break;
-
-    case 'info':
-      printLevel = LogLevel.Info;
-      break;
-  }
-
-  return function (level, message, color) {
-    if (printLevel >= level) {
-      if (color) {
-        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)(message, color);
-      } else {
-        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)(message);
-      }
-    }
-  };
-}();
 
 var debug = function debug(message) {
-  log(LogLevel.Debug, message, 'red');
+  (0,_lib__WEBPACK_IMPORTED_MODULE_3__.log)(_lib__WEBPACK_IMPORTED_MODULE_3__.LogLevel.Debug, message, 'red');
 };
 
 function maybeBjorn(f) {
@@ -12115,9 +12303,9 @@ function step(name, condition, setup, before) {
   return function (step_fun) {
     var wrappedStep = function wrappedStep(skiplist, list) {
       if (list) {
-        log(LogLevel.None, "".concat(name));
+        (0,_lib__WEBPACK_IMPORTED_MODULE_3__.log)(_lib__WEBPACK_IMPORTED_MODULE_3__.LogLevel.None, "".concat(name));
       } else if (skiplist.indexOf(name) === -1) {
-        log(LogLevel.Info, "executing ".concat(name));
+        (0,_lib__WEBPACK_IMPORTED_MODULE_3__.log)(_lib__WEBPACK_IMPORTED_MODULE_3__.LogLevel.Info, "executing ".concat(name));
         if (before) before();
 
         if (condition()) {
@@ -12146,7 +12334,7 @@ function step(name, condition, setup, before) {
           });
         }
       } else {
-        log(LogLevel.Info, "skipping ".concat(name));
+        (0,_lib__WEBPACK_IMPORTED_MODULE_3__.log)(_lib__WEBPACK_IMPORTED_MODULE_3__.LogLevel.Info, "skipping ".concat(name));
       }
     };
 
@@ -12188,11 +12376,11 @@ function pickFreeFightFamiliar() {
       minEffect = _minimumRelevantBuff2[0],
       minTurns = _minimumRelevantBuff2[1];
 
-  log(LogLevel.Info, "".concat(minEffect, " Has ").concat(minTurns, " turns"));
+  (0,_lib__WEBPACK_IMPORTED_MODULE_3__.log)(_lib__WEBPACK_IMPORTED_MODULE_3__.LogLevel.Info, "".concat(minEffect, " Has ").concat(minTurns, " turns"));
 
   if (minTurns >= MINIMUM_BUFF_TURNS) {
     var freeFightFamiliar = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.toFamiliar)((0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('freeStasisFamiliar'));
-    log(LogLevel.Debug, "Free Fight Familiar: ".concat(freeFightFamiliar));
+    (0,_lib__WEBPACK_IMPORTED_MODULE_3__.log)(_lib__WEBPACK_IMPORTED_MODULE_3__.LogLevel.Debug, "Free Fight Familiar: ".concat(freeFightFamiliar));
     (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useFamiliar)(freeFightFamiliar);
     refreshComma();
   } else {
@@ -12216,7 +12404,7 @@ var SpookyPutty = /*#__PURE__*/function () {
     key: "hasCopies",
     value: function hasCopies() {
       // TODO: add support for all the spooky items here
-      log(LogLevel.Debug, "Foldable Copies: ".concat((0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('spookyPuttyCopiesMade') + (0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('_raindohCopiesMade')));
+      (0,_lib__WEBPACK_IMPORTED_MODULE_3__.log)(_lib__WEBPACK_IMPORTED_MODULE_3__.LogLevel.Debug, "Foldable Copies: ".concat((0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('spookyPuttyCopiesMade') + (0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('_raindohCopiesMade')));
       return (0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('spookyPuttyCopiesMade') + (0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('_raindohCopiesMade') < 6;
     }
   }, {
@@ -12513,7 +12701,9 @@ step('chateau', function () {
 step('fax', function () {
   return !(0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('_photocopyUsed');
 }, function () {
-  return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.faxbot)(FREE_FIGHT_COPY_TARGET, 'Cheesefax');
+  return (0,_lib__WEBPACK_IMPORTED_MODULE_3__.inClan)((0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('faxClan'), function () {
+    return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.faxbot)(FREE_FIGHT_COPY_TARGET, 'Cheesefax');
+  });
 })(function () {
   (0,_combat__WEBPACK_IMPORTED_MODULE_2__.withMacro)(_combat__WEBPACK_IMPORTED_MODULE_2__.Macro.tentacle().step(maybeMacro('_iceSculptureUsed', (0,libram__WEBPACK_IMPORTED_MODULE_5__.$item)(_templateObject122()))).step(maybeMacro('_cameraUsed', (0,libram__WEBPACK_IMPORTED_MODULE_5__.$item)(_templateObject123()))).step(SpookyPutty.maybeMacro()).maybeStasis().spellKill(), function () {
     return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$item)(_templateObject124()));
@@ -12602,11 +12792,11 @@ step('drunk pygmy saber copies', function () {
   (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.putCloset)((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.itemAmount)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$item)(_templateObject141())), (0,libram__WEBPACK_IMPORTED_MODULE_5__.$item)(_templateObject142()));
 
   if ((0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('_saberForceUses') < 5) {
-    log(LogLevel.Debug, 'Sabering pygmies');
+    (0,_lib__WEBPACK_IMPORTED_MODULE_3__.log)(_lib__WEBPACK_IMPORTED_MODULE_3__.LogLevel.Debug, 'Sabering pygmies');
     (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.equip)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$slot)(_templateObject143()), (0,libram__WEBPACK_IMPORTED_MODULE_5__.$item)(_templateObject144()));
     (0,_combat__WEBPACK_IMPORTED_MODULE_2__.adventureMacro)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$location)(_templateObject145()), _combat__WEBPACK_IMPORTED_MODULE_2__.Macro.tentacle().skill('Use the Force'));
   } else {
-    log(LogLevel.Debug, 'Just killing pygmies');
+    (0,_lib__WEBPACK_IMPORTED_MODULE_3__.log)(_lib__WEBPACK_IMPORTED_MODULE_3__.LogLevel.Debug, 'Just killing pygmies');
     DrunkPygmy.setupFreeFight(1);
     (0,_combat__WEBPACK_IMPORTED_MODULE_2__.adventureMacro)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$location)(_templateObject146()), _combat__WEBPACK_IMPORTED_MODULE_2__.Macro.tentacle().abort());
   }
@@ -12809,38 +12999,38 @@ step('final kramco familiar fishing', function () {
   (0,_combat__WEBPACK_IMPORTED_MODULE_2__.adventureMacro)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$location)(_templateObject217()), _combat__WEBPACK_IMPORTED_MODULE_2__.Macro.tentacle().kramco(_combat__WEBPACK_IMPORTED_MODULE_2__.Macro.externalIf((0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('bootsCharged'), _combat__WEBPACK_IMPORTED_MODULE_2__.Macro.skill((0,libram__WEBPACK_IMPORTED_MODULE_5__.$skill)(_templateObject218())))).externalIf((0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('_mayflySummons') < 30, _combat__WEBPACK_IMPORTED_MODULE_2__.Macro.if_('monstername basic elemental', _combat__WEBPACK_IMPORTED_MODULE_2__.Macro.trySkill((0,libram__WEBPACK_IMPORTED_MODULE_5__.$skill)(_templateObject219())).abort())).step('runaway'));
 });
 step('final asdon martin', function () {
-  return !(0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('_missileLauncherUsed') && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getCampground)()['Asdon Martin keyfob'] !== undefined || !(0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('_workshedItemUsed') && (0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('_');
+  return !(0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('_missileLauncherUsed') && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getCampground)()['Asdon Martin keyfob'] !== undefined || !(0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('_workshedItemUsed') && (0,libram__WEBPACK_IMPORTED_MODULE_6__.have)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$item)(_templateObject220()));
 }, function () {
   if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getCampground)()['Asdon Martin keyfob'] === undefined) {
-    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$item)(_templateObject220()));
+    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$item)(_templateObject221()));
   }
 
   (0,_asdon__WEBPACK_IMPORTED_MODULE_1__.fillAsdonMartinTo)(100);
 })(function () {
-  drumMachineWithMacro(_combat__WEBPACK_IMPORTED_MODULE_2__.Macro.skill((0,libram__WEBPACK_IMPORTED_MODULE_5__.$skill)(_templateObject221())));
+  drumMachineWithMacro(_combat__WEBPACK_IMPORTED_MODULE_2__.Macro.skill((0,libram__WEBPACK_IMPORTED_MODULE_5__.$skill)(_templateObject222())));
 });
 step('pill keeper embezzlers', function () {
-  return (0,libram__WEBPACK_IMPORTED_MODULE_6__.getRemainingSpleen)() >= 3 && libram__WEBPACK_IMPORTED_MODULE_4__.getBoolean('spendTurns', false) && (0,libram__WEBPACK_IMPORTED_MODULE_6__.have)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$familiar)(_templateObject222()));
+  return (0,libram__WEBPACK_IMPORTED_MODULE_6__.getRemainingSpleen)() >= 3 && libram__WEBPACK_IMPORTED_MODULE_4__.getBoolean('spendTurns', false) && (0,libram__WEBPACK_IMPORTED_MODULE_6__.have)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$familiar)(_templateObject223()));
 }, function () {
-  (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useFamiliar)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$familiar)(_templateObject223()));
+  (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useFamiliar)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$familiar)(_templateObject224()));
 
   if (!(0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('_roboDrinks').includes('drive-by shooting')) {
-    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.retrieveItem)(1, (0,libram__WEBPACK_IMPORTED_MODULE_5__.$item)(_templateObject224()));
+    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.retrieveItem)(1, (0,libram__WEBPACK_IMPORTED_MODULE_5__.$item)(_templateObject225()));
     (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)('robo drive-by shooting');
   }
 
   (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.maximize)("meat +equip thor's pliers +equip mafia pointer finger ring", false);
 })(function () {
   (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)('pillkeeper semirare');
-  (0,_combat__WEBPACK_IMPORTED_MODULE_2__.adventureMacro)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$location)(_templateObject225()), _combat__WEBPACK_IMPORTED_MODULE_2__.Macro.tentacle().if_('monstername Knob Goblin Embezzler', _combat__WEBPACK_IMPORTED_MODULE_2__.Macro.spellKill()).abort());
+  (0,_combat__WEBPACK_IMPORTED_MODULE_2__.adventureMacro)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$location)(_templateObject226()), _combat__WEBPACK_IMPORTED_MODULE_2__.Macro.tentacle().if_('monstername Knob Goblin Embezzler', _combat__WEBPACK_IMPORTED_MODULE_2__.Macro.spellKill()).abort());
 });
 function main() {
   var argString = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
   var skiplist = argString.split(';').map(function (s) {
     return s.trim();
   });
-  if (!(0,libram__WEBPACK_IMPORTED_MODULE_6__.have)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$effect)(_templateObject226()))) throw 'Get Squint first!';
-  if (!(0,libram__WEBPACK_IMPORTED_MODULE_6__.have)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$effect)(_templateObject227()))) throw 'Get Eldritch Attunement first!';
+  if (!(0,libram__WEBPACK_IMPORTED_MODULE_6__.have)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$effect)(_templateObject227()))) throw 'Get Squint first!';
+  if (!(0,libram__WEBPACK_IMPORTED_MODULE_6__.have)((0,libram__WEBPACK_IMPORTED_MODULE_5__.$effect)(_templateObject228()))) throw 'Get Eldritch Attunement first!';
   (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)('mood apathetic');
   (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)('ccs bkfights');
 
@@ -14362,7 +14552,7 @@ function help() {
 }
 
 function preferences(args) {
-  var prefDefaults = [['freeFightValue', 40000, 'The Maximimum amount to spend buying free fights'], ['stashClan', '', "The clan to pull shared stash items (moveable feast, bag o' tricks, PYEC)"], ['fishClan', '', 'The clan to pull Clan Fishery Equipment'], ['chilledClan', '', 'The clan with a setup High Kiss Castle, tuned Cold'], ['freeCopyFight', 'Witchess Bishop', 'The monster to rainman/fax for free fights'], ['freeStasisFamiliar', 'Comma Chameleon', 'The familiar to use when running stasis'], ['freeBuffThreshold', 25, 'The amount of turns to guarantee of a buff before you run your stasis familiar'], ['freeCrownOfThrones', 'Warbear Drone', 'The familiar to put into your Crown of Thrones (if it is used)'], ['freeBuddyBjorn', 'Golden Monkey', 'The familiar to put in your Buddy Bjorn (if it is used)'], ['getThanksgetting', 'true', 'Whether or not to eat 9 thanksgetting foods'], ['additionalFullness', 'mayo', 'How to get to 18 fullness. Either "melange" or "mayo"'], ['spendTurns', 'true', 'Allow BK to do certain tasks that are high value turns'], ['fillerFood', 'SMOOCH soda', 'Food to fill your remaining stomach with (use a commas to seperate values)'], ['fillerBooze', 'mayo', 'Booze to fill your remaining liver with (use a commas to seperate values). If "mayo", it will use food filler'], ['free.hat', 'Crown of Thrones', 'Freefight outfit Hat'], ['free.back', 'Buddy Bjorn', 'Freefight outfit Back (will be flexed to Protonic Accelerator Pack if needed for quest)'], ['free.shirt', "Stephen's Lab Coat", 'Freefight outfit Shirt'], ['free.weapon', "Thor's Pliers", 'Freefight outfit Weapon'], ['free.off-hand', 'KoL Con 13 snowglobe', 'Freefight outfit Offhand'], ['free.pants', 'pantogram pants', 'Freefight outfit Pants'], ['free.acc1', "Mr. Screege's Spectacles", 'Freefight outfit Accessory (1)'], ['free.acc2', "Mr. Cheeng's Spectacles", 'Freefight outfit Accessory (2)'], ['free.acc3', 'Lucky gold ring', 'Freefight outfit Accessory (3) (this will be flexed out for accessoies as needed in some free fights)'], ['free.familiar', 'Ittah Bittah Hookah', 'Freefight outfit Familiar Eqiupment (will be equipped if possible)'], ['otoscopeBoss', 'Oscus', 'The boss against whom to use otoscope'], ['bk.hat', 'Training helmet', 'Bosskilling outfit Hat'], ['bk.back', 'Vampyric Cloake', 'Bosskilling outfit Back'], ['bk.shirt', 'tunac', 'Bosskilling outfit Shirt'], ['bk.weapon', "scratch 'n' sniff sword", 'Bosskilling outfit Weapon'], ['bk.off-hand', 'A Light that Never Goes Out', 'Bosskilling outfit Offhand'], ['bk.pants', 'pantogram pants', 'Bosskilling outfit Pants'], ['bk.acc1', "Mayor Ghost's Sash", 'Bosskilling outfit Accessory (1)'], ['bk.acc2', 'Old Soft Shoes', 'Bosskilling outfit Accessory (2)'], ['bk.acc3', 'Ring of the Skeleton Lord', 'Bosskilling outfit Accessory (3) (this will be flexed out for Lil Doctor Bag as needed)'], ['bk.familiar', 'Luck Incense', 'Bosskilling outfit Familiar']];
+  var prefDefaults = [['freeFightValue', 40000, 'The Maximimum amount to spend buying free fights'], ['stashClan', '', "The clan to pull shared stash items (moveable feast, bag o' tricks, PYEC)"], ['fishClan', '', 'The clan to pull Clan Fishery Equipment'], ['faxClan', '', 'The clan to recieve faxes in'], ['chilledClan', '', 'The clan with a setup High Kiss Castle, tuned Cold'], ['freeCopyFight', 'Witchess Bishop', 'The monster to rainman/fax for free fights'], ['freeStasisFamiliar', 'Comma Chameleon', 'The familiar to use when running stasis'], ['freeBuffThreshold', 25, 'The amount of turns to guarantee of a buff before you run your stasis familiar'], ['freeCrownOfThrones', 'Warbear Drone', 'The familiar to put into your Crown of Thrones (if it is used)'], ['freeBuddyBjorn', 'Golden Monkey', 'The familiar to put in your Buddy Bjorn (if it is used)'], ['getThanksgetting', 'true', 'Whether or not to eat 9 thanksgetting foods'], ['additionalFullness', 'mayo', 'How to get to 18 fullness. Either "melange" or "mayo"'], ['spendTurns', 'true', 'Allow BK to do certain tasks that are high value turns'], ['fillerFood', 'SMOOCH soda', 'Food to fill your remaining stomach with (use a commas to seperate values)'], ['fillerBooze', 'mayo', 'Booze to fill your remaining liver with (use a commas to seperate values). If "mayo", it will use food filler'], ['free.hat', 'Crown of Thrones', 'Freefight outfit Hat'], ['free.back', 'Buddy Bjorn', 'Freefight outfit Back (will be flexed to Protonic Accelerator Pack if needed for quest)'], ['free.shirt', "Stephen's Lab Coat", 'Freefight outfit Shirt'], ['free.weapon', "Thor's Pliers", 'Freefight outfit Weapon'], ['free.off-hand', 'KoL Con 13 snowglobe', 'Freefight outfit Offhand'], ['free.pants', 'pantogram pants', 'Freefight outfit Pants'], ['free.acc1', "Mr. Screege's Spectacles", 'Freefight outfit Accessory (1)'], ['free.acc2', "Mr. Cheeng's Spectacles", 'Freefight outfit Accessory (2)'], ['free.acc3', 'Lucky gold ring', 'Freefight outfit Accessory (3) (this will be flexed out for accessoies as needed in some free fights)'], ['free.familiar', 'Ittah Bittah Hookah', 'Freefight outfit Familiar Eqiupment (will be equipped if possible)'], ['otoscopeBoss', 'Oscus', 'The boss against whom to use otoscope'], ['bk.hat', 'Training helmet', 'Bosskilling outfit Hat'], ['bk.back', 'Vampyric Cloake', 'Bosskilling outfit Back'], ['bk.shirt', 'tunac', 'Bosskilling outfit Shirt'], ['bk.weapon', "scratch 'n' sniff sword", 'Bosskilling outfit Weapon'], ['bk.off-hand', 'A Light that Never Goes Out', 'Bosskilling outfit Offhand'], ['bk.pants', 'pantogram pants', 'Bosskilling outfit Pants'], ['bk.acc1', "Mayor Ghost's Sash", 'Bosskilling outfit Accessory (1)'], ['bk.acc2', 'Old Soft Shoes', 'Bosskilling outfit Accessory (2)'], ['bk.acc3', 'Ring of the Skeleton Lord', 'Bosskilling outfit Accessory (3) (this will be flexed out for Lil Doctor Bag as needed)'], ['bk.familiar', 'Luck Incense', 'Bosskilling outfit Familiar']];
 
   if (args.trim() == 'list') {
     var table = new _lib__WEBPACK_IMPORTED_MODULE_7__.Table();
@@ -14406,71 +14596,73 @@ function main(args) {
   if (!args || args.length == 0) {
     (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("run 'bk help' for help");
   } else {
-    var matchedArgs = args.match(RegExp(/(\w+) ?(.*)/));
+    (0,_lib__WEBPACK_IMPORTED_MODULE_7__.time)(function () {
+      var matchedArgs = args.match(RegExp(/(\w+) ?(.*)/));
 
-    if (matchedArgs) {
-      var mode = matchedArgs[1].trim();
-      var modeArgs = matchedArgs[2] || '';
+      if (matchedArgs) {
+        var mode = matchedArgs[1].trim();
+        var modeArgs = matchedArgs[2] || '';
 
-      switch (mode) {
-        case 'pref':
-        case 'prefs':
-          preferences(modeArgs);
-          break;
+        switch (mode) {
+          case 'pref':
+          case 'prefs':
+            preferences(modeArgs);
+            break;
 
-        case 'help':
-          help();
-          break;
+          case 'help':
+            help();
+            break;
 
-        case 'fights':
-          (0,_bkfights__WEBPACK_IMPORTED_MODULE_1__.main)(modeArgs);
-          break;
+          case 'fights':
+            (0,_bkfights__WEBPACK_IMPORTED_MODULE_1__.main)(modeArgs);
+            break;
 
-        case 'daily':
-          (0,_bkdaily__WEBPACK_IMPORTED_MODULE_5__.main)();
-          break;
+          case 'daily':
+            (0,_bkdaily__WEBPACK_IMPORTED_MODULE_5__.main)();
+            break;
 
-        case 'sewers':
-          (0,_sewers__WEBPACK_IMPORTED_MODULE_4__.main)();
-          break;
+          case 'sewers':
+            (0,_sewers__WEBPACK_IMPORTED_MODULE_4__.main)();
+            break;
 
-        case 'boss':
-          (0,_bkkill__WEBPACK_IMPORTED_MODULE_2__.main)(modeArgs);
-          break;
+          case 'boss':
+            (0,_bkkill__WEBPACK_IMPORTED_MODULE_2__.main)(modeArgs);
+            break;
 
-        case 'diet':
-          (0,_bkdiet__WEBPACK_IMPORTED_MODULE_6__.main)(modeArgs);
-          break;
+          case 'diet':
+            (0,_bkdiet__WEBPACK_IMPORTED_MODULE_6__.main)(modeArgs);
+            break;
 
-        case 'wl':
-        case 'whitelist':
-          (0,_wl__WEBPACK_IMPORTED_MODULE_3__.main)(modeArgs);
-          break;
+          case 'wl':
+          case 'whitelist':
+            (0,_wl__WEBPACK_IMPORTED_MODULE_3__.main)(modeArgs);
+            break;
 
-        case 'minbuff':
-          var thresholdEffects = (0,_lib__WEBPACK_IMPORTED_MODULE_7__.buffsBelowThreshold)((0,libram__WEBPACK_IMPORTED_MODULE_8__.get)('freeBuffThreshold'), modeArgs);
+          case 'minbuff':
+            var thresholdEffects = (0,_lib__WEBPACK_IMPORTED_MODULE_7__.buffsBelowThreshold)((0,libram__WEBPACK_IMPORTED_MODULE_8__.get)('freeBuffThreshold'), modeArgs);
 
-          if (thresholdEffects.length > 0) {
-            thresholdEffects.forEach(function (_ref) {
-              var _ref2 = _slicedToArray(_ref, 2),
-                  minEffect = _ref2[0],
-                  minTurns = _ref2[1];
+            if (thresholdEffects.length > 0) {
+              thresholdEffects.forEach(function (_ref) {
+                var _ref2 = _slicedToArray(_ref, 2),
+                    minEffect = _ref2[0],
+                    minTurns = _ref2[1];
 
-              return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("".concat(minEffect, ": ").concat(minTurns));
-            });
-          } else {
-            (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("All relevant buffs exceed threshold of ".concat((0,libram__WEBPACK_IMPORTED_MODULE_8__.get)('freeBuffThreshold'), " turns"));
-          }
+                return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("".concat(minEffect, ": ").concat(minTurns));
+              });
+            } else {
+              (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("All relevant buffs exceed threshold of ".concat((0,libram__WEBPACK_IMPORTED_MODULE_8__.get)('freeBuffThreshold'), " turns"));
+            }
 
-          break;
+            break;
 
-        case 'mall':
-          mall();
-          break;
+          case 'mall':
+            mall();
+            break;
+        }
+      } else {
+        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("Invalid args ".concat(args));
       }
-    } else {
-      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("Invalid args ".concat(args));
-    }
+    });
   }
 }
 
@@ -14485,6 +14677,8 @@ function main(args) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "LogLevel": () => (/* binding */ LogLevel),
+/* harmony export */   "log": () => (/* binding */ log),
 /* harmony export */   "MayoClinic": () => (/* binding */ MayoClinic),
 /* harmony export */   "myEffectsClean": () => (/* binding */ myEffectsClean),
 /* harmony export */   "Table": () => (/* binding */ Table),
@@ -14522,13 +14716,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "inClan": () => (/* binding */ inClan),
 /* harmony export */   "withStash": () => (/* binding */ withStash),
 /* harmony export */   "buffsBelowThreshold": () => (/* binding */ buffsBelowThreshold),
-/* harmony export */   "minimumRelevantBuff": () => (/* binding */ minimumRelevantBuff)
+/* harmony export */   "minimumRelevantBuff": () => (/* binding */ minimumRelevantBuff),
+/* harmony export */   "time": () => (/* binding */ time)
 /* harmony export */ });
 /* harmony import */ var kolmafia__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! kolmafia */ "kolmafia");
 /* harmony import */ var kolmafia__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(kolmafia__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/template-string.js");
-/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/lib.js");
-/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/property.js");
+/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/property.js");
+/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/template-string.js");
+/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/lib.js");
 /* harmony import */ var _sewers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./sewers */ "./src/sewers.ts");
 /* harmony import */ var _wl__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./wl */ "./src/wl.ts");
 function _templateObject24() {
@@ -14799,6 +14994,39 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 
+var LogLevel;
+
+(function (LogLevel) {
+  LogLevel[LogLevel["None"] = -1] = "None";
+  LogLevel[LogLevel["Info"] = 0] = "Info";
+  LogLevel[LogLevel["Debug"] = 1] = "Debug";
+})(LogLevel || (LogLevel = {}));
+
+var log = function () {
+  var printLevel = LogLevel.None;
+
+  switch ((0,libram__WEBPACK_IMPORTED_MODULE_3__.get)('bkLogLevel').toLowerCase()) {
+    case 'debug':
+      printLevel = LogLevel.Debug;
+      break;
+
+    case 'info':
+      printLevel = LogLevel.Info;
+      break;
+  }
+
+  return function (level, message, color) {
+    if (printLevel >= level) {
+      if (color) {
+        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)(message, color);
+      } else {
+        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)(message);
+      }
+    }
+  };
+}();
+
+
 var MayoClinic = /*#__PURE__*/function () {
   function MayoClinic() {
     _classCallCheck(this, MayoClinic);
@@ -14807,12 +15035,12 @@ var MayoClinic = /*#__PURE__*/function () {
   _createClass(MayoClinic, null, [{
     key: "present",
     value: function present() {
-      return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getCampground)()[(0,libram__WEBPACK_IMPORTED_MODULE_3__.$item)(_templateObject()).name] !== undefined;
+      return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getCampground)()[(0,libram__WEBPACK_IMPORTED_MODULE_4__.$item)(_templateObject()).name] !== undefined;
     }
   }, {
     key: "canPlace",
     value: function canPlace() {
-      return (0,libram__WEBPACK_IMPORTED_MODULE_4__.have)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$item)(_templateObject2())) && !(0,libram__WEBPACK_IMPORTED_MODULE_5__.get)('_workshedItemUsed');
+      return (0,libram__WEBPACK_IMPORTED_MODULE_5__.have)((0,libram__WEBPACK_IMPORTED_MODULE_4__.$item)(_templateObject2())) && !(0,libram__WEBPACK_IMPORTED_MODULE_3__.get)('_workshedItemUsed');
     }
   }, {
     key: "set",
@@ -14823,7 +15051,7 @@ var MayoClinic = /*#__PURE__*/function () {
     key: "tryPlace",
     value: function tryPlace() {
       if (!MayoClinic.present() && MayoClinic.canPlace()) {
-        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$item)(_templateObject3()));
+        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)((0,libram__WEBPACK_IMPORTED_MODULE_4__.$item)(_templateObject3()));
       }
 
       return MayoClinic.present();
@@ -14833,7 +15061,7 @@ var MayoClinic = /*#__PURE__*/function () {
   return MayoClinic;
 }();
 var effectsLookup = new Map();
-(0,libram__WEBPACK_IMPORTED_MODULE_3__.$effects)(_templateObject4()).forEach(function (e) {
+(0,libram__WEBPACK_IMPORTED_MODULE_4__.$effects)(_templateObject4()).forEach(function (e) {
   var currentMap = effectsLookup.get(e.name) || new Map();
   currentMap.set((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.toInt)(e), e);
   effectsLookup.set(e.name, currentMap);
@@ -14946,7 +15174,7 @@ function cheapest() {
   return items[minIndex];
 }
 function getItem(qty, item, maxPrice) {
-  if (item !== (0,libram__WEBPACK_IMPORTED_MODULE_3__.$item)(_templateObject5()) && qty * (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.mallPrice)(item) > 1000000) (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.abort)('bad get!');
+  if (item !== (0,libram__WEBPACK_IMPORTED_MODULE_4__.$item)(_templateObject5()) && qty * (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.mallPrice)(item) > 1000000) (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.abort)('bad get!');
 
   try {
     (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.retrieveItem)(qty, item);
@@ -14975,7 +15203,7 @@ function getItem(qty, item, maxPrice) {
   return qty - remaining;
 }
 function sausageMp(target) {
-  if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myMp)() < target && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myMaxmp)() >= 400 && getPropertyInt('_sausagesEaten') < 23 && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.availableAmount)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$item)(_templateObject6())) > 0) {
+  if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myMp)() < target && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myMaxmp)() >= 400 && getPropertyInt('_sausagesEaten') < 23 && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.availableAmount)((0,libram__WEBPACK_IMPORTED_MODULE_4__.$item)(_templateObject6())) > 0) {
     (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.eat)(1, Item.get('magical sausage'));
   }
 }
@@ -14988,7 +15216,7 @@ function lastWasCombat() {
   return !(0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myLocation)().noncombatQueue.includes((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getProperty)('lastEncounter'));
 }
 function unclosetNickels() {
-  var _iterator = _createForOfIteratorHelper((0,libram__WEBPACK_IMPORTED_MODULE_3__.$items)(_templateObject7())),
+  var _iterator = _createForOfIteratorHelper((0,libram__WEBPACK_IMPORTED_MODULE_4__.$items)(_templateObject7())),
       _step;
 
   try {
@@ -15019,16 +15247,16 @@ function turboMode() {
   return turbo;
 }
 function ensureJingle() {
-  if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEffect)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$effect)(_templateObject8())) === 0) {
+  if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEffect)((0,libram__WEBPACK_IMPORTED_MODULE_4__.$effect)(_templateObject8())) === 0) {
     (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)("csend to buffy || ".concat(Math.round((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myAdventures)() * 1.1 + 200), " jingle"));
 
     for (var i = 0; i < 5; i++) {
       (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.wait)(3);
       (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)('refresh status');
-      if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEffect)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$effect)(_templateObject9())) > 0) break;
+      if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEffect)((0,libram__WEBPACK_IMPORTED_MODULE_4__.$effect)(_templateObject9())) > 0) break;
     }
 
-    if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEffect)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$effect)(_templateObject10())) === 0) (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.abort)('Get Jingle Bells first.');
+    if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEffect)((0,libram__WEBPACK_IMPORTED_MODULE_4__.$effect)(_templateObject10())) === 0) (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.abort)('Get Jingle Bells first.');
   }
 }
 
@@ -15037,7 +15265,7 @@ function writeWhiteboard(text) {
 }
 
 function recordInstanceState() {
-  var lines = ["Ol' Scratch at image ".concat(getImage((0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject11()))), "Frosty at image ".concat(getImage((0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject12()))), "Oscus at image ".concat(getImage((0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject13()))), "Zombo at image ".concat(getImage((0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject14()))), "Chester at image ".concat(getImage((0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject15())))];
+  var lines = ["Ol' Scratch at image ".concat(getImage((0,libram__WEBPACK_IMPORTED_MODULE_4__.$location)(_templateObject11()))), "Frosty at image ".concat(getImage((0,libram__WEBPACK_IMPORTED_MODULE_4__.$location)(_templateObject12()))), "Oscus at image ".concat(getImage((0,libram__WEBPACK_IMPORTED_MODULE_4__.$location)(_templateObject13()))), "Zombo at image ".concat(getImage((0,libram__WEBPACK_IMPORTED_MODULE_4__.$location)(_templateObject14()))), "Chester at image ".concat(getImage((0,libram__WEBPACK_IMPORTED_MODULE_4__.$location)(_templateObject15())))];
   var whiteboard = '';
   var date = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.formatDateTime)('yyyyMMdd', (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.todayToString)(), 'yyyy-MM-dd');
   whiteboard += "Status as of ".concat(date, " ").concat((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.timeToString)(), ":\n");
@@ -15113,22 +15341,22 @@ function memoizeTurncount(func) {
   return result;
 }
 var getImageTownsquare = memoizeTurncount(function () {
-  return getImage((0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject16()));
+  return getImage((0,libram__WEBPACK_IMPORTED_MODULE_4__.$location)(_templateObject16()));
 }, 10);
 var getImageBb = memoizeTurncount(function () {
-  return getImage((0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject17()));
+  return getImage((0,libram__WEBPACK_IMPORTED_MODULE_4__.$location)(_templateObject17()));
 });
 var getImageEe = memoizeTurncount(function () {
-  return getImage((0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject18()));
+  return getImage((0,libram__WEBPACK_IMPORTED_MODULE_4__.$location)(_templateObject18()));
 }, 10);
 var getImageHeap = memoizeTurncount(function () {
-  return getImage((0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject19()));
+  return getImage((0,libram__WEBPACK_IMPORTED_MODULE_4__.$location)(_templateObject19()));
 }, 10);
 var getImagePld = memoizeTurncount(function () {
-  return getImage((0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject20()));
+  return getImage((0,libram__WEBPACK_IMPORTED_MODULE_4__.$location)(_templateObject20()));
 }, 10);
 var getImageAhbg = memoizeTurncount(function () {
-  return getImage((0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject21()));
+  return getImage((0,libram__WEBPACK_IMPORTED_MODULE_4__.$location)(_templateObject21()));
 }, 10);
 function wrapMain() {
   var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
@@ -15137,8 +15365,8 @@ function wrapMain() {
   try {
     turbo = args.includes('turbo');
 
-    if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myClass)() === (0,libram__WEBPACK_IMPORTED_MODULE_3__.$class)(_templateObject22()) && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myThrall)() !== (0,libram__WEBPACK_IMPORTED_MODULE_3__.$thrall)(_templateObject23())) {
-      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useSkill)(1, (0,libram__WEBPACK_IMPORTED_MODULE_3__.$skill)(_templateObject24()));
+    if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myClass)() === (0,libram__WEBPACK_IMPORTED_MODULE_4__.$class)(_templateObject22()) && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myThrall)() !== (0,libram__WEBPACK_IMPORTED_MODULE_4__.$thrall)(_templateObject23())) {
+      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useSkill)(1, (0,libram__WEBPACK_IMPORTED_MODULE_4__.$skill)(_templateObject24()));
     }
 
     ensureJingle();
@@ -15207,7 +15435,7 @@ function withStash(itemsToTake, action) {
   if (itemsToTake.every(function (item) {
     return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.availableAmount)(item) > 0;
   })) return action();
-  var stashClanName = (0,libram__WEBPACK_IMPORTED_MODULE_5__.get)('stashClan');
+  var stashClanName = (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)('stashClan');
   if (stashClanName === '') throw "No clan specified to borrow from the stash";
   return inClan(stashClanName, function () {
     var quantitiesTaken = new Map();
@@ -15304,6 +15532,22 @@ function minimumRelevantBuff(modifierStr) {
       minTurns = _relevantBuffs$reduce2[1];
 
   return [minEffect, minTurns];
+}
+function time(action, level) {
+  var startTime = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.nowToInt)();
+  var retVal = action();
+  var totalTime = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.nowToInt)() - startTime;
+  if (level === undefined) level = LogLevel.Debug;
+
+  if (totalTime < 1000) {
+    log(level, "Took ".concat(totalTime, " ms"));
+  } else if (totalTime < 60 * 1000) {
+    log(level, "Took ".concat(totalTime / 1000, " Seconds"));
+  } else if (totalTime < 60 * 60 * 1000) {
+    log(level, "Took ".concat(totalTime / (60 * 1000), " Minutes"));
+  }
+
+  return retVal;
 }
 
 /***/ }),

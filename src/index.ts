@@ -5,7 +5,7 @@ import { main as wlMain } from './wl';
 import { main as sewerMain } from './sewers';
 import { main as dailyMain } from './bkdaily';
 import { main as dietMain } from './bkdiet';
-import { buffsBelowThreshold, Table } from './lib';
+import { buffsBelowThreshold, Table, time } from './lib';
 import { get, set } from 'libram';
 
 function help() {
@@ -35,6 +35,7 @@ function preferences(args: String) {
     ['freeFightValue', 40000, 'The Maximimum amount to spend buying free fights'],
     ['stashClan', '', "The clan to pull shared stash items (moveable feast, bag o' tricks, PYEC)"],
     ['fishClan', '', 'The clan to pull Clan Fishery Equipment'],
+    ['faxClan', '', 'The clan to recieve faxes in'],
     ['chilledClan', '', 'The clan with a setup High Kiss Castle, tuned Cold'],
     ['freeCopyFight', 'Witchess Bishop', 'The monster to rainman/fax for free fights'],
     ['freeStasisFamiliar', 'Comma Chameleon', 'The familiar to use when running stasis'],
@@ -113,52 +114,54 @@ export function main(args: string) {
   if (!args || args.length == 0) {
     print("run 'bk help' for help");
   } else {
-    let matchedArgs = args.match(RegExp(/(\w+) ?(.*)/));
-    if (matchedArgs) {
-      let mode = matchedArgs[1].trim();
-      let modeArgs = matchedArgs[2] || '';
+    time(() => {
+      let matchedArgs = args.match(RegExp(/(\w+) ?(.*)/));
+      if (matchedArgs) {
+        let mode = matchedArgs[1].trim();
+        let modeArgs = matchedArgs[2] || '';
 
-      switch (mode) {
-        case 'pref':
-        case 'prefs':
-          preferences(modeArgs);
-          break;
-        case 'help':
-          help();
-          break;
-        case 'fights':
-          fightMain(modeArgs);
-          break;
-        case 'daily':
-          dailyMain();
-          break;
-        case 'sewers':
-          sewerMain();
-          break;
-        case 'boss':
-          killMain(modeArgs);
-          break;
-        case 'diet':
-          dietMain(modeArgs);
-          break;
-        case 'wl':
-        case 'whitelist':
-          wlMain(modeArgs);
-          break;
-        case 'minbuff':
-          let thresholdEffects = buffsBelowThreshold(get('freeBuffThreshold'), modeArgs);
-          if (thresholdEffects.length > 0) {
-            thresholdEffects.forEach(([minEffect, minTurns]: [Effect, number]) => print(`${minEffect}: ${minTurns}`));
-          } else {
-            print(`All relevant buffs exceed threshold of ${get('freeBuffThreshold')} turns`);
-          }
-          break;
-        case 'mall':
-          mall();
-          break;
+        switch (mode) {
+          case 'pref':
+          case 'prefs':
+            preferences(modeArgs);
+            break;
+          case 'help':
+            help();
+            break;
+          case 'fights':
+            fightMain(modeArgs);
+            break;
+          case 'daily':
+            dailyMain();
+            break;
+          case 'sewers':
+            sewerMain();
+            break;
+          case 'boss':
+            killMain(modeArgs);
+            break;
+          case 'diet':
+            dietMain(modeArgs);
+            break;
+          case 'wl':
+          case 'whitelist':
+            wlMain(modeArgs);
+            break;
+          case 'minbuff':
+            let thresholdEffects = buffsBelowThreshold(get('freeBuffThreshold'), modeArgs);
+            if (thresholdEffects.length > 0) {
+              thresholdEffects.forEach(([minEffect, minTurns]: [Effect, number]) => print(`${minEffect}: ${minTurns}`));
+            } else {
+              print(`All relevant buffs exceed threshold of ${get('freeBuffThreshold')} turns`);
+            }
+            break;
+          case 'mall':
+            mall();
+            break;
+        }
+      } else {
+        print(`Invalid args ${args}`);
       }
-    } else {
-      print(`Invalid args ${args}`);
-    }
+    });
   }
 }

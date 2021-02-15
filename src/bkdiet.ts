@@ -24,6 +24,7 @@ function fillBooze(amount: number) {
 function fillFood(amount: number) {
   if (property.getString('fillerBooze') == 'mayo') {
     MayoClinic.tryPlace();
+    MayoClinic.set($item`Mayodiol`);
   }
   let fillerFood = get('fillerFood', '')
     .split(',')
@@ -44,8 +45,8 @@ function fillFood(amount: number) {
 }
 
 function thanksgetting() {
-  if (property.getString('additionalFullness') == 'mayo' && MayoClinic.present()) {
-    MayoClinic.tryPlace();
+  if (property.getString('additionalFullness') === 'mayo') {
+    if (!MayoClinic.tryPlace()) throw 'Failed to get Mayo Clinic!';
     MayoClinic.set($item`Mayodiol`);
   }
   let thanksGettingFood = $items``.filter(i => effectModifier(i, 'effect') == $effect`Thanksgetting`);

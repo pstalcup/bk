@@ -8,6 +8,8 @@ import {
   effectModifier,
   familiarWeight,
   formatDateTime,
+  gamedayToInt,
+  gametimeToInt,
   getCampground,
   getClanName,
   getProperty,
@@ -25,6 +27,7 @@ import {
   myMp,
   myThrall,
   myTurncount,
+  nowToInt,
   numericModifier,
   print,
   printHtml,
@@ -50,6 +53,34 @@ import {
 import { $class, $effect, $effects, $item, $items, $location, $skill, $thrall, get, have } from 'libram';
 import { getSewersState, throughSewers } from './sewers';
 import { setClan } from './wl';
+
+export enum LogLevel {
+  None = -1,
+  Info = 0,
+  Debug = 1,
+}
+let log = (function () {
+  let printLevel = LogLevel.None;
+  switch (get<string>('bkLogLevel').toLowerCase()) {
+    case 'debug':
+      printLevel = LogLevel.Debug;
+      break;
+    case 'info':
+      printLevel = LogLevel.Info;
+      break;
+  }
+
+  return function (level: LogLevel, message: string, color?: string | null) {
+    if (printLevel >= level) {
+      if (color) {
+        print(message, color);
+      } else {
+        print(message);
+      }
+    }
+  };
+})();
+export { log };
 
 export class MayoClinic {
   static present() {
@@ -449,4 +480,19 @@ export function minimumRelevantBuff(modifierStr?: string) {
     aggTurns > curTurns ? [curEffect, curTurns] : [aggEffect, aggTurns]
   );
   return [minEffect, minTurns];
+}
+
+export function time<T>(action: () => T, level?: LogLevel): T {
+  let startTime = nowToInt();
+  let retVal = action();
+  let totalTime = nowToInt() - startTime;
+  if (level === undefined) level = LogLevel.Debug;
+  if (totalTime < 1000) {
+    log(level, `Took ${totalTime} ms`);
+  } else if (totalTime < 60 * 1000) {
+    log(level, `Took ${totalTime / 1000} Seconds`);
+  } else if (totalTime < 60 * 60 * 1000) {
+    log(level, `Took ${totalTime / (60 * 1000)} Minutes`);
+  }
+  return retVal;
 }

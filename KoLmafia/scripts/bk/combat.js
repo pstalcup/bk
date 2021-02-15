@@ -3321,6 +3321,8 @@ function adventureMacroAuto(loc, autoMacro) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "LogLevel": () => (/* binding */ LogLevel),
+/* harmony export */   "log": () => (/* binding */ log),
 /* harmony export */   "MayoClinic": () => (/* binding */ MayoClinic),
 /* harmony export */   "myEffectsClean": () => (/* binding */ myEffectsClean),
 /* harmony export */   "Table": () => (/* binding */ Table),
@@ -3358,13 +3360,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "inClan": () => (/* binding */ inClan),
 /* harmony export */   "withStash": () => (/* binding */ withStash),
 /* harmony export */   "buffsBelowThreshold": () => (/* binding */ buffsBelowThreshold),
-/* harmony export */   "minimumRelevantBuff": () => (/* binding */ minimumRelevantBuff)
+/* harmony export */   "minimumRelevantBuff": () => (/* binding */ minimumRelevantBuff),
+/* harmony export */   "time": () => (/* binding */ time)
 /* harmony export */ });
 /* harmony import */ var kolmafia__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! kolmafia */ "kolmafia");
 /* harmony import */ var kolmafia__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(kolmafia__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/template-string.js");
-/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/lib.js");
-/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/property.js");
+/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/property.js");
+/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/template-string.js");
+/* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/lib.js");
 /* harmony import */ var _sewers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./sewers */ "./src/sewers.ts");
 /* harmony import */ var _wl__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./wl */ "./src/wl.ts");
 function _templateObject24() {
@@ -3635,6 +3638,39 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 
+var LogLevel;
+
+(function (LogLevel) {
+  LogLevel[LogLevel["None"] = -1] = "None";
+  LogLevel[LogLevel["Info"] = 0] = "Info";
+  LogLevel[LogLevel["Debug"] = 1] = "Debug";
+})(LogLevel || (LogLevel = {}));
+
+var log = function () {
+  var printLevel = LogLevel.None;
+
+  switch ((0,libram__WEBPACK_IMPORTED_MODULE_3__.get)('bkLogLevel').toLowerCase()) {
+    case 'debug':
+      printLevel = LogLevel.Debug;
+      break;
+
+    case 'info':
+      printLevel = LogLevel.Info;
+      break;
+  }
+
+  return function (level, message, color) {
+    if (printLevel >= level) {
+      if (color) {
+        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)(message, color);
+      } else {
+        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)(message);
+      }
+    }
+  };
+}();
+
+
 var MayoClinic = /*#__PURE__*/function () {
   function MayoClinic() {
     _classCallCheck(this, MayoClinic);
@@ -3643,12 +3679,12 @@ var MayoClinic = /*#__PURE__*/function () {
   _createClass(MayoClinic, null, [{
     key: "present",
     value: function present() {
-      return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getCampground)()[(0,libram__WEBPACK_IMPORTED_MODULE_3__.$item)(_templateObject()).name] !== undefined;
+      return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getCampground)()[(0,libram__WEBPACK_IMPORTED_MODULE_4__.$item)(_templateObject()).name] !== undefined;
     }
   }, {
     key: "canPlace",
     value: function canPlace() {
-      return (0,libram__WEBPACK_IMPORTED_MODULE_4__.have)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$item)(_templateObject2())) && !(0,libram__WEBPACK_IMPORTED_MODULE_5__.get)('_workshedItemUsed');
+      return (0,libram__WEBPACK_IMPORTED_MODULE_5__.have)((0,libram__WEBPACK_IMPORTED_MODULE_4__.$item)(_templateObject2())) && !(0,libram__WEBPACK_IMPORTED_MODULE_3__.get)('_workshedItemUsed');
     }
   }, {
     key: "set",
@@ -3659,7 +3695,7 @@ var MayoClinic = /*#__PURE__*/function () {
     key: "tryPlace",
     value: function tryPlace() {
       if (!MayoClinic.present() && MayoClinic.canPlace()) {
-        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$item)(_templateObject3()));
+        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.use)((0,libram__WEBPACK_IMPORTED_MODULE_4__.$item)(_templateObject3()));
       }
 
       return MayoClinic.present();
@@ -3669,7 +3705,7 @@ var MayoClinic = /*#__PURE__*/function () {
   return MayoClinic;
 }();
 var effectsLookup = new Map();
-(0,libram__WEBPACK_IMPORTED_MODULE_3__.$effects)(_templateObject4()).forEach(function (e) {
+(0,libram__WEBPACK_IMPORTED_MODULE_4__.$effects)(_templateObject4()).forEach(function (e) {
   var currentMap = effectsLookup.get(e.name) || new Map();
   currentMap.set((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.toInt)(e), e);
   effectsLookup.set(e.name, currentMap);
@@ -3782,7 +3818,7 @@ function cheapest() {
   return items[minIndex];
 }
 function getItem(qty, item, maxPrice) {
-  if (item !== (0,libram__WEBPACK_IMPORTED_MODULE_3__.$item)(_templateObject5()) && qty * (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.mallPrice)(item) > 1000000) (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.abort)('bad get!');
+  if (item !== (0,libram__WEBPACK_IMPORTED_MODULE_4__.$item)(_templateObject5()) && qty * (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.mallPrice)(item) > 1000000) (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.abort)('bad get!');
 
   try {
     (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.retrieveItem)(qty, item);
@@ -3811,7 +3847,7 @@ function getItem(qty, item, maxPrice) {
   return qty - remaining;
 }
 function sausageMp(target) {
-  if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myMp)() < target && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myMaxmp)() >= 400 && getPropertyInt('_sausagesEaten') < 23 && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.availableAmount)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$item)(_templateObject6())) > 0) {
+  if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myMp)() < target && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myMaxmp)() >= 400 && getPropertyInt('_sausagesEaten') < 23 && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.availableAmount)((0,libram__WEBPACK_IMPORTED_MODULE_4__.$item)(_templateObject6())) > 0) {
     (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.eat)(1, Item.get('magical sausage'));
   }
 }
@@ -3824,7 +3860,7 @@ function lastWasCombat() {
   return !(0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myLocation)().noncombatQueue.includes((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getProperty)('lastEncounter'));
 }
 function unclosetNickels() {
-  var _iterator = _createForOfIteratorHelper((0,libram__WEBPACK_IMPORTED_MODULE_3__.$items)(_templateObject7())),
+  var _iterator = _createForOfIteratorHelper((0,libram__WEBPACK_IMPORTED_MODULE_4__.$items)(_templateObject7())),
       _step;
 
   try {
@@ -3855,16 +3891,16 @@ function turboMode() {
   return turbo;
 }
 function ensureJingle() {
-  if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEffect)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$effect)(_templateObject8())) === 0) {
+  if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEffect)((0,libram__WEBPACK_IMPORTED_MODULE_4__.$effect)(_templateObject8())) === 0) {
     (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)("csend to buffy || ".concat(Math.round((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myAdventures)() * 1.1 + 200), " jingle"));
 
     for (var i = 0; i < 5; i++) {
       (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.wait)(3);
       (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)('refresh status');
-      if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEffect)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$effect)(_templateObject9())) > 0) break;
+      if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEffect)((0,libram__WEBPACK_IMPORTED_MODULE_4__.$effect)(_templateObject9())) > 0) break;
     }
 
-    if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEffect)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$effect)(_templateObject10())) === 0) (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.abort)('Get Jingle Bells first.');
+    if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.haveEffect)((0,libram__WEBPACK_IMPORTED_MODULE_4__.$effect)(_templateObject10())) === 0) (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.abort)('Get Jingle Bells first.');
   }
 }
 
@@ -3873,7 +3909,7 @@ function writeWhiteboard(text) {
 }
 
 function recordInstanceState() {
-  var lines = ["Ol' Scratch at image ".concat(getImage((0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject11()))), "Frosty at image ".concat(getImage((0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject12()))), "Oscus at image ".concat(getImage((0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject13()))), "Zombo at image ".concat(getImage((0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject14()))), "Chester at image ".concat(getImage((0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject15())))];
+  var lines = ["Ol' Scratch at image ".concat(getImage((0,libram__WEBPACK_IMPORTED_MODULE_4__.$location)(_templateObject11()))), "Frosty at image ".concat(getImage((0,libram__WEBPACK_IMPORTED_MODULE_4__.$location)(_templateObject12()))), "Oscus at image ".concat(getImage((0,libram__WEBPACK_IMPORTED_MODULE_4__.$location)(_templateObject13()))), "Zombo at image ".concat(getImage((0,libram__WEBPACK_IMPORTED_MODULE_4__.$location)(_templateObject14()))), "Chester at image ".concat(getImage((0,libram__WEBPACK_IMPORTED_MODULE_4__.$location)(_templateObject15())))];
   var whiteboard = '';
   var date = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.formatDateTime)('yyyyMMdd', (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.todayToString)(), 'yyyy-MM-dd');
   whiteboard += "Status as of ".concat(date, " ").concat((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.timeToString)(), ":\n");
@@ -3949,22 +3985,22 @@ function memoizeTurncount(func) {
   return result;
 }
 var getImageTownsquare = memoizeTurncount(function () {
-  return getImage((0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject16()));
+  return getImage((0,libram__WEBPACK_IMPORTED_MODULE_4__.$location)(_templateObject16()));
 }, 10);
 var getImageBb = memoizeTurncount(function () {
-  return getImage((0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject17()));
+  return getImage((0,libram__WEBPACK_IMPORTED_MODULE_4__.$location)(_templateObject17()));
 });
 var getImageEe = memoizeTurncount(function () {
-  return getImage((0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject18()));
+  return getImage((0,libram__WEBPACK_IMPORTED_MODULE_4__.$location)(_templateObject18()));
 }, 10);
 var getImageHeap = memoizeTurncount(function () {
-  return getImage((0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject19()));
+  return getImage((0,libram__WEBPACK_IMPORTED_MODULE_4__.$location)(_templateObject19()));
 }, 10);
 var getImagePld = memoizeTurncount(function () {
-  return getImage((0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject20()));
+  return getImage((0,libram__WEBPACK_IMPORTED_MODULE_4__.$location)(_templateObject20()));
 }, 10);
 var getImageAhbg = memoizeTurncount(function () {
-  return getImage((0,libram__WEBPACK_IMPORTED_MODULE_3__.$location)(_templateObject21()));
+  return getImage((0,libram__WEBPACK_IMPORTED_MODULE_4__.$location)(_templateObject21()));
 }, 10);
 function wrapMain() {
   var args = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
@@ -3973,8 +4009,8 @@ function wrapMain() {
   try {
     turbo = args.includes('turbo');
 
-    if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myClass)() === (0,libram__WEBPACK_IMPORTED_MODULE_3__.$class)(_templateObject22()) && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myThrall)() !== (0,libram__WEBPACK_IMPORTED_MODULE_3__.$thrall)(_templateObject23())) {
-      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useSkill)(1, (0,libram__WEBPACK_IMPORTED_MODULE_3__.$skill)(_templateObject24()));
+    if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myClass)() === (0,libram__WEBPACK_IMPORTED_MODULE_4__.$class)(_templateObject22()) && (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myThrall)() !== (0,libram__WEBPACK_IMPORTED_MODULE_4__.$thrall)(_templateObject23())) {
+      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useSkill)(1, (0,libram__WEBPACK_IMPORTED_MODULE_4__.$skill)(_templateObject24()));
     }
 
     ensureJingle();
@@ -4043,7 +4079,7 @@ function withStash(itemsToTake, action) {
   if (itemsToTake.every(function (item) {
     return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.availableAmount)(item) > 0;
   })) return action();
-  var stashClanName = (0,libram__WEBPACK_IMPORTED_MODULE_5__.get)('stashClan');
+  var stashClanName = (0,libram__WEBPACK_IMPORTED_MODULE_3__.get)('stashClan');
   if (stashClanName === '') throw "No clan specified to borrow from the stash";
   return inClan(stashClanName, function () {
     var quantitiesTaken = new Map();
@@ -4140,6 +4176,22 @@ function minimumRelevantBuff(modifierStr) {
       minTurns = _relevantBuffs$reduce2[1];
 
   return [minEffect, minTurns];
+}
+function time(action, level) {
+  var startTime = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.nowToInt)();
+  var retVal = action();
+  var totalTime = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.nowToInt)() - startTime;
+  if (level === undefined) level = LogLevel.Debug;
+
+  if (totalTime < 1000) {
+    log(level, "Took ".concat(totalTime, " ms"));
+  } else if (totalTime < 60 * 1000) {
+    log(level, "Took ".concat(totalTime / 1000, " Seconds"));
+  } else if (totalTime < 60 * 60 * 1000) {
+    log(level, "Took ".concat(totalTime / (60 * 1000), " Minutes"));
+  }
+
+  return retVal;
 }
 
 /***/ }),
