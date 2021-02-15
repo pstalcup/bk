@@ -38,6 +38,7 @@ import {
   availableChoiceOptions,
   buy,
   totalTurnsPlayed,
+  maximize,
 } from 'kolmafia';
 import {
   $class,
@@ -58,6 +59,8 @@ import {
   getRemainingLiver,
   $items,
   $slots,
+  getRemainingSpleen,
+  property,
 } from 'libram';
 import { fillAsdonMartinTo } from './asdon';
 import { adventureMacro, Macro, withMacro } from './combat';
@@ -275,32 +278,28 @@ class SpookyPutty {
 
 class DrunkPygmy {
   static freeBanishes() {
-    return (
-      get('questL11Worship') !== 'unstarted' &&
-      (get('_drunkPygmyBanishes') < 10 || (get('_drunkPygmyBanishes') == 10 && have($item`miniature crystal ball`)))
-    );
+    return get('_drunkPygmyBanishes') < 10;
   }
 
-  static shouldSaber(): boolean {
-    return (
-      get('questL11Worship') !== 'unstarted' &&
-      ((get('_drunkPygmyBanishes') == 10 && !have($item`miniature crystal ball`)) ||
-        (get('_drunkPygmyBanishes') == 11 &&
-          have($item`miniature crystal ball`) &&
-          getProperty('crystalBallMonster') == 'drunk pygmy'))
-    );
+  static setupSaber() {
+    if (have($item`miniature crystal ball`) && get('_drunkPygmyBanishes') == 10) {
+      DrunkPygmy.setupFreeFight();
+      useFamiliar($familiar`unspeakachu`);
+      equip($slot`familiar`, $item`miniature crystal ball`);
+    } else {
+      if (have($item`miniature crystal ball`)) {
+        useFamiliar($familiar`unspeakachu`);
+        equip($slot`familiar`, $item`miniature crystal ball`);
+      }
+      putCloset(itemAmount($item`Bowl of Scorpions`), $item`Bowl of Scorpions`);
+      equip($slot`weapon`, $item`Fourth of May Cosplay Saber`);
+    }
   }
 
   static setupFreeFight(fights?: number) {
-    putCloset(itemAmount($item`bowling ball`), $item`bowling ball`);
     fights ||= 1;
+    putCloset(itemAmount($item`bowling ball`), $item`bowling ball`);
     retrieveItem(fights, $item`Bowl of Scorpions`);
-    if (get('_drunkPygmyBanishes') == 10 && have($item`miniature crystal ball`)) {
-      useFamiliar($familiar`unspeakachu`);
-      equip($slot`familiar`, $item`miniature crystal ball`);
-    } else if (get('_drunkPygmyBanishes') == 10) {
-      throw 'HOW';
-    }
   }
 
   static didSaber() {
@@ -612,15 +611,18 @@ step('drunk pygmies', () => DrunkPygmy.freeBanishes())(() => {
 
 step(
   'drunk pygmy initial saber',
-  () => DrunkPygmy.shouldSaber(),
-  () => {
-    equip($slot`weapon`, $item`Fourth of May Cosplay Saber`);
-    putCloset(itemAmount($item`bowling ball`), $item`bowling ball`);
-    putCloset(itemAmount($item`Bowl of Scorpions`), $item`Bowl of Scorpions`);
-    setChoice(1387, 2);
-  }
+  () =>
+    get('_saberForceUses') == 0 &&
+    (get('_drunkPygmyBanishes') < 11 || getProperty('crystalBallMonster') === 'drunk pygmy'),
+  () => setChoice(1387, 2)
 )(() => {
-  adventureMacro($location`The Hidden Bowling Alley`, Macro.tentacle().skill('Use the Force'));
+  DrunkPygmy.setupSaber();
+  adventureMacro(
+    $location`The Hidden Bowling Alley`,
+    Macro.tentacle()
+      .externalIf(equippedAmount($item`Fourth of May Cosplay Saber`) > 0, Macro.skill('Use the Force'))
+      .abort()
+  );
 });
 
 step('drunk pygmy saber copies', () => DrunkPygmy.didSaber())(() => {
@@ -630,6 +632,7 @@ step('drunk pygmy saber copies', () => DrunkPygmy.didSaber())(() => {
   putCloset(itemAmount($item`Bowl of Scorpions`), $item`Bowl of Scorpions`);
   if (get('_saberForceUses') < 5) {
     log(LogLevel.Debug, 'Sabering pygmies');
+    equip($slot`weapon`, $item`Fourth of May Cosplay Saber`);
     adventureMacro($location`The Hidden Bowling Alley`, Macro.tentacle().skill('Use the Force'));
   } else {
     log(LogLevel.Debug, 'Just killing pygmies');
@@ -943,55 +946,22 @@ step(
 });
 
 step(
-  'thanksgetting',
-  () => get('_thanksgettingFoodsEaten') < 9 && getRemainingStomach() > 1,
+  'pill keeper embezzlers',
+  () => getRemainingSpleen() >= 3 && property.getBoolean('spendTurns', false) && have($familiar`Robortender`),
   () => {
-    if (MayoClinic.tryPlace()) {
-      MayoClinic.set($item`Mayodiol`);
-      retrieveItem(get('_thanksgettingFoodsEaten') - 9, $item`Mayodiol`);
+    useFamiliar($familiar`robortender`);
+    if (!get('_roboDrinks').includes('drive-by shooting')) {
+      retrieveItem(1, $item`drive-by shooting`);
+      cliExecute('robo drive-by shooting');
     }
+    maximize("meat +equip thor's pliers +equip mafia pointer finger ring", false);
   }
 )(() => {
-  let thanksgettingStr = get<string>('_thanksgettingFoodsEatenList');
-  let thanksgetting: Array<Item> = [];
-  if (thanksgettingStr) {
-    thanksgetting = thanksgettingStr.split(';').map(i => toItem(i));
-  }
-  let nextFood = $items``.find(
-    i => effectModifier(i, 'effect') == $effect`Thanksgetting` && thanksgetting.indexOf(i) == -1
+  cliExecute('pillkeeper semirare');
+  adventureMacro(
+    $location`Cobb's Knob Treasury`,
+    Macro.tentacle().if_('monstername Knob Goblin Embezzler', Macro.spellKill()).abort()
   );
-  if (nextFood) {
-    eat(nextFood);
-  } else {
-    throw 'Unable to find a new thanksgetting food!';
-  }
-  thanksgetting.push(nextFood);
-  set('_thanksgettingFoodsEatenList', thanksgetting.join(';'));
-});
-
-step(
-  'smooch soda',
-  () =>
-    (mallPrice($item`SMOOCH soda`) < 1000 && getRemainingStomach() > 0) ||
-    (MayoClinic.present() && getRemainingLiver() > 0)
-)(() => {
-  if (MayoClinic.present() && getRemainingLiver() > 0) {
-    MayoClinic.set($item`Mayodiol`);
-    retrieveItem(1, $item`Mayodiol`);
-  } else if (MayoClinic.present()) {
-    MayoClinic.set($item`Mayonex`);
-    retrieveItem(1, $item`Mayonex`);
-  }
-  retrieveItem(1, $item`SMOOCH soda`);
-  eat($item`SMOOCH soda`);
-});
-
-const pyec = $item`Platinum Yendorian Express Card`;
-step(
-  'pyec',
-  () => !get('expressCardUsed')
-)(() => {
-  withStash([pyec], () => use(pyec));
 });
 
 export function main(argString = '') {

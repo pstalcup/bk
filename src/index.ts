@@ -3,17 +3,20 @@ import { main as fightMain } from './bkfights';
 import { main as killMain } from './bkkill';
 import { main as wlMain } from './wl';
 import { main as sewerMain } from './sewers';
-import { buffsBelowThreshold, minimumRelevantBuff, Table } from './lib';
+import { main as dailyMain } from './bkdaily';
+import { main as dietMain } from './bkdiet';
+import { buffsBelowThreshold, Table } from './lib';
 import { get, set } from 'libram';
 
 function help() {
   print('bk [mode] [mode args]');
   let table = new Table();
-  table.row('mode', '', '', '');
+  table.row('mode', '', '');
   table.row('help', 'print this help', '');
   table.row('pref', '', '');
   table.row('', 'init', 'initialize the preferences used by this script to their default values');
   table.row('', 'list', 'list the preferences used by this script and their current values');
+  table.row('daily', 'Run daily tasks (PYEC, BoT, etc.)', '');
   table.row('fights', '', '');
   table.row('', '(noarg)', 'runs all free fights and daily tasks for the day');
   table.row('', 'list', 'list all fight steps');
@@ -30,7 +33,6 @@ function help() {
 function preferences(args: String) {
   let prefDefaults = [
     ['freeFightValue', 40000, 'The Maximimum amount to spend buying free fights'],
-    ['fishClan', '', 'The clan to pull fish equipment from'],
     ['stashClan', '', "The clan to pull shared stash items (moveable feast, bag o' tricks, PYEC)"],
     ['fishClan', '', 'The clan to pull Clan Fishery Equipment'],
     ['chilledClan', '', 'The clan with a setup High Kiss Castle, tuned Cold'],
@@ -39,6 +41,15 @@ function preferences(args: String) {
     ['freeBuffThreshold', 25, 'The amount of turns to guarantee of a buff before you run your stasis familiar'],
     ['freeCrownOfThrones', 'Warbear Drone', 'The familiar to put into your Crown of Thrones (if it is used)'],
     ['freeBuddyBjorn', 'Golden Monkey', 'The familiar to put in your Buddy Bjorn (if it is used)'],
+    ['getThanksgetting', 'true', 'Whether or not to eat 9 thanksgetting foods'],
+    ['additionalFullness', 'mayo', 'How to get to 18 fullness. Either "melange" or "mayo"'],
+    ['spendTurns', 'true', 'Allow BK to do certain tasks that are high value turns'],
+    ['fillerFood', 'SMOOCH soda', 'Food to fill your remaining stomach with (use a commas to seperate values)'],
+    [
+      'fillerBooze',
+      'mayo',
+      'Booze to fill your remaining liver with (use a commas to seperate values). If "mayo", it will use food filler',
+    ],
     ['free.hat', 'Crown of Thrones', 'Freefight outfit Hat'],
     [
       'free.back',
@@ -84,16 +95,6 @@ function preferences(args: String) {
   }
 }
 
-function getWrappedInventory(): Map<Item, number> {
-  let inventory = new Map<Item, number>();
-  let mafiaInventory = getInventory();
-  for (let itemStr in mafiaInventory) {
-    let item = toItem(itemStr);
-    inventory.set(item, mafiaInventory[itemStr]);
-  }
-  return inventory;
-}
-
 function mall() {
   let inventory = getInventory();
   let expensiveItems: Array<Item> = [];
@@ -128,11 +129,17 @@ export function main(args: string) {
         case 'fights':
           fightMain(modeArgs);
           break;
+        case 'daily':
+          dailyMain();
+          break;
         case 'sewers':
           sewerMain();
           break;
         case 'boss':
           killMain(modeArgs);
+          break;
+        case 'diet':
+          dietMain(modeArgs);
           break;
         case 'wl':
         case 'whitelist':
@@ -140,7 +147,11 @@ export function main(args: string) {
           break;
         case 'minbuff':
           let thresholdEffects = buffsBelowThreshold(get('freeBuffThreshold'), modeArgs);
-          thresholdEffects.forEach(([minEffect, minTurns]: [Effect, number]) => print(`${minEffect}: ${minTurns}`));
+          if (thresholdEffects.length > 0) {
+            thresholdEffects.forEach(([minEffect, minTurns]: [Effect, number]) => print(`${minEffect}: ${minTurns}`));
+          } else {
+            print(`All relevant buffs exceed threshold of ${get('freeBuffThreshold')} turns`);
+          }
           break;
         case 'mall':
           mall();
