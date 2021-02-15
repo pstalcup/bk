@@ -9523,16 +9523,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var libram__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! libram */ "./node_modules/libram/dist/lib.js");
 /* harmony import */ var libram_dist_console__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! libram/dist/console */ "./node_modules/libram/dist/console.js");
 /* harmony import */ var _lib__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./lib */ "./src/lib.ts");
-function _templateObject13() {
-  var data = _taggedTemplateLiteral(["Summon Alice's Army Cards"]);
-
-  _templateObject13 = function _templateObject13() {
-    return data;
-  };
-
-  return data;
-}
-
 function _templateObject12() {
   var data = _taggedTemplateLiteral(["Summon Alice's Army Cards"]);
 
@@ -9544,7 +9534,7 @@ function _templateObject12() {
 }
 
 function _templateObject11() {
-  var data = _taggedTemplateLiteral(["Summon Clip Art"]);
+  var data = _taggedTemplateLiteral(["Summon Alice's Army Cards"]);
 
   _templateObject11 = function _templateObject11() {
     return data;
@@ -9725,12 +9715,12 @@ dailyTask('smiths', function () {
 dailyTask('clip art', function () {
   return (0,libram__WEBPACK_IMPORTED_MODULE_5__.have)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$skill)(_templateObject10())) && (0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('_clipartSummons') < 3;
 }, function () {
-  return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useSkill)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$skill)(_templateObject11()));
+  return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)('make familiar jacks');
 });
 dailyTask("Alice's Army", function () {
-  return (0,libram__WEBPACK_IMPORTED_MODULE_5__.have)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$skill)(_templateObject12())) && (0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('grimoire3Summons') < 1;
+  return (0,libram__WEBPACK_IMPORTED_MODULE_5__.have)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$skill)(_templateObject11())) && (0,libram__WEBPACK_IMPORTED_MODULE_4__.get)('grimoire3Summons') < 1;
 }, function () {
-  return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useSkill)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$skill)(_templateObject13()));
+  return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.useSkill)((0,libram__WEBPACK_IMPORTED_MODULE_3__.$skill)(_templateObject12()));
 });
 function main() {
   (0,libram_dist_console__WEBPACK_IMPORTED_MODULE_2__.log)(_lib__WEBPACK_IMPORTED_MODULE_1__.LogLevel.None, 'Running Daily Tasks...');

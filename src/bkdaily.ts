@@ -1,4 +1,4 @@
-import { maximize, print, retrieveItem, use, useSkill, visitUrl } from 'kolmafia';
+import { cliExecute, maximize, print, retrieveItem, use, useSkill, visitUrl } from 'kolmafia';
 import { $item, $skill, get, have } from 'libram';
 import { log } from 'libram/dist/console';
 import { LogLevel, setChoice, withStash } from './lib';
@@ -75,7 +75,7 @@ dailyTask(
 dailyTask(
   'clip art',
   () => have($skill`Summon Clip Art`) && get('_clipartSummons') < 3,
-  () => useSkill($skill`Summon Clip Art`)
+  () => cliExecute('make familiar jacks')
 );
 
 dailyTask(
