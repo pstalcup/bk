@@ -415,13 +415,16 @@ export function effectiveFamiliarWeight() {
 }
 
 export function inClan<T>(clanName: string, action: () => T) {
-  const startingClanName = getClanName();
-  setClan(clanName);
-  if (getClanName() !== clanName) throw `Failed to move to clan ${clanName}`;
+  clanName = clanName.toLowerCase();
+  const startingClanName = getClanName().toLowerCase();
+  if (startingClanName !== clanName) setClan(clanName);
+  if (getClanName().toLowerCase() !== clanName) {
+    throw `Failed to move to clan ${clanName} (currently in ${getClanName()})`;
+  }
   try {
     return action();
   } finally {
-    setClan(startingClanName);
+    if (startingClanName !== clanName) setClan(startingClanName);
   }
 }
 

@@ -226,6 +226,11 @@ export function main(args: string) {
     consumables.forEach(i => print(`${i}: ${availableAmount(i)}`));
     skills.forEach(i => print(`${i}: ${availableAmount(i)}`));
   }
+  if (args.trim() == 'outfit') {
+    setupOutfit();
+    useFamiliar(bestItemFamiliar());
+    outfit();
+  }
   if (args.trim() == 'kill') {
     let ltb = availableAmount($item`Louder Than Bomb`);
     retrieveItem(10 - ltb, $item`Louder Than Bomb`);

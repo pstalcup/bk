@@ -1,7 +1,27 @@
-import { cliExecute, maximize, print, retrieveItem, use, useSkill, visitUrl } from 'kolmafia';
-import { $item, $skill, get, have } from 'libram';
-import { log } from 'libram/dist/console';
-import { LogLevel, setChoice, withStash } from './lib';
+import {
+  availableAmount,
+  buy,
+  buyPrice,
+  cliExecute,
+  getCampground,
+  handlingChoice,
+  mallPrice,
+  maximize,
+  print,
+  retrieveItem,
+  reverseNumberology,
+  runChoice,
+  sellPrice,
+  sellsItem,
+  toInt,
+  toItem,
+  use,
+  useSkill,
+  visitUrl,
+} from 'kolmafia';
+import { $coinmasters, $item, $skill, get, have, property } from 'libram';
+import { castArray } from 'lodash-es';
+import { inClan, LogLevel, setChoice, withStash, log } from './lib';
 
 let tasks = new Array<() => void>();
 
@@ -10,7 +30,7 @@ function dailyTask(name: string, condition: () => boolean, action: () => void) {
     log(LogLevel.Debug, `Running Task ${name}`);
     let loopCount = 0;
     while (condition()) {
-      if (loopCount > 100) {
+      if (loopCount > 10) {
         throw `Infinite Loop in ${name}`;
       }
       action();
@@ -41,6 +61,7 @@ dailyTask(
     retrieveItem($item`bag of park garbage`);
     setChoice(1067, 6);
     visitUrl('place.php?whichplace=airport_stench&action=airport3_tunnels');
+    runChoice(6);
   }
 );
 
@@ -51,6 +72,64 @@ dailyTask(
     maximize('disco style', false);
     setChoice(1090, 7);
     visitUrl('place.php?whichplace=airport_hot&action=airport4_zone1');
+    runChoice(7);
+  }
+);
+
+class VolcanoQuest {
+  static finishedQuest() {
+    return get('_volcanoItemRedeemed');
+  }
+
+  static hasQuest() {
+    return property.getNumber('_volcanoItem1') !== 0;
+  }
+
+  static getItem(index: number, tradeableComponent: boolean = true) {
+    let itemNumber: number = toInt(property.getString(`_volcanoItem${index}`));
+    let item = toItem(itemNumber);
+    if (tradeableComponent && item === $item`SMOOCH bracers`) {
+      return $item`superheated metal`;
+    }
+    return item;
+  }
+
+  static getAmount(index: number, tradeableComponent: boolean = true) {
+    let amount = property.getNumber(`_volcanoItemCount${index}`);
+    if (tradeableComponent && this.getItem(index) === $item`SMOOCH bracers`) {
+      return amount * 3;
+    }
+    return amount;
+  }
+
+  static price(index: number) {
+    let item = this.getItem(index);
+    return item.tradeable ? mallPrice(item) * (availableAmount(item) - this.getAmount(index)) : -1;
+  }
+
+  static retrieveItem(index: number) {
+    retrieveItem(this.getItem(index, false), this.getAmount(index, false));
+  }
+}
+
+dailyTask(
+  'volcoino quest',
+  () =>
+    !VolcanoQuest.finishedQuest() &&
+    (!VolcanoQuest.hasQuest() || [1, 2, 3].some(i => VolcanoQuest.getItem(i).tradeable)),
+  () => {
+    if (property.getNumber('_volcanoItem1') === 0) {
+      visitUrl('place.php?whichplace=airport_hot&action=airport4_questhub');
+    } else {
+      let tradeable = [1, 2, 3].filter(i => VolcanoQuest.getItem(i).tradeable);
+      if (tradeable.length > 0) {
+        let target = tradeable.reduce((agg, cur) => (VolcanoQuest.price(agg) < VolcanoQuest.price(cur) ? agg : cur));
+        VolcanoQuest.retrieveItem(target);
+        setChoice(1093, target);
+        visitUrl('place.php?whichplace=airport_hot&action=airport4_questhub');
+        runChoice(target);
+      }
+    }
   }
 );
 
@@ -84,7 +163,88 @@ dailyTask(
   () => useSkill($skill`Summon Alice's Army Cards`)
 );
 
+let draws = ['Ancestral Recall', 'Island', '952 Mickey Mantle'];
+dailyTask(
+  'deck of every card',
+  () => have($item`Deck of Every Card`) && get('_deckCardsDrawn') < 15,
+  () => cliExecute(`cheat ${draws.find(draw => !get('_deckCardsSeen').includes(draw))}`)
+);
+
+dailyTask(
+  'Tea trea',
+  () => getCampground()['potted tea tree'] !== undefined && !get('_pottedTeaTreeUsed'),
+  () => cliExecute('teatree royal tea')
+);
+
+dailyTask(
+  'Swim item',
+  () => !get('_olympicSwimmingPoolItemFound'),
+  () => cliExecute('swim item')
+);
+
+// note this relies on having Ezandoras bastille script installed
+dailyTask(
+  'Bastille',
+  () => get('_bastilleGames') == 0,
+  () => 'bastille muscle'
+);
+
+class SpaceGate {
+  static available() {
+    return get('spacegateAlways') || get('_spacegateToday');
+  }
+
+  static availableVaccines() {
+    [1, 2, 3].filter(i => property.getBoolean(`spacegateVaccine${i}`));
+  }
+}
+
+/*let vaccinePriority = [3, 2, 1]; 
+dailyTask(
+  'Spacegate Vaccine'
+  () => 
+)*/
+
+let numberologyTarget = 14;
+dailyTask(
+  'numberology',
+  () =>
+    have($skill`Calculate the Universe`) &&
+    get('_universeCalculated') < get('skillLevel144') &&
+    reverseNumberology()[numberologyTarget] !== undefined,
+  () => cliExecute(`numberology ${numberologyTarget}`)
+);
+
+function useCurrency(currency: Item, target: Item, condition?: (() => boolean) | null) {
+  let safeCondition = condition || (() => true);
+  let coinmaster = $coinmasters``.find(c => sellsItem(c, target));
+  if (coinmaster) {
+    let price = sellPrice(coinmaster, target);
+    dailyTask(
+      `Spend ${currency} on ${target}`,
+      () => safeCondition() && availableAmount(currency) >= price,
+      () => coinmaster && buy(coinmaster, 1, target)
+    );
+  }
+}
+
+useCurrency($item`Beach Buck`, $item`one-day ticket to Spring Break Beach`);
+useCurrency($item`Coinspiracy`, $item`karma shawarma`);
+useCurrency($item`FunFunds™`, $item`one-day ticket to Dinseylandfill`);
+useCurrency($item`Volcoino`, $item`one-day ticket to That 70s Volcano`);
+useCurrency($item`Wal-Mart gift certificate`, $item`one-day ticket to The Glaciest`);
+useCurrency(
+  $item`Freddy Kruegerand`,
+  $item`Hot Dreadsylvanian Cocoa`,
+  () => availableAmount($item`Hot Dreadsylvanian Cocoa`) < 5
+);
+useCurrency(
+  $item`Freddy Kruegerand`,
+  $item`Dreadsylvanian skeleton key`,
+  () => availableAmount($item`Freddy Kruegerand`) > 26
+);
+
 export function main() {
   log(LogLevel.None, 'Running Daily Tasks...');
-  tasks.forEach(task => task());
+  inClan(get('fishClan'), () => tasks.forEach(task => task()));
 }

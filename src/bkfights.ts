@@ -39,6 +39,7 @@ import {
   buy,
   totalTurnsPlayed,
   maximize,
+  myClass,
 } from 'kolmafia';
 import {
   $class,
@@ -61,15 +62,20 @@ import {
   $slots,
   getRemainingSpleen,
   property,
+  $familiars,
 } from 'libram';
 import { fillAsdonMartinTo } from './asdon';
 import { adventureMacro, Macro, withMacro } from './combat';
 import { getItem, inClan, log, LogLevel, minimumRelevantBuff, setChoice, setChoices } from './lib';
 
 //const FREE_FIGHT_COST = 40000; // TODO: don't hardcode this
-const FREE_FIGHT_COST = get<number>('freeFightValue');
-const FREE_FIGHT_COPY_TARGET = toMonster(get('freeCopyFight'));
-const MINIMUM_BUFF_TURNS = get<number>('freeBuffThreshold');
+const FREE_FIGHT_COST = property.getNumber('freeFightValue');
+const FREE_FIGHT_COPY_TARGET = property.getMonster('freeCopyFight') || $monster`Witchess Bishop`;
+const MINIMUM_BUFF_TURNS = property.getNumber('freeBuffThreshold');
+const INFINITE_LOOP_COUNT = property.getNumber('infiniteLoopCount');
+const FREE_STASIS_FAMILIAR = property.getFamiliar('freeStasisFamiliar') || $familiar`Cocoabo`;
+const BACKUP_FAMILIAR = $familiar`unspeakachu`; // use this when you absolutely need a familiar equipment
+const WANDERER_ZONE = $location`The Haunted Billiards Room`;
 
 let debug = function (message: string) {
   log(LogLevel.Debug, message, 'red');
@@ -105,9 +111,25 @@ function bustGhost() {
   }
 }
 
+function fightVoter() {
+  if (totalTurnsPlayed() % 11 === 1 && get('_voteFreeFights') < 3) {
+    if (!have($item`"I Voted!" sticker`)) throw 'Either vote or code in a vote!';
+    pickFreeFightFamiliar();
+    outfit();
+    equip($slot`acc1`, $item`"I Voted!" sticker`);
+    adventureMacro(WANDERER_ZONE, Macro.tentacle().perpetualStasis());
+  }
+}
+
+function canUseFamiliarEquipment() {
+  let badFamiliars: Array<Familiar> = $familiars`none,Comma Chameleon,Ghost of Crimbo Commerce,Ghost of Crimbo Carols,Ghost of Crimbo Cheer`;
+  let familiar = myFamiliar();
+  return !badFamiliars.includes(familiar);
+}
+
 function outfit() {
   $slots`hat,back,shirt,weapon,offhand,pants,acc1,acc2,acc3`.forEach(slot => equip(slot, toItem(get(`free.${slot}`))));
-  if (myFamiliar() !== $familiar`none` && myFamiliar() !== $familiar`Comma Chameleon`) {
+  if (canUseFamiliarEquipment()) {
     equip($slot`familiar`, toItem(get('free.familiar')));
   }
   if (
@@ -146,7 +168,7 @@ function step(name: string, condition: () => boolean | null | undefined, setup?:
             step_fun();
             refreshComma(); // this will only refresh if the active familiar is comma chameleon
             infiniteLoopCheck += 1;
-            if (infiniteLoopCheck == 100) {
+            if (infiniteLoopCheck == INFINITE_LOOP_COUNT) {
               throw `${name} encountered an infinite loop (maybe?)`;
             }
           }
@@ -198,7 +220,7 @@ function pickFreeFightFamiliar() {
   log(LogLevel.Info, `${minEffect} Has ${minTurns} turns`);
 
   if (minTurns >= MINIMUM_BUFF_TURNS) {
-    let freeFightFamiliar = toFamiliar(get('freeStasisFamiliar'));
+    let freeFightFamiliar = FREE_STASIS_FAMILIAR;
     log(LogLevel.Debug, `Free Fight Familiar: ${freeFightFamiliar}`);
     useFamiliar(freeFightFamiliar);
     refreshComma();
@@ -256,11 +278,11 @@ class DrunkPygmy {
   static setupSaber() {
     if (have($item`miniature crystal ball`) && get('_drunkPygmyBanishes') == 10) {
       DrunkPygmy.setupFreeFight();
-      useFamiliar($familiar`unspeakachu`);
+      if (!canUseFamiliarEquipment()) useFamiliar(BACKUP_FAMILIAR);
       equip($slot`familiar`, $item`miniature crystal ball`);
     } else {
       if (have($item`miniature crystal ball`)) {
-        useFamiliar($familiar`unspeakachu`);
+        if (!canUseFamiliarEquipment()) useFamiliar(BACKUP_FAMILIAR);
         equip($slot`familiar`, $item`miniature crystal ball`);
       }
       putCloset(itemAmount($item`Bowl of Scorpions`), $item`Bowl of Scorpions`);
@@ -835,6 +857,29 @@ step(
   );
 });
 
+step(
+  'kramco fishing',
+  () => have($item`mayfly bait necklace`) && get('_mayflySummons') < 30,
+  () => {
+    equip($slot`acc3`, $item`mayfly bait necklace`);
+    equip($item`Kramco Sausage-o-Matic™`);
+  }
+)(() => {
+  adventureMacro(
+    $location`Menagerie Level 1`,
+    Macro.tentacle()
+      .if_('monstername fruit golem', Macro.trySkill($skill`Feel Hatred`).abort())
+      .if_('monstername knob goblin mutant', Macro.trySkill($skill`Snokebomb`).abort())
+      .if_(
+        'monstername basic elemental',
+        Macro.safeStasis()
+          .trySkill($skill`Summon Mayfly Swarm`)
+          .abort()
+      )
+      .spellKill()
+  );
+});
+
 step('final end of day resources', () => myRain() >= 50 || myLightning() >= 20)(heavyRainFreeFights);
 
 step(
@@ -844,7 +889,7 @@ step(
 )(() => {
   FreeRun.wrapFreeRun(() => {
     adventureMacro(
-      $location`Menagerie Level 1`,
+      WANDERER_ZONE,
       Macro.tentacle().if_('monstername black crayon*', Macro.spellKill()).step(FreeRun.maybeMacro()).abort()
     );
   });
@@ -856,10 +901,7 @@ step(
   () => equip($item`Kramco Sausage-o-Matic™`)
 )(() => {
   FreeRun.wrapFreeRun(() => {
-    adventureMacro(
-      $location`Menagerie Level 1`,
-      Macro.tentacle().kramco(Macro.maybeStasis()).step(FreeRun.maybeMacro()).abort()
-    );
+    adventureMacro(WANDERER_ZONE, Macro.tentacle().kramco(Macro.maybeStasis()).step(FreeRun.maybeMacro()).abort());
   });
 });
 
@@ -879,9 +921,6 @@ step(
     equip($item`Kramco Sausage-o-Matic™`);
   }
 )(() => {
-  if (get('_mayflySummons') < 30) {
-    equip($slot`acc3`, $item`mayfly bait necklace`);
-  }
   if (
     get('_banderRunaways') == maxFamiliarRuns() &&
     equippedAmount($item`Fourth of May Cosplay Saber`) == 0 &&
@@ -889,15 +928,15 @@ step(
   ) {
     CosplaySaber.upgrade(SaberUpgrade.FamiliarWeight);
     equip($slot`weapon`, $item`Fourth of May Cosplay Saber`);
+    if (myClass() == $class`Pastamancer`) equip($slot`back`, $item`snowpack`);
+    equip($slot`hat`, $item`Crumpled Felt Fedora`);
+    equip($slot`acc2`, $item`Beach Comb`);
+    equip($slot`acc3`, $item`hewn moon-rune spoon`);
   }
   adventureMacro(
-    $location`Menagerie Level 1`,
+    WANDERER_ZONE,
     Macro.tentacle()
       .kramco(Macro.externalIf(get('bootsCharged'), Macro.skill($skill`Release The Boots`)))
-      .externalIf(
-        get('_mayflySummons') < 30,
-        Macro.if_('monstername basic elemental', Macro.trySkill($skill`Summon Mayfly Swarm`).abort())
-      )
       .step('runaway')
   );
 });
@@ -929,6 +968,7 @@ step(
     maximize("meat +equip thor's pliers +equip mafia pointer finger ring", false);
   }
 )(() => {
+  fightVoter();
   cliExecute('pillkeeper semirare');
   adventureMacro(
     $location`Cobb's Knob Treasury`,

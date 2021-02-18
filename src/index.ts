@@ -1,4 +1,4 @@
-import { getInventory, mallPrice, print, printHtml, toInt, toItem } from 'kolmafia';
+import { getInventory, mallPrice, print, printHtml, toInt, toItem, visitUrl } from 'kolmafia';
 import { main as fightMain } from './bkfights';
 import { main as killMain } from './bkkill';
 import { main as wlMain } from './wl';
@@ -46,6 +46,7 @@ function preferences(args: String) {
     ['additionalFullness', 'mayo', 'How to get to 18 fullness. Either "melange" or "mayo"'],
     ['spendTurns', 'true', 'Allow BK to do certain tasks that are high value turns'],
     ['fillerFood', 'SMOOCH soda', 'Food to fill your remaining stomach with (use a commas to seperate values)'],
+    ['infiniteLoopCount', 100, 'How many times a given block of code is allowed to loop before aborting'],
     [
       'fillerBooze',
       'mayo',

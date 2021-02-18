@@ -4065,14 +4065,18 @@ function effectiveFamiliarWeight() {
   return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.familiarWeight)((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.myFamiliar)()) + (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.weightAdjustment)();
 }
 function inClan(clanName, action) {
-  var startingClanName = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getClanName)();
-  (0,_wl__WEBPACK_IMPORTED_MODULE_2__.setClan)(clanName);
-  if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getClanName)() !== clanName) throw "Failed to move to clan ".concat(clanName);
+  clanName = clanName.toLowerCase();
+  var startingClanName = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getClanName)().toLowerCase();
+  if (startingClanName !== clanName) (0,_wl__WEBPACK_IMPORTED_MODULE_2__.setClan)(clanName);
+
+  if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getClanName)().toLowerCase() !== clanName) {
+    throw "Failed to move to clan ".concat(clanName, " (currently in ").concat((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getClanName)(), ")");
+  }
 
   try {
     return action();
   } finally {
-    (0,_wl__WEBPACK_IMPORTED_MODULE_2__.setClan)(startingClanName);
+    if (startingClanName !== clanName) (0,_wl__WEBPACK_IMPORTED_MODULE_2__.setClan)(startingClanName);
   }
 }
 function withStash(itemsToTake, action) {
