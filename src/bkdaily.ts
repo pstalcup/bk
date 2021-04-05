@@ -3,10 +3,12 @@ import {
   buy,
   buyPrice,
   cliExecute,
+  craft,
   getCampground,
   handlingChoice,
   mallPrice,
   maximize,
+  myMeat,
   print,
   retrieveItem,
   reverseNumberology,
@@ -25,11 +27,12 @@ import { inClan, LogLevel, setChoice, withStash, log } from './lib';
 
 let tasks = new Array<() => void>();
 
-function dailyTask(name: string, condition: () => boolean, action: () => void) {
+function dailyTask(name: string, condition: () => boolean, action: () => void, runAtLeastOnce = false) {
   let wrappedTask = () => {
     log(LogLevel.Debug, `Running Task ${name}`);
     let loopCount = 0;
-    while (condition()) {
+    while (runAtLeastOnce || condition()) {
+      runAtLeastOnce = false;
       if (loopCount > 10) {
         throw `Infinite Loop in ${name}`;
       }
@@ -50,8 +53,8 @@ dailyTask(
 const bot = $item`Bag o' Tricks`;
 dailyTask(
   "bag o' tricks",
-  () => !get('_bagOTricksUsed') && have(bot),
-  () => use(bot)
+  () => !get('_bagOTricksUsed'),
+  () => withStash([bot], () => use(bot))
 );
 
 dailyTask(
@@ -186,7 +189,13 @@ dailyTask(
 dailyTask(
   'Bastille',
   () => get('_bastilleGames') == 0,
-  () => 'bastille muscle'
+  () => cliExecute('bastille muscle')
+);
+
+dailyTask(
+  'Rainbows Gravity',
+  () => get('prismaticSummons') < 3,
+  () => useSkill($skill`Rainbow Gravitation`)
 );
 
 class SpaceGate {
@@ -199,11 +208,24 @@ class SpaceGate {
   }
 }
 
-/*let vaccinePriority = [3, 2, 1]; 
 dailyTask(
-  'Spacegate Vaccine'
-  () => 
-)*/
+  'genie',
+  () => get('_genieWishesUsed') < 3,
+  () => cliExecute('genie item pocket')
+);
+
+dailyTask(
+  'buy wishes',
+  () => availableAmount($item`pocket wish`) > 0,
+  () => {
+    let pocketWishes = availableAmount($item`pocket wish`);
+    for (var i = 0; i < pocketWishes; ++i) {
+      cliExecute('genie meat');
+    }
+    buy(Math.floor(myMeat() / 50000), $item`pocket wish`, 49999);
+  },
+  true
+);
 
 let numberologyTarget = 14;
 dailyTask(
@@ -241,8 +263,9 @@ useCurrency(
 useCurrency(
   $item`Freddy Kruegerand`,
   $item`Dreadsylvanian skeleton key`,
-  () => availableAmount($item`Freddy Kruegerand`) > 26
+  () => availableAmount($item`Freddy Kruegerand`) > 25
 );
+useCurrency($item`BACON`, $item`Print Screen Button`, () => !get('_internetPrintScreenButtonBought'));
 
 export function main() {
   log(LogLevel.None, 'Running Daily Tasks...');

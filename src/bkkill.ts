@@ -4,18 +4,35 @@ import {
   equip,
   getClanName,
   haveEffect,
+  myAdventures,
+  numericModifier,
   print,
   printHtml,
   retrieveItem,
+  setProperty,
   toItem,
   toMonster,
   use,
   useFamiliar,
   visitUrl,
 } from 'kolmafia';
-import { $effect, $familiar, $item, $items, $location, $monster, $skill, $slot, $slots, Clan, get, have } from 'libram';
+import {
+  $effect,
+  $familiar,
+  $item,
+  $items,
+  $location,
+  $monster,
+  $skill,
+  $slot,
+  $slots,
+  Clan,
+  get,
+  have,
+  set,
+} from 'libram';
 import { Macro, adventureMacro } from './combat';
-import { inClan, setChoice, withStash } from './lib';
+import { assert, inClan, setChoice, withStash } from './lib';
 
 // borrowed from raidlog parser
 function parseImageN(hoboPlace: string) {
@@ -125,6 +142,14 @@ function bestItemFamiliar() {
   return $familiar`Jumpsuited Hound Dog`;
 }
 
+function turnSafe(name: string, condition: () => boolean, block: () => void) {
+  let initialAdventureCount = myAdventures();
+  while (condition()) {
+    assert(myAdventures() == initialAdventureCount, `Spent a turn and didn't resolve ${name}`);
+    block();
+  }
+}
+
 function setupOutfit() {
   if (toItem(get('bk.weapon')) == $item`scratch 'n' sniff sword`) {
     // refresh the sticker weapon
@@ -138,6 +163,19 @@ function setupOutfit() {
     useFamiliar($familiar`mu`);
     retrieveItem(1, $item`box of familiar jacks`);
     use($item`box of familiar jacks`);
+  }
+  if (!get('_feastedFamiliars').includes(`${bestItemFamiliar()}`)) {
+    useFamiliar(bestItemFamiliar());
+    withStash([$item`moveable feast`], () => use($item`moveable feast`));
+  }
+  if (!get('_mummeryMods').includes(`${bestItemFamiliar()}`) && !get('_mummeryMods').includes('Item Drop:')) {
+    useFamiliar(bestItemFamiliar());
+    cliExecute('mummery item');
+  }
+  if (get('_VYKEACompanionType') === '') {
+    retrieveItem(37, $item`vykea dowel`);
+    retrieveItem(10, $item`vykea rail`);
+    cliExecute('create level 5 lamp');
   }
 }
 
@@ -161,38 +199,44 @@ function kill(location: Location) {
       equip($slot`acc3`, $item`Lil' Doctor™ bag`);
     }
 
-    if (!get('_feastedFamiliars').includes(`${itemFamiliar}`)) {
-      withStash([$item`moveable feast`], () => use($item`moveable feast`));
-    }
-
     if (location == $location`Exposure Esplanade` && !have($effect`Chilled to the Bone`)) {
       if (!retrieveItem(1, $item`Louder Than Bomb`)) {
         throw 'Unable to get a louder than bomb for getting Chilled to the Bone!';
       } else {
         inClan(get('chilledClan'), () => {
-          adventureMacro($location`Dreadsylvanian Castle`, Macro.item($item`Louder Than Bomb`).abort());
+          turnSafe(
+            'Chilled to the Bone',
+            () => !haveEffect($effect`Chilled to the Bone`),
+            () => {
+              adventureMacro($location`Dreadsylvanian Castle`, Macro.item($item`Louder Than Bomb`).abort());
+            }
+          );
         });
       }
-      if (!haveEffect($effect`Chilled to the Bone`)) {
-        throw "Did not get Chilled to the Bone, so we can't kill frosty!";
+      if (!haveEffect($effect`Chilled to the Bone`) || !haveEffect($effect`Gummi Badass`)) {
+        throw "Did not get Chilled to the Bone or Gummi Badass, so we can't kill frosty!";
       }
     }
-    while (status(location) == HoboStatus.BossReady) {
-      setChoice(hoboLocation.choiceAdventure, 1);
-      adventureMacro(
-        location,
-        Macro.if_('monstername eldritch tentacle', Macro.item($item`Louder Than Bomb`))
-          .if_(
-            `monstername ${hoboLocation.boss}`,
-            Macro.externalIf(hoboLocation.boss == otoscopeBoss, Macro.skill($skill`otoscope`))
-              .attack()
-              .repeat()
-          )
-          .abort()
-      );
-      print(`Killed ${hoboLocation.boss}`);
-      setChoice(hoboLocation.choiceAdventure, 0);
-    }
+    let initialAdventureCount = myAdventures();
+    setChoice(hoboLocation.choiceAdventure, 1);
+    let bossMacro = Macro.if_(
+      `monstername ${hoboLocation.boss}`,
+      Macro.externalIf(hoboLocation.boss == otoscopeBoss && get('_otoscopeUsed') < 3, Macro.skill($skill`otoscope`))
+        .attack()
+        .repeat()
+    )
+      .item($item`Louder Than Bomb`)
+      .abort();
+
+    turnSafe(
+      `Kill ${hoboLocation.boss}`,
+      () => status(location) == HoboStatus.BossReady,
+      () => adventureMacro(location, bossMacro)
+    );
+
+    print(`Killed ${hoboLocation.boss}`);
+    setChoice(hoboLocation.choiceAdventure, 0);
+
     if (have($effect`Chilled to the Bone`)) {
       retrieveItem(1, $item`hot Dreadsylvanian cocoa`);
       use($item`hot Dreadsylvanian cocoa`);
@@ -200,17 +244,20 @@ function kill(location: Location) {
   }
 }
 
-function statusString(location: Location) {
+function printStatus(location: Location) {
   let hoboStatus = status(location);
   switch (hoboStatus) {
     case HoboStatus.Unavailable:
-      return `${location} unavailable. Are you through the sewers?`;
+      print(`${location} unavailable. Are you through the sewers?`, 'purple');
+      break;
     case HoboStatus.NotReady:
-      return `${location} does not have the boss ready.`;
+      print(`${location} does not have the boss ready.`, 'purple');
+      break;
     case HoboStatus.BossReady:
-      return `${location} is ready to kill the boss.`;
+      print(`${location} is ready to kill the boss.`, 'lime');
+      break;
     case HoboStatus.BossKilled:
-      return `${location} has already had the boss killed.`;
+      print(`${location} has already had the boss killed.`, 'blue');
   }
 }
 
@@ -219,7 +266,7 @@ export function main(args: string) {
   if (args.trim() == 'status') {
     print(`In clan ${Clan.get().name}`);
     for (let key of hoboLocations.keys()) {
-      print(`${key}: ${statusString(key)}`);
+      printStatus(key);
     }
   }
   if (args.trim() == 'drops') {
@@ -230,12 +277,27 @@ export function main(args: string) {
     setupOutfit();
     useFamiliar(bestItemFamiliar());
     outfit();
+
+    let softshoes = 30 * 2; // doubled by squint
+    let friars = 25 * 2; // not doubled by squint
+
+    let baseDrop = numericModifier('Item Drop') + softshoes + friars;
+    let foodDrop = baseDrop + numericModifier('Food Drop');
+    let boozeDrop = baseDrop + numericModifier('Booze Drop');
+
+    print(`Item Drop: ${baseDrop}`);
+    print(`Base Drop: ${Math.floor(baseDrop / 100)}`);
+    print(`Food Drop: ${Math.floor(foodDrop / 100)}`);
+    print(`Booze Drop: ${Math.floor(boozeDrop / 100)}`);
+    print(`Hodgman Food Drop: ${1 + Math.floor((foodDrop - 50) / 150)}`);
+    print(`Hodgman Booze Drop: ${1 + Math.floor((boozeDrop - 50) / 150)}`);
   }
   if (args.trim() == 'kill') {
     let ltb = availableAmount($item`Louder Than Bomb`);
     retrieveItem(10 - ltb, $item`Louder Than Bomb`);
 
     let drops = new Map<Item, number>();
+    let finalDrops = new Map<string, number>();
 
     consumables.forEach(i => drops.set(i, availableAmount(i)));
     skills.forEach(i => drops.set(i, availableAmount(i)));
@@ -255,6 +317,7 @@ export function main(args: string) {
       let current = availableAmount(i);
       let prior = drops.get(i) || 0;
       if (current > prior) {
+        finalDrops.set(`${i}`, current - prior);
         print(`${i}: ${current - prior}`);
       }
     });
@@ -262,9 +325,18 @@ export function main(args: string) {
     skills.forEach(i => {
       let current = availableAmount(i);
       let prior = drops.get(i) || 0;
+      drops.set(i, current - prior);
       if (current > prior) {
+        finalDrops.set(`${i}`, current - prior);
         print(`${i}: ${current - prior}`);
       }
     });
+    let hoboDrops = JSON.stringify(
+      Array.from(finalDrops.entries()).reduce((o, [key, value]) => {
+        o[key] = value;
+        return o;
+      }, Object.create(null))
+    );
+    set('_lastHoboDrops', hoboDrops);
   }
 }

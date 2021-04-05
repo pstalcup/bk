@@ -1,12 +1,27 @@
-import { getInventory, mallPrice, print, printHtml, toInt, toItem, visitUrl } from 'kolmafia';
-import { main as fightMain } from './bkfights';
+import {
+  autosellPrice,
+  availableAmount,
+  buy,
+  cliExecute,
+  equip,
+  getInventory,
+  getStash,
+  mallPrice,
+  print,
+  printHtml,
+  toInt,
+  toItem,
+  visitUrl,
+} from 'kolmafia';
+import { freeFightCost, main as fightMain, pickFreeFightFamiliar } from './bkfights';
 import { main as killMain } from './bkkill';
 import { main as wlMain } from './wl';
 import { main as sewerMain } from './sewers';
 import { main as dailyMain } from './bkdaily';
 import { main as dietMain } from './bkdiet';
 import { buffsBelowThreshold, Table, time } from './lib';
-import { get, set } from 'libram';
+import { get, set, property, $item, have } from 'libram';
+import { simulateFamiliarMeat } from './simulate';
 
 function help() {
   print('bk [mode] [mode args]');
@@ -39,6 +54,17 @@ function preferences(args: String) {
     ['chilledClan', '', 'The clan with a setup High Kiss Castle, tuned Cold'],
     ['freeCopyFight', 'Witchess Bishop', 'The monster to rainman/fax for free fights'],
     ['freeStasisFamiliar', 'Comma Chameleon', 'The familiar to use when running stasis'],
+    [
+      'simulationMelangePrice',
+      '400000',
+      'The sales price of melange to use when computing what is a cost effective free kill',
+    ],
+    [
+      'simulationDrumMachineCost',
+      '4000',
+      'The cost of drum machines to use when computing what is a cost effective free kill',
+    ],
+    ['simulationSafetyThreshold', '1.1', 'Multiplier for the final free fight cost to account'],
     ['freeBuffThreshold', 25, 'The amount of turns to guarantee of a buff before you run your stasis familiar'],
     ['freeCrownOfThrones', 'Warbear Drone', 'The familiar to put into your Crown of Thrones (if it is used)'],
     ['freeBuddyBjorn', 'Golden Monkey', 'The familiar to put in your Buddy Bjorn (if it is used)'],
@@ -100,15 +126,36 @@ function preferences(args: String) {
 function mall() {
   let inventory = getInventory();
   let expensiveItems: Array<Item> = [];
+  let autoSellItems: Array<Item> = [];
   for (let itemStr in inventory) {
     let item = toItem(itemStr);
     let price = mallPrice(item);
     if (price > 10000) {
       expensiveItems.push(item);
     }
+    if (autosellPrice(item) > 1000) {
+      autoSellItems.push(item);
+    }
   }
-  print(`You have ${expensiveItems.length} items. Here are 10:`);
-  expensiveItems.slice(10).forEach(i => print(`${i}:${mallPrice(i)}`));
+  print(`You have ${expensiveItems.length} expensive items. Here are 25:`);
+  expensiveItems.slice(0, 25).forEach(i => print(`${i}:${mallPrice(i)}`));
+  print(`You have ${autoSellItems.length} high autosell items. Here are 25:`);
+  autoSellItems.slice(0, 25).forEach(i => print(`${i}:${autosellPrice(i)}`));
+}
+
+function stash() {
+  let inventory = getStash();
+  let expensiveItems: Array<Item> = [];
+  const PRICE_THRESHOLD = 1000000;
+  for (let itemStr in inventory) {
+    let qty = inventory[itemStr];
+    let item = toItem(itemStr);
+    let price = mallPrice(item);
+    if (price > PRICE_THRESHOLD || (qty && qty * price > PRICE_THRESHOLD)) {
+      expensiveItems.push(item);
+    }
+  }
+  expensiveItems.forEach(i => print(`${i}:${mallPrice(i)}`));
 }
 
 export function main(args: string) {
@@ -149,16 +196,64 @@ export function main(args: string) {
             wlMain(modeArgs);
             break;
           case 'minbuff':
-            let thresholdEffects = buffsBelowThreshold(get('freeBuffThreshold'), modeArgs);
+          case 'genie':
+            let threshold = property.getNumber('freeBuffThreshold');
+            let thresholdEffects = buffsBelowThreshold(threshold, modeArgs);
             if (thresholdEffects.length > 0) {
-              thresholdEffects.forEach(([minEffect, minTurns]: [Effect, number]) => print(`${minEffect}: ${minTurns}`));
+              thresholdEffects
+                .sort(([effectA, a]: [Effect, number], [effectB, b]: [Effect, number]) => b - a)
+                .forEach(([minEffect, minTurns]: [Effect, number]) =>
+                  print(
+                    `${minEffect}: ${minTurns} (${minEffect.default || minEffect.note})`,
+                    minTurns < 20 ? 'red' : 'yellow'
+                  )
+                );
             } else {
               print(`All relevant buffs exceed threshold of ${get('freeBuffThreshold')} turns`);
+            }
+            if (mode.includes('genie')) {
+              thresholdEffects.forEach(([effect, turns]: [Effect, number]) => {
+                let numWishes = Math.ceil((threshold - turns) / 20);
+                print(`${effect} is missing ${numWishes} genie buffs`);
+                //buy(numWishes, $item`pocket wish`, 50000);
+
+                if (!cliExecute(`genie effect ${effect}`)) {
+                  print(`genie effect ${effect}`);
+                }
+              });
             }
             break;
           case 'mall':
             mall();
             break;
+          case 'fakehand':
+            while (availableAmount($item`fake hand`) > 0) {
+              equip($item`fake hand`);
+            }
+            break;
+          case 'freefight':
+            let perFight = simulateFamiliarMeat();
+            print(`Melange Price: ${property.getNumber('simulationMelangePrice')}`);
+            print(`Drum Machine Cost: ${property.getNumber('simulationDrumMachineCost')}`);
+            print(`Simulation Safety Threshold: ${property.getNumber('simulationSafetyThreshold')}`);
+            print(`Free Fight Values (${perFight}):`);
+            print('Using Current Familiar', 'Blue');
+            print(`Current Familiar Choice: ${pickFreeFightFamiliar(true)}`);
+            print(`Drum Machine, Choose Familiar: ${freeFightCost(true, true)}`);
+            print(`(Single Battery): ${freeFightCost(true, true) / 4}`);
+            print(`Drum Machine, Do not Choose: ${freeFightCost(true, false)}`);
+            print(`No Drum Machine, Choose Familiar: ${freeFightCost(false, true)}`);
+            print(`No Drum Machine, Do not Choose: ${freeFightCost(false, false)}`);
+            print('Using Meat Familiar Override');
+            print(`Current Familiar Choice (meat familiar): ${pickFreeFightFamiliar(true, true)}`);
+            print(`Drum Machine, Choose Familiar (meat familiar): ${freeFightCost(true, true, true)}`);
+            print(`(Single Battery): ${freeFightCost(true, true, true) / 4}`);
+            print(`Drum Machine, Do not Choose (meat familiar): ${freeFightCost(true, false, true)}`);
+            print(`No Drum Machine, Choose Familiar (meat familiar): ${freeFightCost(false, true, true)}`);
+            print(`No Drum Machine, Do not Choose (meat familiar): ${freeFightCost(false, false, true)}`);
+            break;
+          case 'stash':
+            stash();
         }
       } else {
         print(`Invalid args ${args}`);

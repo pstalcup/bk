@@ -23,6 +23,7 @@ import {
   toInt,
   useSkill,
   visitUrl,
+  xpath,
 } from 'kolmafia';
 import {
   $effect,
@@ -36,6 +37,8 @@ import {
   get as getLibram,
   get,
   $familiars,
+  property,
+  set,
 } from 'libram';
 // import { get } from 'lodash-es';
 import {
@@ -64,34 +67,6 @@ export class Macro extends LibramMacro {
   submit() {
     print(`Submitting macro: ${this.toString()}`);
     return super.submit();
-  }
-
-  collect() {
-    return this.externalIf(!turboMode(), Macro.if_('!hpbelow 500', Macro.skill($skill`Extract`)))
-      .externalIf(
-        myFamiliar() === $familiar`Space Jellyfish`,
-        Macro.if_(
-          `!hpbelow 500 && (monsterid ${toInt($monster`stench hobo`)} || monsterid ${toInt($monster`sleaze hobo`)})`,
-          Macro.skill($skill`Extract Jelly`)
-        )
-      )
-      .externalIf(
-        getPropertyInt('_sourceTerminalDigitizeMonsterCount') >= 7 &&
-          getPropertyInt('_sourceTerminalDigitizeUses') < 3 &&
-          getCounters('Digitize Monster', 0, 0) !== '',
-        Macro.if_(`monstername ${getProperty('_sourceTerminalDigitizeMonster')}`, Macro.skill($skill`Digitize`))
-      )
-      .externalIf(
-        !turboMode(),
-        Macro.while_(
-          `!hpbelow 500 && monsterhpabove ${2 * candyblastDamage()} && !match "some of it is even intact"`,
-          Macro.skill($skill`Candyblast`)
-        )
-      );
-  }
-
-  static collect() {
-    return new Macro().collect();
   }
 
   static nonFree() {
@@ -139,26 +114,6 @@ export class Macro extends LibramMacro {
     return new Macro().kill();
   }
 
-  static freeRun() {
-    return new Macro()
-      .skill($skill`Extract`)
-      .skill($skill`Extract Jelly`)
-      .externalIf(
-        (haveFamiliar($familiar`Frumious Bandersnatch`) && haveEffect($effect`The Ode to Booze`) > 0) ||
-          haveFamiliar($familiar`Pair of Stomping Boots`),
-        'runaway'
-      )
-      .trySkill(
-        'Spring-Loaded Front Bumper',
-        'Reflex Hammer',
-        'KGB tranquilizer dart',
-        'Throw Latte on Opponent',
-        'Snokebomb'
-      )
-      .tryItem('Louder Than Bomb', 'tattered scrap of paper', 'GOTO', 'green smoke bomb')
-      .abort();
-  }
-
   spellKill() {
     return this.trySkill('Curse of Weaksauce', 'Micrometeorite', 'Stuffed Mortar Shell', 'Saucegeyser').repeat();
   }
@@ -168,10 +123,20 @@ export class Macro extends LibramMacro {
   }
 
   stasis(...steps: Macro[]) {
-    // this method assumes you have enough ml that hte monster will survive for at least 4 rounds
-    return this.trySkill('Curse of Weaksauce', 'Micrometeorite', 'Love Mosquito')
-      .item('time-spinner')
-      .step(...steps);
+    let mark = `final${Math.random().toString(36).substr(2, 5)}`;
+    return [
+      Macro.trySkill('Curse of Weaksauce'),
+      Macro.trySkill('Micrometeorite'),
+      Macro.trySkill('Love Mosquito'),
+      Macro.trySkill('Extract'),
+      Macro.tryItem('time-spinner'),
+    ]
+      .reduce(
+        (currentMacro, nextStep) =>
+          currentMacro.step(`goto ${mark} !monsterhpabove ${Math.ceil(effectiveFamiliarWeight() * 0.75)}`, nextStep),
+        this
+      )
+      .step(`mark ${mark}`, ...steps);
   }
 
   static stasis(...steps: Macro[]) {
@@ -181,7 +146,7 @@ export class Macro extends LibramMacro {
   safeStasis(...steps: Macro[]) {
     return this.stasis(
       Macro.while_(
-        `monsterhpabove ${Math.ceil(effectiveFamiliarWeight() * 1.25)} and !pastround 10`,
+        `monsterhpabove ${Math.ceil(effectiveFamiliarWeight() * 0.75)} and !pastround 10`,
         Macro.item($item`seal tooth`)
       ),
       ...steps
@@ -202,13 +167,13 @@ export class Macro extends LibramMacro {
 
   maybeStasis(...steps: Macro[]) {
     let stasisFamiliars = $familiars`Cocoabo,Ninja Pirate Zombie Robot,Stocking Mimic,Feather Boa Constrictor`;
-
-    return this.externalIf(
+    if (
       stasisFamiliars.includes(myFamiliar()) ||
-        (myFamiliar() === $familiar`Comma Chameleon` &&
-          stasisFamiliars.map(f => `${f}`).includes(get('commaFamiliar'))),
-      Macro.safeStasis(...steps)
-    );
+      (myFamiliar() === $familiar`Comma Chameleon` && stasisFamiliars.map(f => `${f}`).includes(get('commaFamiliar')))
+    ) {
+      return this.safeStasis(...steps);
+    }
+    return this.step(...steps);
   }
 
   static maybeStasis(...steps: Macro[]) {
@@ -216,7 +181,12 @@ export class Macro extends LibramMacro {
   }
 
   tentacle(...steps: Macro[]) {
-    return this.if_('monstername eldritch tentacle', Macro.perpetualStasis().spellKill());
+    return this.if_(
+      'monstername eldritch tentacle',
+      Macro.step(...steps)
+        .perpetualStasis()
+        .spellKill()
+    );
     //return this.if_('monstername eldritch tentacle', Macro.step(...steps).skill('Curse of Weaksauce', 'Micrometeorite', 'Stuffed Mortar Shell', 'Saucestorm').repeat());
   }
 
@@ -257,68 +227,25 @@ export function getMode() {
   return getProperty('minehobo_combatMode');
 }
 
-export function getArg1() {
-  return getProperty('minehobo_combatArg1');
-}
-
-export function getArg2() {
-  return getProperty('minehobo_combatArg2');
-}
-
-const freeRunItems = $items`Louder Than Bomb, divine champagne popper, tattered scrap of paper, GOTO, green smoke bomb`;
-export function main(initialRound: number, foe: Monster) {
+export function main(initialRound: number, foe: Monster, page: string) {
+  if (foe === Monster.get('time-spinner prank')) {
+    let prankerMatch = xpath(page, '//span[@id="monname"]/text()');
+    if (prankerMatch.length > 0) {
+      let prankers = property
+        .getString('_timePranks')
+        .split(',')
+        .filter(s => s.length > 0)
+        .concat(prankerMatch);
+      set('_timePranks', prankers.join(','));
+    } else {
+      print('Unable to track time pranker!');
+    }
+  }
   const mode = getMode();
   if (mode === MODE_MACRO) {
     Macro.load().submit();
-  } else if (mode === MODE_RUN_UNLESS_FREE) {
-    const preMacro = new Macro().step(getArg1());
-    const killMacro = new Macro().step(getArg2());
-    if (foe.attributes.includes('FREE')) {
-      killMacro.submit();
-    } else {
-      preMacro.submit();
-      if (
-        myFamiliar() === Familiar.get('Frumious Bandersnatch') &&
-        haveEffect(Effect.get('Ode to Booze')) > 0 &&
-        getPropertyInt('_banderRunaways') < myFamiliarWeight() / 5
-      ) {
-        const banderRunaways = getPropertyInt('_banderRunaways');
-        runaway();
-        if (getPropertyInt('_banderRunaways') === banderRunaways) {
-          print('WARNING: Mafia is not tracking bander runaways correctly.');
-          setPropertyInt('_banderRunaways', banderRunaways + 1);
-        }
-      } else if (haveSkill(Skill.get('Spring-Loaded Front Bumper'))) {
-        useSkill(1, Skill.get('Spring-Loaded Front Bumper'));
-      } else if (haveSkill(Skill.get('Reflex Hammer')) && getPropertyInt('_reflexHammerUsed') < 3) {
-        useSkill(1, Skill.get('Reflex Hammer'));
-      } else if (haveSkill(Skill.get('KGB tranquilizer dart')) && getPropertyInt('_kgbTranquilizerDartUses') < 3) {
-        useSkill(1, Skill.get('KGB tranquilizer dart'));
-      } else if (haveSkill(Skill.get('Show them your ring')) && !getPropertyBoolean('_mafiaMiddleFingerRingUsed')) {
-        useSkill(1, Skill.get('Show them your ring'));
-      } else if (myMp() >= 50 && haveSkill(Skill.get('Snokebomb')) && getPropertyInt('_snokebombUsed') < 3) {
-        useSkill(1, Skill.get('Snokebomb'));
-      } else if (freeRunItems.some((item: Item) => itemAmount(item) > 0)) {
-        Macro.item(freeRunItems.find((item: Item) => itemAmount(item) > 0) as Item)
-          .repeat()
-          .submit();
-      } else {
-        // non-free, whatever
-        throw "Couldn't find a way to run away for free!";
-      }
-    }
   } else {
     throw 'Unrecognized mode.';
-  }
-}
-
-export function withMode<T>(action: () => T, mode: CombatMode, arg1: string | null = null, arg2: string | null = null) {
-  setMode(mode, arg1, arg2);
-  try {
-    return action();
-  } finally {
-    multiFight();
-    setMode(MODE_NULL);
   }
 }
 
@@ -332,40 +259,6 @@ export function withMacro<T>(macro: Macro, action: () => T) {
     Macro.clearSaved();
   }
 }
-
-export function adventureMode(loc: Location, mode: CombatMode, arg1: string | null = null, arg2: string | null = null) {
-  return withMode(
-    () => {
-      adv1(loc, -1, '');
-    },
-    mode,
-    arg1,
-    arg2
-  );
-}
-
-export function adventureRunUnlessFree(loc: Location, preMacro: Macro, killMacro: Macro) {
-  adventureMode(loc, MODE_RUN_UNLESS_FREE, preMacro.toString(), killMacro.toString());
-}
-
-export function adventureRunOrStasis(loc: Location, freeRun: boolean) {
-  /*if (freeRun) {
-    adventureRunUnlessFree(
-      loc,
-      //myFamiliar() === $familiar`Stocking Mimic` ? Macro.stasis() : Macro.collect(),
-      //Macro.stasis().kill()
-    );
-  } else {
-    adventureMacro(loc, Macro.stasis().kill());
-  }&*/
-}
-
 export function adventureMacro(loc: Location, macro: Macro) {
-  withMode(() => withMacro(macro, () => adv1(loc, -1, '')), MODE_MACRO);
-}
-
-export function adventureMacroAuto(loc: Location, autoMacro: Macro, nextMacro: Macro | null = null) {
-  nextMacro = nextMacro ?? Macro.abort();
-  autoMacro.setAutoAttack();
-  adventureMacro(loc, nextMacro);
+  withMacro(macro, () => adv1(loc, -1, ''));
 }

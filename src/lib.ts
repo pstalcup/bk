@@ -461,7 +461,10 @@ export function withStash<T>(itemsToTake: Item[], action: () => T) {
 export function buffsBelowThreshold(threshold: number, modifierStr?: string) {
   let myEffects = myEffectsClean();
   let modifiers = modifierStr ? modifierStr.split(';') : [];
-  modifiers = modifiers.length === 0 ? ['Item Drop', 'Meat Drop', 'Monster Level'] : modifiers;
+  modifiers =
+    modifiers.length === 0
+      ? ['Item Drop', 'Meat Drop', 'Monster Level', 'Booze Drop', 'Food Drop', 'Familiar Weight']
+      : modifiers;
 
   return myEffects.filter(([effect, turns]: [Effect, number]) =>
     modifiers.some(modifier => numericModifier(effect, modifier) > 0 && turns < threshold)
@@ -498,4 +501,14 @@ export function time<T>(action: () => T, level?: LogLevel): T {
     log(level, `Took ${totalTime / (60 * 1000)} Minutes`);
   }
   return retVal;
+}
+
+export function assert(condition: boolean | (() => boolean), message: string) {
+  let assertCondition = condition;
+  if (condition && typeof condition === 'function') {
+    let assertCondition = condition();
+  }
+  if (!assertCondition) {
+    throw message;
+  }
 }

@@ -40,6 +40,12 @@ import {
   totalTurnsPlayed,
   maximize,
   myClass,
+  drink,
+  mySpleenUse,
+  myAdventures,
+  craft,
+  numericModifier,
+  random,
 } from 'kolmafia';
 import {
   $class,
@@ -66,20 +72,37 @@ import {
 } from 'libram';
 import { fillAsdonMartinTo } from './asdon';
 import { adventureMacro, Macro, withMacro } from './combat';
-import { getItem, inClan, log, LogLevel, minimumRelevantBuff, setChoice, setChoices } from './lib';
+import { getItem, inClan, log, LogLevel, minimumRelevantBuff, setChoice, setChoices, assert, withStash } from './lib';
+import { simulateFamiliarMeat } from './simulate';
 
-//const FREE_FIGHT_COST = 40000; // TODO: don't hardcode this
-const FREE_FIGHT_COST = property.getNumber('freeFightValue');
+const FREE_STASIS_FAMILIAR = property.getFamiliar('freeStasisFamiliar') || $familiar`Cocoabo`;
+
+const MELANGE_VALUE = property.getNumber('simulationMelangePrice');
+const DRUM_MACHINE_COST = property.getNumber('simulationDrumMachineCost');
+const FREE_FIGHT_SAFETY_THRESHOLD = property.getNumber('simulationSafetyThreshold');
+const STASIS_FIGHT_VALUE = simulateFamiliarMeat();
 const FREE_FIGHT_COPY_TARGET = property.getMonster('freeCopyFight') || $monster`Witchess Bishop`;
 const MINIMUM_BUFF_TURNS = property.getNumber('freeBuffThreshold');
 const INFINITE_LOOP_COUNT = property.getNumber('infiniteLoopCount');
-const FREE_STASIS_FAMILIAR = property.getFamiliar('freeStasisFamiliar') || $familiar`Cocoabo`;
 const BACKUP_FAMILIAR = $familiar`unspeakachu`; // use this when you absolutely need a familiar equipment
 const WANDERER_ZONE = $location`The Haunted Billiards Room`;
 
 let debug = function (message: string) {
   log(LogLevel.Debug, message, 'red');
 };
+
+export function freeFightCost(useDrumMachine: boolean, pickFamiliar: boolean, overrideFamiliar: boolean = false) {
+  // TODO: compute marginal MPA of accessories
+  let familiarFightValue = 0;
+  if (pickFamiliar && (overrideFamiliar || pickFreeFightFamiliar(true) === FREE_STASIS_FAMILIAR)) {
+    familiarFightValue = STASIS_FIGHT_VALUE * 2;
+  }
+  let singleFreeFightCost =
+    familiarFightValue + (useDrumMachine ? MELANGE_VALUE * 0.1 - DRUM_MACHINE_COST : 0) + 1000 * 2 + 200;
+  return Math.floor(
+    FREE_FIGHT_SAFETY_THRESHOLD * Math.min(600000, singleFreeFightCost + 3000 * 0.04 + singleFreeFightCost * 0.1)
+  );
+}
 
 function maybeBjorn(f: Familiar) {
   if (equippedAmount($item`buddy bjorn`) > 0 && myBjornedFamiliar() != f) {
@@ -94,7 +117,7 @@ function maybeEnthrone(f: Familiar) {
 }
 function heavyRainFreeFights() {
   while (myLightning() >= 20) {
-    withMacro(Macro.tentacle().skill($skill`lightning strike`), () => use($item`drum machine`));
+    drumMachineWithMacro(Macro.skill($skill`lightning strike`));
   }
   while (myRain() >= 50) {
     setPropertyMafia('choiceAdventure970', `1&whichmonster=${FREE_FIGHT_COPY_TARGET.id}`);
@@ -113,7 +136,10 @@ function bustGhost() {
 
 function fightVoter() {
   if (totalTurnsPlayed() % 11 === 1 && get('_voteFreeFights') < 3) {
-    if (!have($item`"I Voted!" sticker`)) throw 'Either vote or code in a vote!';
+    if (!have($item`"I Voted!" sticker`)) {
+      cliExecute('VotingBooth');
+    }
+    assert(have($item`"I Voted!" sticker`), 'Unable to get Voting Sticker');
     pickFreeFightFamiliar();
     outfit();
     equip($slot`acc1`, $item`"I Voted!" sticker`);
@@ -163,8 +189,12 @@ function step(name: string, condition: () => boolean | null | undefined, setup?:
           if (setup) setup();
 
           let infiniteLoopCheck = 0;
+          let adventureCheck = myAdventures();
 
           while (condition()) {
+            if (myAdventures() < adventureCheck && !name.includes('(TURNS)')) {
+              throw 'Spent a turn!!!';
+            }
             step_fun();
             refreshComma(); // this will only refresh if the active familiar is comma chameleon
             infiniteLoopCheck += 1;
@@ -194,9 +224,9 @@ function step(name: string, condition: () => boolean | null | undefined, setup?:
 postSteps.push(heavyRainFreeFights);
 postSteps.push(bustGhost);
 
-function maybeMacro(property: string, target: Item) {
-  if (!get(property)) retrieveItem(1, target);
-  return Macro.externalIf(!get<boolean>(property) && availableAmount(target) > 0, Macro.item(target));
+function maybeMacro(propName: string, target: Item) {
+  if (!property.getBoolean(propName)) retrieveItem(1, target);
+  return Macro.tryItem(target);
 }
 
 function refreshComma() {
@@ -204,6 +234,7 @@ function refreshComma() {
     visitUrl('charpane.php');
     cliExecute('refresh inv');
     if (get('commaFamiliar') !== 'Feather Boa Constrictor') {
+      assert(have($item`velvet choker`), 'Must have a velvet choker to refresh your comma chameleon!');
       // borrowed from phyllis
       visitUrl('charpane.php');
       cliExecute('refresh inv');
@@ -214,19 +245,22 @@ function refreshComma() {
   }
 }
 
-function pickFreeFightFamiliar() {
+export function pickFreeFightFamiliar(simulate: boolean = false, overrideFamiliar: boolean = false) {
   let [minEffect, minTurns] = minimumRelevantBuff();
 
-  log(LogLevel.Info, `${minEffect} Has ${minTurns} turns`);
-
-  if (minTurns >= MINIMUM_BUFF_TURNS) {
+  if (minTurns >= MINIMUM_BUFF_TURNS || overrideFamiliar) {
     let freeFightFamiliar = FREE_STASIS_FAMILIAR;
-    log(LogLevel.Debug, `Free Fight Familiar: ${freeFightFamiliar}`);
-    useFamiliar(freeFightFamiliar);
-    refreshComma();
+    if (!simulate) {
+      useFamiliar(freeFightFamiliar);
+      refreshComma();
+    }
+    return freeFightFamiliar;
   } else {
-    useFamiliar($familiar`Unspeakachu`);
-    equip($slot`familiar`, $item`ittah bittah hookah`);
+    if (!simulate) {
+      useFamiliar($familiar`Unspeakachu`);
+      equip($slot`familiar`, $item`ittah bittah hookah`);
+    }
+    return $familiar`Unspeakachu`;
   }
 }
 
@@ -376,6 +410,52 @@ class FreeKill {
   }
 }
 
+class Battery {
+  static availableCharges() {
+    cliExecute(`refresh inventory`);
+    return $items`Battery (AAA),Battery (AA),Battery (D),Battery (9-Volt),Battery (Lantern),Battery (Car)`.reduce(
+      (sum, currentBattery, index) => sum + availableAmount(currentBattery) * (index + 1),
+      0
+    );
+  }
+
+  static buy() {
+    $items`Battery (AAA),Battery (AA),Battery (D),Battery (9-Volt),Battery (Lantern),Battery (Car)`.forEach(
+      (battery, index) => {
+        let cost = (freeFightCost(true, true, true) * (index + 1)) / 4;
+        debug(`Buying ${battery} @ ${cost}`);
+        buy(10000, battery, cost);
+      }
+    );
+  }
+
+  static hasFreeKills() {
+    let charges = Battery.availableCharges();
+    debug(`Battery Charges Available: ${charges} (${Math.floor(charges / 4)})`);
+    return get('shockingLickCharges') > 0 || charges >= 4;
+  }
+
+  static untinker() {
+    $items`Battery (Car),Battery (Lantern),Battery (9-Volt),Battery (D),Battery (AA)`.forEach(battery => {
+      debug(`Untinkering ${battery}`);
+      while (have(battery)) {
+        cliExecute(`untinker ${battery}`);
+        cliExecute(`refresh inventory`);
+      }
+    });
+  }
+
+  static setupFreeKill() {
+    if (get('shockingLickCharges') == 0) {
+      cliExecute(`refresh inventory`);
+      retrieveItem(3, $item`meat paste`);
+      craft('combine', 2, $item`Battery (AAA)`, $item`Battery (AAA)`);
+      craft('combine', 1, $item`Battery (AA)`, $item`Battery (AA)`);
+      use($item`Battery (9-Volt)`);
+    }
+  }
+}
+
 let withEquip = (slot: Slot, item: Item, action: () => void) => {
   let originalItem = equippedItem(slot);
   equip(slot, item);
@@ -507,6 +587,18 @@ class GingerbreadCity {
   }
 }
 
+step(
+  'eldritch attunment',
+  () => !have($effect`Eldritch Attunement`)
+)(() => {
+  if (availableAmount($item`Eldritch Elixir`) < 1) {
+    throw 'Get an eldtrich elixir!!';
+  } else if (getRemainingLiver() < 3) {
+    throw 'No space for an eldtirch elixir, and you do not have attunement. Use sobrie tea, melange, etc. to fit it in!';
+  }
+  drink($item`Eldritch Elixir`);
+});
+
 step('rollover resources', () => myRain() >= 50 || myLightning() >= 20)(heavyRainFreeFights);
 
 step(
@@ -526,10 +618,17 @@ step(
 step(
   'fax',
   () => !get('_photocopyUsed'),
-  () => inClan(get('faxClan'), () => faxbot(FREE_FIGHT_COPY_TARGET, 'Cheesefax'))
+  () => {
+    inClan(get('faxClan'), () => faxbot(FREE_FIGHT_COPY_TARGET, 'Cheesefax'));
+    if (get('_pocketProfessorLectures') < maxProfessorLectures()) {
+      useFamiliar($familiar`Pocket Professor`);
+      equip($slot`familiar`, $item`Pocket Professor Memory Chip`);
+    }
+  }
 )(() => {
   withMacro(
     Macro.tentacle()
+      .professor()
       .step(maybeMacro('_iceSculptureUsed', $item`unfinished ice sculpture`))
       .step(maybeMacro('_cameraUsed', $item`4-d camera`))
       .step(SpookyPutty.maybeMacro())
@@ -549,8 +648,14 @@ step('spooky putty', () => SpookyPutty.hasFight())(() => {
   );
 });
 
-step('camera', () => have($item`shaking 4-d camera`))(() => {
-  withMacro(Macro.tentacle().maybeStasis().spellKill(), () => use($item`shaking 4-d camera`));
+step(
+  'camera',
+  () => have($item`shaking 4-d camera`),
+  () => equip($slot`acc3`, $item`backup camera`)
+)(() => {
+  withMacro(Macro.tentacle(Macro.trySkill('Back-Up to your last enemy')).maybeStasis().spellKill(), () =>
+    use($item`shaking 4-d camera`)
+  );
 });
 
 step('sculpture', () => have($item`ice sculpture`))(() => {
@@ -581,15 +686,21 @@ step(
   'lynrd snares',
   () => get('_lynyrdSnareUses') < 3
 )(() => {
-  withMacro(Macro.tentacle().spellKill(), () => use($item`lynyrd snare`));
+  withMacro(Macro.tentacle().perpetualStasis().spellKill(), () => use($item`lynyrd snare`));
 });
 
 step(
   'bricko',
-  () => get('_brickoFights') < 10,
-  () => cliExecute('acquire 10 BRICKO ooze')
+  () => get('_brickoFights') < 10
 )(() => {
-  withMacro(Macro.tentacle().spellKill(), () => use($item`BRICKO ooze`));
+  let brickoMonster = $item`BRICKO Ooze`;
+  if (availableAmount($item`BRICKO reactor`) < 4) {
+    brickoMonster = $item`BRICKO Airship`;
+  } else if (availableAmount($item`green BRICKO brick`) < 18) {
+    brickoMonster = $item`BRICKO python`;
+  }
+  retrieveItem(brickoMonster);
+  withMacro(Macro.tentacle().perpetualStasis().spellKill(), () => use(brickoMonster));
 });
 
 step('drunk pygmies', () => DrunkPygmy.freeBanishes())(() => {
@@ -614,7 +725,7 @@ step(
   adventureMacro(
     $location`The Hidden Bowling Alley`,
     Macro.tentacle()
-      .externalIf(equippedAmount($item`Fourth of May Cosplay Saber`) > 0, Macro.skill('Use the Force'))
+      .externalIf(equippedAmount($item`Fourth of May Cosplay Saber`) > 0, Macro.maybeStasis().skill('Use the Force'))
       .abort()
   );
 });
@@ -652,9 +763,9 @@ step(
 step(
   'glark cables',
   () => ['step3', 'finished'].includes(get('questL11Ron')) && get('_glarkCableUses') < 5,
-  () => getItem(5 - get('_glarkCableUses'), $item`glark cable`, FREE_FIGHT_COST)
+  () => getItem(5 - get('_glarkCableUses'), $item`glark cable`, freeFightCost(false, true))
 )(() => {
-  adventureMacro($location`The Red Zeppelin`, Macro.tentacle().item($item`glark cable`));
+  adventureMacro($location`The Red Zeppelin`, Macro.tentacle().maybeStasis(Macro.item($item`glark cable`)));
 });
 
 step(
@@ -666,15 +777,35 @@ step(
 });
 
 step(
+  'snojo',
+  () => get('_snojoFreeFights') < 10
+)(() => {
+  adventureMacro($location`The X-32-F Combat Training Snowman`, Macro.tentacle().item('seal tooth').repeat());
+});
+
+step(
   'free kills',
-  () => FreeKill.hasFreeKills(),
+  () => FreeKill.hasFreeKills() && pickFreeFightFamiliar(true) === FREE_STASIS_FAMILIAR,
   () => pickFreeFightFamiliar(),
   () => {
-    buy(100, $item`Daily Affirmation: Think Win-Lose`, FREE_FIGHT_COST);
-    buy(100, $item`Superduperheated Metal`, FREE_FIGHT_COST);
+    buy(100, $item`Daily Affirmation: Think Win-Lose`, freeFightCost(true, true, true));
+    buy(100, $item`Superduperheated Metal`, freeFightCost(true, true, true));
   }
 )(() => {
   drumMachineWithMacro(FreeKill.maybeMacro());
+  heavyRainFreeFights();
+});
+
+step(
+  'batteries',
+  () => Battery.hasFreeKills() && pickFreeFightFamiliar(true) === FREE_STASIS_FAMILIAR,
+  () => Battery.untinker(),
+  () => Battery.buy()
+)(() => {
+  Battery.setupFreeKill();
+  assert(get('shockingLickCharges') > 0, 'Must have a lick charge!!');
+  drumMachineWithMacro(Macro.skill($skill`Shocking Lick`));
+  heavyRainFreeFights();
 });
 
 step(
@@ -701,9 +832,9 @@ step(
 
 step(
   'powdered madness',
-  () => get('_powderedMadnessUses') < 5 && mallPrice($item`powdered madness`) < FREE_FIGHT_COST,
+  () => get('_powderedMadnessUses') < 5 && mallPrice($item`powdered madness`) < freeFightCost(true, true),
   () => pickFreeFightFamiliar(),
-  () => getItem(5 - get('_powderedMadnessUses'), $item`powdered madness`, FREE_FIGHT_COST)
+  () => getItem(5 - get('_powderedMadnessUses'), $item`powdered madness`, freeFightCost(true, true))
 )(() => {
   drumMachineWithMacro(Macro.item($item`powdered madness`));
 });
@@ -731,13 +862,6 @@ step(
     )
 )(() => {
   adventureMacro($location`The Neverending Party`, Macro.tentacle().spellKill());
-});
-
-step(
-  'snojo',
-  () => get('_snojoFreeFights') < 10
-)(() => {
-  adventureMacro($location`The X-32-F Combat Training Snowman`, Macro.tentacle().spellKill());
 });
 
 step(
@@ -793,7 +917,7 @@ step(
       getItem(
         Math.max(0, 20 - get('_powerPillUses') - availableAmount($item`power pill`)),
         $item`power pill`,
-        FREE_FIGHT_COST
+        freeFightCost(true, false)
       );
     }
   }
@@ -805,7 +929,7 @@ step(
   'gingerbread city',
   () => GingerbreadCity.retailUnlocked() && GingerbreadCity.hasTurns() && have($item`gingerbread cigarette`),
   () => {},
-  () => getItem(GingerbreadCity.turnsLeft(), $item`gingerbread cigarette`, FREE_FIGHT_COST)
+  () => getItem(GingerbreadCity.turnsLeft(), $item`gingerbread cigarette`, freeFightCost(false, true))
 )(() => {
   if (GingerbreadCity.isNoon()) {
     setChoice(1204, 1); // find candy
@@ -849,11 +973,12 @@ step(
 )(() => {
   adventureMacro(
     $location`Menagerie Level 1`,
-    Macro.tentacle()
-      .if_('monstername fruit golem', Macro.trySkill($skill`Feel Hatred`).abort())
-      .if_('monstername knob goblin mutant', Macro.trySkill($skill`Snokebomb`).abort())
-      .if_('monstername basic elemental', Macro.trySkill($skill`Summon Mayfly Swarm`).abort())
-      .spellKill()
+    Macro.tentacle().maybeStasis(
+      Macro.if_('monstername fruit golem', Macro.trySkill($skill`Feel Hatred`).abort())
+        .if_('monstername knob goblin mutant', Macro.trySkill($skill`Snokebomb`).abort())
+        .if_('monstername basic elemental', Macro.trySkill($skill`Summon Mayfly Swarm`).abort())
+        .spellKill()
+    )
   );
 });
 
@@ -896,6 +1021,37 @@ step(
 });
 
 step(
+  'final kramco familiar fishing',
+  () =>
+    get('_banderRunaways') < maxFamiliarRuns() ||
+    (CosplaySaber.canGive(SaberUpgrade.FamiliarWeight) &&
+      equippedAmount($item`Fourth of May Cosplay Saber`) === 0 &&
+      get('_banderRunaways') == maxFamiliarRuns()),
+  () => {
+    useFamiliar($familiar`Pair of Stomping Boots`);
+    equip($item`Kramco Sausage-o-Matic™`);
+    setChoice(885, 4);
+  }
+)(() => {
+  if (
+    get('_banderRunaways') == maxFamiliarRuns() &&
+    equippedAmount($item`Fourth of May Cosplay Saber`) == 0 &&
+    CosplaySaber.canGive(SaberUpgrade.FamiliarWeight)
+  ) {
+    CosplaySaber.upgrade(SaberUpgrade.FamiliarWeight);
+    maximize('familiar weight', false);
+  }
+  adventureMacro(
+    $location`The Haunted Nursery`,
+    Macro.tentacle()
+      .kramco(Macro.externalIf(get('bootsCharged'), Macro.skill($skill`Release The Boots`)))
+      .if_('monstername creepy doll', Macro.trySkill('Feel Hatred').tryItem('louder than bomb'))
+      .if_('monstername Possessed toy chest', Macro.trySkill('Snokebomb').tryItem('spooky music box mechanism'))
+      .step('pickpocket', 'runaway')
+  );
+});
+
+step(
   'final kramco free run fishing',
   () => FreeRun.hasFreeRuns(),
   () => equip($item`Kramco Sausage-o-Matic™`)
@@ -909,37 +1065,10 @@ function maxFamiliarRuns() {
   return Math.floor((familiarWeight($familiar`Pair of Stomping Boots`) + weightAdjustment()) / 5);
 }
 
-step(
-  'final kramco familiar fishing',
-  () =>
-    get('_banderRunaways') < maxFamiliarRuns() ||
-    (CosplaySaber.canGive(SaberUpgrade.FamiliarWeight) &&
-      equippedAmount($item`Fourth of May Cosplay Saber`) === 0 &&
-      get('_banderRunaways') == maxFamiliarRuns()),
-  () => {
-    useFamiliar($familiar`Pair of Stomping Boots`);
-    equip($item`Kramco Sausage-o-Matic™`);
-  }
-)(() => {
-  if (
-    get('_banderRunaways') == maxFamiliarRuns() &&
-    equippedAmount($item`Fourth of May Cosplay Saber`) == 0 &&
-    CosplaySaber.canGive(SaberUpgrade.FamiliarWeight)
-  ) {
-    CosplaySaber.upgrade(SaberUpgrade.FamiliarWeight);
-    equip($slot`weapon`, $item`Fourth of May Cosplay Saber`);
-    if (myClass() == $class`Pastamancer`) equip($slot`back`, $item`snowpack`);
-    equip($slot`hat`, $item`Crumpled Felt Fedora`);
-    equip($slot`acc2`, $item`Beach Comb`);
-    equip($slot`acc3`, $item`hewn moon-rune spoon`);
-  }
-  adventureMacro(
-    WANDERER_ZONE,
-    Macro.tentacle()
-      .kramco(Macro.externalIf(get('bootsCharged'), Macro.skill($skill`Release The Boots`)))
-      .step('runaway')
-  );
-});
+function maxProfessorLectures() {
+  // assume chip is equipped
+  return Math.floor(Math.sqrt(familiarWeight($familiar`Pocket Professor`) + weightAdjustment()));
+}
 
 step(
   'final asdon martin',
@@ -956,25 +1085,42 @@ step(
   drumMachineWithMacro(Macro.skill($skill`Asdon Martin: Missile Launcher`));
 });
 
-step(
-  'pill keeper embezzlers',
-  () => getRemainingSpleen() >= 3 && property.getBoolean('spendTurns', false) && have($familiar`Robortender`),
+function setupRobort() {
+  if (!get('_roboDrinks').includes('drive-by shooting')) {
+    retrieveItem(1, $item`drive-by shooting`);
+    cliExecute('robo drive-by shooting');
+  }
+  if (!get('_mummeryMods').includes(`${$familiar`Robortender`}`)) {
+    cliExecute('mummery meat');
+  }
+  if (!get('_feastedFamiliars').includes(`${$familiar`Robortender`}`)) {
+    withStash([$item`Moveable Feast`], () => use($item`Moveable Feast`));
+  }
+}
+
+/*step(
+  'pill keeper embezzlers (TURNS)',
+  () =>
+    (get('currentMojoFilters') == 0 || getRemainingSpleen() >= 3) &&
+    property.getBoolean('spendTurns', false) &&
+    have($familiar`Robortender`),
   () => {
     useFamiliar($familiar`robortender`);
-    if (!get('_roboDrinks').includes('drive-by shooting')) {
-      retrieveItem(1, $item`drive-by shooting`);
-      cliExecute('robo drive-by shooting');
-    }
-    maximize("meat +equip thor's pliers +equip mafia pointer finger ring", false);
+    setupRobort();
   }
 )(() => {
   fightVoter();
+  if (mySpleenUse() > 3 && get('currentMojoFilters') < 3) {
+    retrieveItem(3, $item`mojo filter`);
+    use(3, $item`mojo filter`);
+  }
   cliExecute('pillkeeper semirare');
+  maximize("meat +equip thor's pliers", false);
   adventureMacro(
     $location`Cobb's Knob Treasury`,
-    Macro.tentacle().if_('monstername Knob Goblin Embezzler', Macro.spellKill()).abort()
+    Macro.tentacle().if_('monstername Knob Goblin Embezzler', Macro.skill('sing along').spellKill()).abort()
   );
-});
+});*/
 
 export function main(argString = '') {
   let skiplist = argString.split(';').map(s => s.trim());
