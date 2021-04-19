@@ -1,5 +1,6 @@
 import {
   availableAmount,
+  buy,
   cliExecute,
   equip,
   getClanName,
@@ -14,6 +15,7 @@ import {
   toMonster,
   use,
   useFamiliar,
+  useSkill,
   visitUrl,
 } from 'kolmafia';
 import {
@@ -29,10 +31,11 @@ import {
   Clan,
   get,
   have,
+  property,
   set,
 } from 'libram';
 import { Macro, adventureMacro } from './combat';
-import { assert, inClan, setChoice, withStash } from './lib';
+import { assert, inClan, sendKmail, setChoice, withStash } from './lib';
 
 // borrowed from raidlog parser
 function parseImageN(hoboPlace: string) {
@@ -177,6 +180,12 @@ function setupOutfit() {
     retrieveItem(10, $item`vykea rail`);
     cliExecute('create level 5 lamp');
   }
+  if (get('_pantogramModifier') === '') {
+    // depends on pantogram.ash
+    retrieveItem(11, $item`lead necklace`);
+    retrieveItem(1, $item`tiny dancer`);
+    cliExecute('pantogram tiny dancer|lead necklace|silent');
+  }
 }
 
 function outfit() {
@@ -213,6 +222,13 @@ function kill(location: Location) {
           );
         });
       }
+      if (!haveEffect($effect`Gummi Badass`)) {
+        buy($item`pocket wish`);
+        cliExecute('genie effect Gummi Badass');
+      }
+      useSkill($skill`Scarysauce`);
+      useSkill($skill`Jalapeño Saucesphere`);
+      useSkill($skill`Spiky Shell`);
       if (!haveEffect($effect`Chilled to the Bone`) || !haveEffect($effect`Gummi Badass`)) {
         throw "Did not get Chilled to the Bone or Gummi Badass, so we can't kill frosty!";
       }
@@ -293,8 +309,7 @@ export function main(args: string) {
     print(`Hodgman Booze Drop: ${1 + Math.floor((boozeDrop - 50) / 150)}`);
   }
   if (args.trim() == 'kill') {
-    let ltb = availableAmount($item`Louder Than Bomb`);
-    retrieveItem(10 - ltb, $item`Louder Than Bomb`);
+    retrieveItem(10, $item`Louder Than Bomb`);
 
     let drops = new Map<Item, number>();
     let finalDrops = new Map<string, number>();
@@ -338,5 +353,16 @@ export function main(args: string) {
       }, Object.create(null))
     );
     set('_lastHoboDrops', hoboDrops);
+  }
+  if (args.includes('distro')) {
+    let argParts = args.split('|');
+    let player = argParts[1];
+    let obj = JSON.parse(property.getString('_lastHoboDrops', '{}')!);
+
+    let dropsMap = new Map<Item, number>();
+    for (let itemStr of Object.getOwnPropertyNames(obj)) {
+      dropsMap.set(Item.get(itemStr), obj[itemStr!]);
+    }
+    sendKmail(player, 'Hobopolis consumable drops', dropsMap);
   }
 }

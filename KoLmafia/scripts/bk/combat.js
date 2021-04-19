@@ -2778,7 +2778,7 @@ var Macro = /*#__PURE__*/function (_LibramMacro) {
   }, {
     key: "tentacle",
     value: function tentacle() {
-      return this.if_('monstername eldritch tentacle', Macro.step.apply(Macro, arguments).perpetualStasis().spellKill()); //return this.if_('monstername eldritch tentacle', Macro.step(...steps).skill('Curse of Weaksauce', 'Micrometeorite', 'Stuffed Mortar Shell', 'Saucestorm').repeat());
+      return this.if_('monstername eldritch tentacle', Macro.step.apply(Macro, arguments).perpetualStasis().spellKill());
     }
   }, {
     key: "professor",
@@ -2958,7 +2958,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "buffsBelowThreshold": () => (/* binding */ buffsBelowThreshold),
 /* harmony export */   "minimumRelevantBuff": () => (/* binding */ minimumRelevantBuff),
 /* harmony export */   "time": () => (/* binding */ time),
-/* harmony export */   "assert": () => (/* binding */ assert)
+/* harmony export */   "assert": () => (/* binding */ assert),
+/* harmony export */   "sendKmail": () => (/* binding */ sendKmail)
 /* harmony export */ });
 /* harmony import */ var kolmafia__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! kolmafia */ "kolmafia");
 /* harmony import */ var kolmafia__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(kolmafia__WEBPACK_IMPORTED_MODULE_0__);
@@ -3177,6 +3178,7 @@ function cheapest() {
   return items[minIndex];
 }
 function getItem(qty, item, maxPrice) {
+  (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("Getting ".concat(qty, " ").concat(item, " @ max price ").concat(maxPrice), "blue");
   if (item !== (0,libram__WEBPACK_IMPORTED_MODULE_4__.$item)(_templateObject5 || (_templateObject5 = _taggedTemplateLiteral(["pocket wish"]))) && qty * (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.mallPrice)(item) > 1000000) (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.abort)('bad get!');
 
   try {
@@ -3566,6 +3568,42 @@ function assert(condition, message) {
   if (!assertCondition) {
     throw message;
   }
+}
+function sendKmail(playerName, message, items) {
+  var multiKmail = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+  assert(items.size <= 11 && !multiKmail, 'Can only send 11 items in a single KMail. Use parameter "multiKmail" to send multiple kmails');
+  assert(message.length <= 2000, 'KMail text body must be less than 2000 characters');
+  var i = 1;
+  var encodedPlayer = encodeURIComponent(playerName);
+  var encodedMessage = encodeURIComponent(message);
+  (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)('refresh inventory');
+  var params = "towho=".concat(encodedPlayer, "&message=").concat(encodedMessage, "&submit=").concat(encodeURIComponent('Send Message.'));
+
+  var _iterator4 = _createForOfIteratorHelper(items.keys()),
+      _step4;
+
+  try {
+    for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+      var item = _step4.value;
+      var qty = items.get(item);
+      var amt = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.availableAmount)(item);
+
+      if (amt < qty) {
+        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)("Couldn't send ".concat(item, ", didn't have enough, only had ").concat(amt), 'red');
+      } else {
+        params += "&whichitem".concat(i, "=").concat((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.toInt)(item), "&howmany").concat(i, "=").concat(qty);
+        i += 1;
+      }
+    }
+  } catch (err) {
+    _iterator4.e(err);
+  } finally {
+    _iterator4.f();
+  }
+
+  var url = "sendmessage.php?toid=&".concat(params, "&pwd&action=send");
+  (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)(url, 'red');
+  (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.visitUrl)(url, true, true);
 }
 
 /***/ }),

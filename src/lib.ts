@@ -196,6 +196,7 @@ export function cheapest(...items: Item[]) {
 }
 
 export function getItem(qty: number, item: Item, maxPrice: number) {
+  print(`Getting ${qty} ${item} @ max price ${maxPrice}`, `blue`);
   if (item !== $item`pocket wish` && qty * mallPrice(item) > 1000000) abort('bad get!');
 
   try {
@@ -511,4 +512,30 @@ export function assert(condition: boolean | (() => boolean), message: string) {
   if (!assertCondition) {
     throw message;
   }
+}
+
+export function sendKmail(playerName: string, message: string, items: Map<Item, number>, multiKmail: boolean = false) {
+  assert(
+    items.size <= 11 && !multiKmail,
+    'Can only send 11 items in a single KMail. Use parameter "multiKmail" to send multiple kmails'
+  );
+  assert(message.length <= 2000, 'KMail text body must be less than 2000 characters');
+  let i = 1;
+  let encodedPlayer = encodeURIComponent(playerName);
+  let encodedMessage = encodeURIComponent(message);
+  cliExecute('refresh inventory');
+  let params = `towho=${encodedPlayer}&message=${encodedMessage}&submit=${encodeURIComponent('Send Message.')}`;
+  for (let item of items.keys()) {
+    let qty = items.get(item)!;
+    let amt = availableAmount(item);
+    if (amt < qty) {
+      print(`Couldn't send ${item}, didn't have enough, only had ${amt}`, 'red');
+    } else {
+      params += `&whichitem${i}=${toInt(item)}&howmany${i}=${qty}`;
+      i += 1;
+    }
+  }
+  let url = `sendmessage.php?toid=&${params}&pwd&action=send`;
+  print(url, 'red');
+  visitUrl(url, true, true);
 }

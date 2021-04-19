@@ -9,6 +9,8 @@ import {
   mallPrice,
   print,
   printHtml,
+  putShop,
+  takeShop,
   toInt,
   toItem,
   visitUrl,
@@ -19,7 +21,7 @@ import { main as wlMain } from './wl';
 import { main as sewerMain } from './sewers';
 import { main as dailyMain } from './bkdaily';
 import { main as dietMain } from './bkdiet';
-import { buffsBelowThreshold, Table, time } from './lib';
+import { buffsBelowThreshold, sendKmail, Table, time } from './lib';
 import { get, set, property, $item, have } from 'libram';
 import { simulateFamiliarMeat } from './simulate';
 
@@ -158,6 +160,13 @@ function stash() {
   expensiveItems.forEach(i => print(`${i}:${mallPrice(i)}`));
 }
 
+function kmail() {
+  let items = new Map<Item, number>();
+  items.set($item`seal tooth`, 1);
+
+  sendKmail('phreddrickkv2', 'This is a test of my kmail function', items);
+}
+
 export function main(args: string) {
   if (!args || args.length == 0) {
     print("run 'bk help' for help");
@@ -251,9 +260,21 @@ export function main(args: string) {
             print(`Drum Machine, Do not Choose (meat familiar): ${freeFightCost(true, false, true)}`);
             print(`No Drum Machine, Choose Familiar (meat familiar): ${freeFightCost(false, true, true)}`);
             print(`No Drum Machine, Do not Choose (meat familiar): ${freeFightCost(false, false, true)}`);
+
+            if (modeArgs.includes('update')) {
+              let batteryPrice = Math.floor(freeFightCost(true, true, true) / 4);
+              print(`Updating battery price @ ${batteryPrice}`, 'red');
+              takeShop($item`Battery (AAA)`);
+              cliExecute('refresh inventory');
+              putShop(batteryPrice, 1, Math.min(5, availableAmount($item`Battery (AAA)`)), $item`Battery (AAA)`);
+            }
+
             break;
           case 'stash':
             stash();
+            break;
+          case 'kmailtest':
+            kmail();
         }
       } else {
         print(`Invalid args ${args}`);

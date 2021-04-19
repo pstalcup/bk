@@ -43,6 +43,12 @@ function dailyTask(name: string, condition: () => boolean, action: () => void, r
   tasks.push(wrappedTask);
 }
 
+dailyTask(
+  'raffle house',
+  () => availableAmount($item`raffle ticket`) < 11,
+  () => cliExecute('raffle 11')
+);
+
 const pyec = $item`Platinum Yendorian Express Card`;
 dailyTask(
   'pyec',
@@ -225,6 +231,24 @@ dailyTask(
     buy(Math.floor(myMeat() / 50000), $item`pocket wish`, 49999);
   },
   true
+);
+
+dailyTask(
+  'BACON',
+  () => !get('_baconMachineUsed'),
+  () => use($item`Infinite bacon machine`)
+);
+
+dailyTask(
+  'perfect freeze',
+  () => have($skill`Perfect Freeze`) && !get('_perfectFreezeUsed'),
+  () => useSkill($skill`Perfect Freeze`)
+);
+
+dailyTask(
+  'incredible self esteem',
+  () => have($skill`Incredible Self Esteem`) && !get('_incredibleSelfEsteemCast'),
+  () => useSkill($skill`Incredible Self Esteem`)
 );
 
 let numberologyTarget = 14;

@@ -187,7 +187,6 @@ export class Macro extends LibramMacro {
         .perpetualStasis()
         .spellKill()
     );
-    //return this.if_('monstername eldritch tentacle', Macro.step(...steps).skill('Curse of Weaksauce', 'Micrometeorite', 'Stuffed Mortar Shell', 'Saucestorm').repeat());
   }
 
   static tentacle(...steps: Macro[]) {

@@ -1,4 +1,4 @@
-import { drink, eat, effectModifier, myFullness, myInebriety, retrieveItem, toItem, use } from 'kolmafia';
+import { drink, eat, effectModifier, myFullness, myInebriety, retrieveItem, toItem, use, buy } from 'kolmafia';
 import { $effect, $item, $items, get, getRemainingLiver, getRemainingStomach, property } from 'libram';
 import { MayoClinic } from './lib';
 
@@ -73,6 +73,10 @@ function thanksgetting() {
 export function main(args: string) {
   if (property.getBoolean('getThanksgetting')) {
     thanksgetting();
+  }
+  if (!get('_voraciTeaUsed')) {
+    buy($item`cuppa voraci tea`);
+    use($item`cuppa voraci tea`);
   }
   if (getRemainingStomach() > 0) fillFood(getRemainingStomach());
   if (getRemainingLiver() > 0) fillBooze(getRemainingLiver());
