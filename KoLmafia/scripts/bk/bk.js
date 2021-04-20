@@ -10395,7 +10395,7 @@ var Battery = /*#__PURE__*/function () {
         debug("Untinkering ".concat(battery));
 
         while ((0,libram__WEBPACK_IMPORTED_MODULE_7__.have)(battery)) {
-          (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)("untinker ".concat(battery));
+          (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)("untinker * ".concat(battery));
           (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)("refresh inventory");
         }
       });
@@ -10410,7 +10410,7 @@ var Battery = /*#__PURE__*/function () {
 
       while ((0,libram__WEBPACK_IMPORTED_MODULE_7__.have)((0,libram__WEBPACK_IMPORTED_MODULE_6__.$item)(_templateObject76 || (_templateObject76 = _taggedTemplateLiteral(["Battery (D)"]))))) {
         debug("Untinkering ".concat((0,libram__WEBPACK_IMPORTED_MODULE_6__.$item)(_templateObject77 || (_templateObject77 = _taggedTemplateLiteral(["Battery (D)"])))));
-        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)("untinker ".concat((0,libram__WEBPACK_IMPORTED_MODULE_6__.$item)(_templateObject78 || (_templateObject78 = _taggedTemplateLiteral(["Battery (D)"])))));
+        (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)("untinker * ".concat((0,libram__WEBPACK_IMPORTED_MODULE_6__.$item)(_templateObject78 || (_templateObject78 = _taggedTemplateLiteral(["Battery (D)"])))));
         (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)("refresh inventory");
       }
 
@@ -10803,7 +10803,8 @@ step('batteries', function () {
 }, function () {
   return Battery.untinker();
 }, function () {
-  return Battery.buy();
+  Battery.buy();
+  Battery.untinker();
 })(function () {
   Battery.setupFreeKill();
   (0,_lib__WEBPACK_IMPORTED_MODULE_3__.assert)((0,libram__WEBPACK_IMPORTED_MODULE_5__.get)('shockingLickCharges') > 0, 'Must have a lick charge!!');
@@ -11045,7 +11046,7 @@ function main() {
   (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)('mood apathetic');
   (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)('ccs bkfights');
 
-  if ((0,libram__WEBPACK_IMPORTED_MODULE_5__.get)('sourceTerminalEducate1') !== 'digitize.edu' || (0,libram__WEBPACK_IMPORTED_MODULE_5__.get)('sourceTerminalEducate2') !== 'extract.edu') {
+  if ((0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getCampground)()['Source terminal'] && (0,libram__WEBPACK_IMPORTED_MODULE_5__.get)('sourceTerminalEducate1') !== 'digitize.edu' || (0,libram__WEBPACK_IMPORTED_MODULE_5__.get)('sourceTerminalEducate2') !== 'extract.edu') {
     (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.cliExecute)('terminal educate digitize; terminal educate extract');
   }
 
@@ -11721,18 +11722,23 @@ function setMode(mode) {
 function getMode() {
   return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getProperty)('minehobo_combatMode');
 }
+
+function trackPranker(page) {
+  var prankerMatch = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.xpath)(page, '//span[@id="monname"]/text()');
+
+  if (prankerMatch.length > 0) {
+    var prankers = libram__WEBPACK_IMPORTED_MODULE_3__.getString('_timePranks').split(',').filter(function (s) {
+      return s.length > 0;
+    }).concat(prankerMatch);
+    (0,libram__WEBPACK_IMPORTED_MODULE_3__.set)('_timePranks', prankers.join(','));
+  } else {
+    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)('Unable to track time pranker!');
+  }
+}
+
 function main(initialRound, foe, page) {
   if (foe === Monster.get('time-spinner prank')) {
-    var prankerMatch = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.xpath)(page, '//span[@id="monname"]/text()');
-
-    if (prankerMatch.length > 0) {
-      var prankers = libram__WEBPACK_IMPORTED_MODULE_3__.getString('_timePranks').split(',').filter(function (s) {
-        return s.length > 0;
-      }).concat(prankerMatch);
-      (0,libram__WEBPACK_IMPORTED_MODULE_3__.set)('_timePranks', prankers.join(','));
-    } else {
-      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)('Unable to track time pranker!');
-    }
+    trackPranker(page);
   }
 
   var mode = getMode();

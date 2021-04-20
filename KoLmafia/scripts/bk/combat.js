@@ -2869,18 +2869,23 @@ function setMode(mode) {
 function getMode() {
   return (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.getProperty)('minehobo_combatMode');
 }
+
+function trackPranker(page) {
+  var prankerMatch = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.xpath)(page, '//span[@id="monname"]/text()');
+
+  if (prankerMatch.length > 0) {
+    var prankers = libram__WEBPACK_IMPORTED_MODULE_3__.getString('_timePranks').split(',').filter(function (s) {
+      return s.length > 0;
+    }).concat(prankerMatch);
+    (0,libram__WEBPACK_IMPORTED_MODULE_3__.set)('_timePranks', prankers.join(','));
+  } else {
+    (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)('Unable to track time pranker!');
+  }
+}
+
 function main(initialRound, foe, page) {
   if (foe === Monster.get('time-spinner prank')) {
-    var prankerMatch = (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.xpath)(page, '//span[@id="monname"]/text()');
-
-    if (prankerMatch.length > 0) {
-      var prankers = libram__WEBPACK_IMPORTED_MODULE_3__.getString('_timePranks').split(',').filter(function (s) {
-        return s.length > 0;
-      }).concat(prankerMatch);
-      (0,libram__WEBPACK_IMPORTED_MODULE_3__.set)('_timePranks', prankers.join(','));
-    } else {
-      (0,kolmafia__WEBPACK_IMPORTED_MODULE_0__.print)('Unable to track time pranker!');
-    }
+    trackPranker(page);
   }
 
   var mode = getMode();

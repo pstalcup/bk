@@ -466,7 +466,7 @@ class Battery {
     $items`Battery (Car),Battery (Lantern)`.forEach(battery => {
       debug(`Untinkering ${battery}`);
       while (have(battery)) {
-        cliExecute(`untinker ${battery}`);
+        cliExecute(`untinker * ${battery}`);
         cliExecute(`refresh inventory`);
       }
     });
@@ -479,7 +479,7 @@ class Battery {
     }
     while (have($item`Battery (D)`)) {
       debug(`Untinkering ${$item`Battery (D)`}`);
-      cliExecute(`untinker ${$item`Battery (D)`}`);
+      cliExecute(`untinker * ${$item`Battery (D)`}`);
       cliExecute(`refresh inventory`);
     }
     while (availableAmount($item`Battery (AAA)`) > 1) {
@@ -876,7 +876,10 @@ step(
   'batteries',
   () => Battery.hasFreeKills(),
   () => Battery.untinker(),
-  () => Battery.buy()
+  () => {
+    Battery.buy();
+    Battery.untinker();
+  }
 )(() => {
   Battery.setupFreeKill();
   assert(get('shockingLickCharges') > 0, 'Must have a lick charge!!');
@@ -1209,7 +1212,10 @@ export function main(argString = '') {
 
   cliExecute('mood apathetic');
   cliExecute('ccs bkfights');
-  if (get('sourceTerminalEducate1') !== 'digitize.edu' || get('sourceTerminalEducate2') !== 'extract.edu') {
+  if (
+    (getCampground()['Source terminal'] && get('sourceTerminalEducate1') !== 'digitize.edu') ||
+    get('sourceTerminalEducate2') !== 'extract.edu'
+  ) {
     cliExecute('terminal educate digitize; terminal educate extract');
   }
   set('hpAutoRecovery', 0.8);

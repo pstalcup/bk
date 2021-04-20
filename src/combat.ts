@@ -226,19 +226,23 @@ export function getMode() {
   return getProperty('minehobo_combatMode');
 }
 
+function trackPranker(page: string) {
+  let prankerMatch = xpath(page, '//span[@id="monname"]/text()');
+  if (prankerMatch.length > 0) {
+    let prankers = property
+      .getString('_timePranks')
+      .split(',')
+      .filter(s => s.length > 0)
+      .concat(prankerMatch);
+    set('_timePranks', prankers.join(','));
+  } else {
+    print('Unable to track time pranker!');
+  }
+}
+
 export function main(initialRound: number, foe: Monster, page: string) {
   if (foe === Monster.get('time-spinner prank')) {
-    let prankerMatch = xpath(page, '//span[@id="monname"]/text()');
-    if (prankerMatch.length > 0) {
-      let prankers = property
-        .getString('_timePranks')
-        .split(',')
-        .filter(s => s.length > 0)
-        .concat(prankerMatch);
-      set('_timePranks', prankers.join(','));
-    } else {
-      print('Unable to track time pranker!');
-    }
+    trackPranker(page);
   }
   const mode = getMode();
   if (mode === MODE_MACRO) {
